@@ -1,0 +1,333 @@
+\begin{frame}{\insertsubsection}
+
+  CVE-2017-5754: спекулятивное чтение недоступных данных
+
+  \begin{figure}[h]
+    \includegraphics[height = .7\textheight]{meltdown_logo}
+    \caption{Meltdown}
+  \end{figure}
+
+  \note{
+
+
+  }
+\end{frame}
+
+\subsubsection{Выполнение не по порядку}
+\begin{frame}[fragile]{\insertsubsubsection}
+
+          \begin{minted}[escapeinside = ||]{c}
+            |\tikzmark{firsts}|int width = 10, height = 5;|\tikzmark{firste}|
+
+            |\tikzmark{seconds}|float diagonal = sqrt(width * width + height * height);|\tikzmark{seconde}|
+
+            |\tikzmark{thirds}|int area = width * height;|\tikzmark{thirde}|
+
+            |\tikzmark{fourths}|printf("Area %d x %d = %d\n", width, height, area);|\tikzmark{fourthe}|
+          \end{minted}
+
+  \begin{tikzpicture}[
+    remember picture,
+    align = center,
+    ->,
+    > = Stealth,
+    thick,
+    ]
+
+    \node[
+    overlay,
+    above right = and -1cm of pic cs:seconde,
+    ] (paral) {
+      Параллелизация
+    };
+
+    \draw[overlay] (pic cs:firsts) -- ++(-1, 0) |- node[below] {Зависимости}  (pic cs:fourths);
+    \draw[overlay] (pic cs:thirds) to[bend right] (pic cs:fourths);
+
+    \draw[overlay] (paral.north) to[bend right] (pic cs:firste);
+    \draw[overlay] (paral) to[bend left] (pic cs:seconde);
+    \draw[overlay] (paral.290) |- (pic cs:thirde);
+
+  \end{tikzpicture}
+
+  \note{
+
+    В разделе теории было уже рассказано, что инструкции могут выполняться не по
+    порядку, а некоторые даже спекулятивно, если у них нет зависимостей.
+
+  }
+\end{frame}
+
+\subsubsection{Чтение недоступной памяти}
+\begin{frame}{\insertsubsubsection}
+
+  \begin{itemize}
+  \item Если программа читает память,то
+    \begin{enumerate}
+    \item проверяются права
+    \item память считывается
+    \end{enumerate}
+  \item Если программа пытается читать недоступную память, то
+    \begin{enumerate}
+    \item происходит ошибка
+    \item выполнение останавливается
+    \end{enumerate}
+  \end{itemize}
+
+  Но что будет, если проверка прав и чтение будут выполняться не по порядку?
+
+  \note{
+
+
+  }
+\end{frame}
+
+\begin{frame}[fragile]{\insertsubsubsection}
+
+  \begin{minted}{c}
+    *(volatile char*) 0; // ошибка чтения, выполнение прерывается
+    temp = array[84 * 4096]; // выполнение вне очереди?
+  \end{minted}
+
+  \only<2>{С помощью атаки на кэш \texttt{Flush + Reload} выясняется, что
+    обращение к 84 странице памяти состоялось!}
+
+  \note<1>{
+
+    \begin{enumerate}
+    \item Попытка чтения недоступной памяти
+    \item Проверка прав на чтение
+    \item Параллельно: спекулятивное выполнение последующей операции
+    \item Параллельно: запись данных в кэш
+    \end{enumerate}
+
+  }
+
+\end{frame}
+
+\subsubsection{Эксплуатация}
+\begin{frame}[fragile]{\insertsubsubsection}
+
+  \begin{minted}{c}
+    unsigned char value = *(unsigned char *)ptr;
+    unsigned long index = (((value >> bit) & 1) * 0x100) + 0x200;
+    maccess(&data[index]);
+  \end{minted}
+
+  \note{
+
+    \textbf{ptr} --- указатель на интересующую нас память.
+
+    \textbf{data} --- контролируемый атакующим массив.
+
+  }
+
+\end{frame}
+
+\begin{frame}{\insertsubsubsection}
+
+  \begin{figure}[h]
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      data/.style = {
+        matrix of nodes,
+        nodes in empty cells,
+        nodes = {
+          minimum width = 3cm,
+          minimum height = .8cm,
+          draw,
+          align = center,
+          anchor = center,
+          fill = ForestGreen,
+        },
+        text = White,
+      },
+      block/.style = {
+        rectangle,
+        draw,
+        fill = ForestGreen,
+        text = White,
+        text centered,
+      },
+      ]
+
+      \node<1->[
+      block,
+      font = \ttfamily,
+      ] (secret) {
+        char value = *SECRET\_KERNEL\_PTR;
+      };
+
+      \node<2->[
+      block,
+      below = of secret,
+      ] (mask) {
+        маска для чтения нужного бита
+      };
+
+      \node<3->[
+      block,
+      below = of mask,
+      ] (offset) {
+        вычисление смещения в \texttt{data}\\(к которому есть доступ)
+      };
+
+      \node<4->[
+      right = of offset,
+      data,
+      label = { above:\texttt{char data[];}},
+      ] (data) {
+        0x000\&a\\
+        0x100\&b\\
+        0x200\&c\\
+        0x300\&d\\
+      };
+
+      \draw<2-> (secret) -- (mask);
+      \draw<3-> (mask) -- (offset);
+      \draw<4-> (offset) -- (data-3-1);
+      \draw<4-> (offset) -- (data-4-1);
+
+    \end{tikzpicture}
+    \only<1>{\caption{\texttt{unsigned char value = \color{NavyBlue}*(unsigned char *)ptr;}}}
+    \only<2>{\caption{\texttt{unsigned long index = ((\color{NavyBlue}(value >{}> bit) \& 1\color{Black}) * 0x100) + 0x200;}}}
+    \only<3>{\caption{\texttt{unsigned long index = (((value >{}> bit) \& 1)\color{NavyBlue} * 0x100) + 0x200;}}}
+    \only<4>{\caption{\texttt{maccess(\&data[index]);}}}
+
+  \end{figure}
+
+  \note{
+
+
+  }
+
+\end{frame}
+
+\begin{frame}{\insertsubsubsection}
+
+  \begin{figure}[h]
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      data/.style = {
+        matrix of nodes,
+        nodes in empty cells,
+        nodes = {
+          minimum width = 3cm,
+          minimum height = .8cm,
+          draw,
+          align = center,
+          anchor = center,
+          fill = ForestGreen,
+        },
+        text = White,
+      },
+      block/.style = {
+        rectangle,
+        draw,
+        fill = ForestGreen,
+        text = White,
+        text centered,
+      },
+      ]
+
+      \node[
+      data,
+      label = {above:\texttt{char data[];}},
+      ] (data) {
+        0x000\&a\\
+        0x100\&b\\
+        0x200\&c\\
+        0x300\&d\\
+      };
+
+      \node<1>[
+      right = of data-3-2,
+      label = above:Кэш,
+      block,
+      rectangle split,
+      rectangle split parts = 2,
+      rectangle split horizontal,
+      ] (cache) {
+        0x200
+        \nodepart{two}
+        c
+      };
+
+      \node<2>[
+      right = of data-4-2,
+      label = above:Кэш,
+      block,
+      rectangle split,
+      rectangle split parts = 2,
+      rectangle split horizontal,
+      ] (cache) {
+        0x300
+        \nodepart{two}
+        d
+      };
+
+      \draw<1> (data-3-2) -- (cache);
+      \draw<2> (data-4-2) -- (cache);
+
+    \end{tikzpicture}
+    \caption{При обращении к массиву по определённому индексу данные попадают в
+      кэш}
+
+  \end{figure}
+
+  \note{
+
+
+  }
+
+\end{frame}
+
+\subsubsection{ASM}
+\begin{frame}[fragile]{\insertsubsubsection}
+
+  \begin{minted}{nasm}
+    LDR X1, [X2]       ; X2 - указатель на данные, которых нет в кэше,
+                       ; также в TLB не должно быть данного адреса
+    CBZ X1, over       ; переход, который в итоге будет совершён,
+                       ; но инструкции ниже всё равно исполнятся
+    LDR X3, [X4]       ; X4 - указатель на данные в пространстве памяти ядра
+    LSL X3, X3, #imm   ; получение нужного бита данных
+    AND X3, X3, #0xFC0 ; выравнивание с размером страницы памяти
+    LDR X5, [X6,X3]    ; X6 - адрес массива атакующего
+    over
+  \end{minted}
+
+  \note{
+
+    Читаем недоступные пользователю данные из памяти, лучше, если адрес не будет
+    храниться в TLB, также данных не будет в кэше.
+
+  }
+
+\end{frame}
+
+\subsubsection{Предотвращение}
+\begin{frame}{\insertsubsubsection}
+
+  \LARGE
+
+  Изоляция адресного пространства ядра --- kernel page-table isolation, KPTI
+  (KEISER --- Kernel Address Isolation to have Side-channels Efficiently
+  Removed)
+
+  \note{
+
+    При смене контекста происходит проседание производительности ввиду того, что
+    полностью сбрасывается TLB, изменяется CR3 регистр.
+
+  }
+
+\end{frame}

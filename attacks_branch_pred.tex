@@ -1,0 +1,108 @@
+\begin{frame}{\insertsubsection}
+
+  \begin{figure}[h]
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      cache/.style = {
+        matrix of nodes,
+        nodes in empty cells,
+        inner sep = 0,
+        nodes = {
+          minimum width = 3cm,
+          minimum height = .5cm,
+          draw,
+          align = center,
+          anchor = center,
+        },
+      },
+      ]
+
+      \node[
+      cache,
+      label = {Branch Target Buffer},
+      ] (btb) {
+        Тэг-адрес \& Адрес перехода \\
+        \& \\
+        \& \\
+        0xebe45a82 \& ??? \\
+        \& \\
+        \& \\
+        \& \\
+      };
+
+      \node[
+      draw,
+      left = 7cm of btb.north,
+      label = above:Виртуальный адрес (user space),
+      ] (addr_user) {
+        0x0000 \color{ForestGreen}EBE45A82
+      };
+
+      \node[
+      draw,
+      below = 4cm of addr_user,
+      label = below:Виртуальный адрес (kernel space),
+      ] (addr_kernel) {
+        0xFFFF \color{ForestGreen}EBE45A82
+      };
+
+      \node[
+      left = of btb,
+      block,
+      minimum width = 1cm,
+      minimum height = 1cm,
+      label = left:Функция\\индексации,
+      ] (f) {
+        f(x)
+      };
+
+      \draw (addr_user.east) -| (f.north);
+      \draw (addr_kernel.east) -| (f.south);
+      \draw (f) -> (btb.west);
+
+    \end{tikzpicture}
+    \caption{Тег вычисляется, основываясь на последних байтах виртуального
+      адреса}\label{btb_tag}
+  \end{figure}
+
+  \note{
+
+    \textbf{Буфер адресов перехода (branch target buffer, BTB)} кэширует
+    информацию о ранее выбранных переходах выполнения для быстрого угадывания
+    будущих. Кэш использует индексацию на \textbf{базе виртуального адресного
+      пространства}, таким образом \textbf{атакующему не обязательно знать
+      физический адрес} для выполнения атаки.
+
+    \textbf{Атакующий заполняет буфер адресов перехода} путём выполнения
+    последовательности различных переходов. Если жертва--программа будет
+    выполнять ту ветвь, которой не было в кэше, то она добавится туда, вытеснив
+    тем самым существующую запись. \textbf{Атакующий может вычислить} какая
+    ветвь была вытолкнута из буфера по сравнительно \textbf{большому времени
+      выполнения} этой ветви.
+
+    Пример атаки позволяет взломать KASLR из пользовательского процесса.
+    Основывается на возникающих \textbf{коллизиях} в кэше branch target buffer.
+    По времени выполнения своего кода атакующий имеет возможность
+    \textbf{вычислить адрес перехода в ядерном пространстве} (значение берётся
+    из BTB), тем самым вычислить смешение, полученное в результате KASLR.
+
+    Возникает два типа коллизий:
+
+    \begin{enumerate}
+    \item cross domain collisions --- user и kernel space;
+    \item same domain collisions --- разные user-space процессы, позволяет
+      выявить смещения для ASLR другого процесса.
+    \end{enumerate}
+
+  }
+
+\end{frame}

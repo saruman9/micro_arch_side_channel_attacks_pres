@@ -1,0 +1,531 @@
+\begin{frame}{\insertsubsection}
+
+  \begin{figure}[h]
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      cache/.style = {
+        rectangle split,
+        rectangle split parts = 5,
+        draw,
+        minimum width = 2cm,
+      },
+      ]
+
+      \node[
+      cache,
+      label = above:Кэш 0,
+      ] (cache_0) {
+      };
+
+      \node[
+      right = of cache_0,
+      draw,
+      minimum width = 1cm,
+      minimum height = 1cm,
+      ] (cpu_0) {
+        CPU\\0
+      };
+
+      \node[
+      cache,
+      label = above:Кэш 3,
+      above = of cache_0,
+      ] (cache_3) {
+      };
+
+      \node[
+      right = of cache_3,
+      draw,
+      minimum width = 1cm,
+      minimum height = 1cm,
+      ] (cpu_3) {
+        CPU\\3
+      };
+
+      \node[
+      cache,
+      label = above:Кэш 1,
+      left = of cache_0,
+      ] (cache_1) {
+      };
+
+      \node[
+      left = of cache_1,
+      draw,
+      minimum width = 1cm,
+      minimum height = 1cm,
+      ] (cpu_1) {
+        CPU\\1
+      };
+
+      \node[
+      cache,
+      label = above:Кэш 2,
+      above = of cache_1,
+      ] (cache_2) {
+      };
+
+      \node[
+      left = of cache_2,
+      draw,
+      minimum width = 1cm,
+      minimum height = 1cm,
+      ] (cpu_2) {
+        CPU\\2
+      };
+
+      \draw (cpu_0) -- (cache_0);
+      \draw (cpu_1) -- (cache_1);
+      \draw (cpu_2) -- (cache_2);
+      \draw (cpu_3) -- (cache_3);
+      \draw[ForestGreen] (cache_0.three west) -- ++(-0.5, 0) |- (cache_3.four west);
+      \draw[BrickRed] (cache_1.five east) -- ++(0.3, 0) |- (cache_3.one west);
+      \draw[Green] (cache_2.one east) -- ++(0.1, 0) |- (cache_3.three west);
+      \draw[Blue] (cache_1.two west) -- ++(-0.5, 0) |- (cache_2.five west);
+
+    \end{tikzpicture}
+    \caption{Скрытые каналы между процессорами}\label{covert_attack_example}
+  \end{figure}
+
+  \note{
+
+    Современные облачные системы часто имеют \textbf{несколько процессоров},
+    установленных в материнскую плату с \textbf{мультисокетом}. Кэшы процессоров
+    содержатся в когерентном состоянии с помощью \textbf{межпроцессорных
+      протоколов, обеспечивающих когерентность}. Однако, это обеспечивает эффект
+    \textbf{разделяемой кэш линии}.
+
+    Кеш-атаки позволяют реализовать \textbf{высокопроизводительные межъядерные и
+      межпроцессорные скрытые кеш-каналы} на современных смартфонах, используя
+    \texttt{Flush+Reload}, \texttt{Evict+Reload} или \texttt{Flush+Flush}.
+    Скрытый канал позволяет двум \textbf{непривилегированным приложениям}
+    взаимодействовать друг с другом \textbf{без использования} каких-либо
+    системных \textbf{механизмов передачи данных}. Благодаря этому можно
+    вырваться из песочницы и обойти систему «ограниченных разрешений». В
+    частности, на Android злоумышленник может использовать одно приложение,
+    которое имеет \textbf{доступ к личным контактам} владельца устройства, для
+    \textbf{отправки данных по скрытому каналу} другому приложению, имеющему
+    доступ к \textbf{интернет}.
+
+  }
+
+\end{frame}
+
+\subsubsection{Пример работы}
+\begin{frame}{\insertsubsubsection}
+
+  \begin{figure}[h]
+    \newcommand*\colorshared{White, White, White,
+      White, White}
+
+    \only<2>{
+      \renewcommand*\colorshared{White, White,
+        ForestGreen, White, White}
+    }
+    \only<3>{
+      \renewcommand*\colorshared{White, White,
+        ForestGreen, White, White}
+    }
+    \only<4>{
+      \renewcommand*\colorshared{White, ForestGreen,
+        White, White, White}
+    }
+    \only<5>{
+      \renewcommand*\colorshared{White, ForestGreen,
+        White, White, White}
+    }
+    \only<6>{
+      \renewcommand*\colorshared{White, White,
+        ForestGreen, White, White}
+    }
+    \only<7>{
+      \renewcommand*\colorshared{White, ForestGreen,
+        White, White, White}
+    }
+    \only<8>{
+      \renewcommand*\colorshared{White, White,
+        ForestGreen, White, White}
+    }
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      cache/.style = {
+        rectangle split,
+        rectangle split parts = 5,
+        rectangle split part fill = \colorshared,
+        draw,
+        minimum width = 2cm,
+        text = Black,
+      },
+      ]
+
+      \node[
+      cache,
+      label = above:Разделяемая\\библиотека,
+      ] (shared) {
+        0x7f8517d35000
+        \nodepart{two}
+        0x7f8517d36000
+        \nodepart{three}
+        0x7f8517d37000
+        \nodepart{four}
+        0x7f8517d38000
+        \nodepart{five}
+        0x7f8517d39000
+        \nodepart{six}
+      };
+
+      \node[
+      text = Black,
+      draw,
+      left = 2cm of shared,
+      ] (p0) {
+        Процесс 0
+      };
+
+      \node[
+      above = of p0,
+      text = Black,
+      ] (p0_t) {
+        \only<2>{\color{ForestGreen}1}
+        \only<3>{1\color{ForestGreen}1}
+        \only<4>{11\color{ForestGreen}0}
+        \only<5>{110\color{ForestGreen}0}
+        \only<6>{1100\color{ForestGreen}1}
+        \only<7>{11001\color{ForestGreen}0}
+        \only<8>{110010\color{ForestGreen}1}
+      };
+
+      \node[
+      text = Black,
+      draw,
+      right = 2cm of shared,
+      ] (p1) {
+        Процесс 1
+      };
+
+      \node[
+      above = of p1,
+      text = Black,
+      ] (p1_t) {
+        \only<2>{\color{ForestGreen}1}
+        \only<3>{1\color{ForestGreen}1}
+        \only<4>{11\color{ForestGreen}0}
+        \only<5>{110\color{ForestGreen}0}
+        \only<6>{1100\color{ForestGreen}1}
+        \only<7>{11001\color{ForestGreen}0}
+        \only<8>{110010\color{ForestGreen}1}
+      };
+
+      \draw<1-3,6,8> (p0) -- node[above] {Запись} (shared);
+      \draw (p1) -- node[above] {Чтение} (shared);
+      \draw<4-5,7> (p0) -- node[above] {Запись} (shared.two west);
+
+    \end{tikzpicture}
+    \caption{Скрытые каналы между приложениями на базе
+      кэшей}
+  \end{figure}
+
+  \note<1>{
+
+    Основная идея скрытого канала заключается в том, что \textbf{отправитель и
+      получатель согласовывают набор адресов памяти} какой-нибудь
+    \textbf{разделяемой библиотеки}. Они используют для передачи информации
+    загрузку \textbf{ячейки в кеш или ее выгрузку оттуда}. Например, если
+    такая-то ячейка находится в кеше, то это \textbf{единичка}, а если нет, то
+    \textbf{нолик}. В нескольких работах представлена пакетная реализация
+    передачи данных с возможностью повторного запроса недоставленных пакетов;
+    здесь используется «бит отправки» и «бит подтверждения», которые реализованы
+    по такому же принципу, а также контрольная сумма введена (а-ля \textbf{TCP
+      по скрытому каналу}).
+
+  }
+
+  \note<8>{
+
+    Wu в 2012 и в 2014 годах обнаружил \textbf{разницу во времени при доступе к
+      памяти}, возникающую из-за \textbf{задержки в шине памяти}, что позволяет
+    наладить скрытый канал передачи данных между \textbf{близко расположенными
+      виртуальными машинами}. В облаке Amazon EC2 был налажен канал скоростью
+    13.5 КБ/c при 0.75 \% ошибок. В 2016 Inci также обнаружил задержку в шине
+    памяти, позволяющую наладить канал в облаках Microsoft Azure.
+
+    В 2017 году была представлена первая в своём роде реализация
+    \textbf{скрытого канала, работающего по протоколу SSH}, с относительно
+    высокой пропускной способностью (45 Кбит/с); эта реализация обеспечивает
+    отказоустойчивые коммуникации между двумя виртуальными машинами даже в
+    условиях экстремальной зашумлённости кеша.
+
+  }
+
+\end{frame}
+
+\subsubsection{DRAM (row miss атака)}
+\begin{frame}{\insertsubsubsection}
+
+  \begin{figure}[h]
+
+    \newcommand*\dramcolor{Green, Green, NavyBlue,
+      NavyBlue, White, White, White}
+
+    \newcommand*\bufcolor{White}
+
+    \only<2>{
+      \renewcommand*\bufcolor{Green}
+    }
+
+    \only<3>{
+      \renewcommand*\bufcolor{Green}
+    }
+
+    \only<4>{
+      \renewcommand*\bufcolor{NavyBlue}
+    }
+
+    \only<5>{
+      \renewcommand*\bufcolor{Green}
+    }
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      dram/.style = {
+        rectangle,
+        rectangle split,
+        rectangle split parts = 7,
+        rectangle split part fill = \dramcolor,
+        minimum width = 3cm,
+        draw,
+        text = Black,
+        text centered,
+      },
+      block/.style = {
+        rectangle,
+        draw,
+        fill = ForestGreen,
+        text = White,
+        text centered,
+      },
+      ]
+
+      \node[
+      dram,
+      label = above:DRAM банк,
+      ] (dram) {
+        0123456789
+        \nodepart{two}
+        1234567890
+        \nodepart{three}
+        2345678901
+        \nodepart{four}
+        3456789012
+        \nodepart{five}
+        4567890123
+        \nodepart{six}
+        5678901234
+        \nodepart{seven}
+        6789012345
+        \nodepart{eight}
+      };
+
+      \node[
+      draw,
+      fill = ForestGreen,
+      text = White,
+      left = 3cm of dram,
+      minimum width = 2cm,
+      minimum height = 2cm,
+      ] (cpu) {
+        CPU
+      };
+
+      \node[
+      below = .5 of dram,
+      text = Black,
+      fill = \bufcolor,
+      draw,
+      minimum width = 3cm,
+      ] (buf) {
+        \only<1>{row buffer}%
+        \only<2>{1234567890}%
+        \only<3>{1234567890}%
+        \only<4>{2345678901}%
+        \only<5>{1234567890}%
+      };
+
+      \node<1>[
+      right = of dram.north east,
+      ] (receiver) {
+        Получатель
+      };
+
+      \node<1>[
+      right = of dram.east,
+      ] (sender) {
+        Отправитель
+      };
+
+      \draw<1> (receiver) -- (dram.one east);
+      \draw<1> (receiver) -- (dram.two east);
+      \draw<1> (sender) -- (dram.three east);
+      \draw<1> (sender) -- (dram.four east);
+
+      \draw<2> (dram.two east) -- ++(1, 0) |- node[right] {Открытие} (buf);
+      \draw<2> (buf) -- node[below, sloped] {Медленно!} (cpu);
+
+      \draw<3> (buf) -- node[below, sloped] {Быстро!} (cpu);
+
+      \draw<4> (dram.three east) -- ++(1, 0) |- node[right] {Открытие} (buf);
+      \draw<4> (buf) -- node[below, sloped] {} (cpu);
+
+      \draw<5> (dram.two east) -- ++(1, 0) |- node[right] {Открытие} (buf);
+      \draw<5> (buf) -- node[below, sloped] {Медленно!} (cpu);
+
+    \end{tikzpicture}
+    \only<1>{\caption{Отправитель и получатель используют один и тот же банк
+        памяти}}
+
+    \only<2>{\caption{Получатель проверяет время доступа к своей памяти}}
+
+    \only<3>{\caption{Повторное чтение своей памяти будет происходить быстрее}}
+
+    \only<4>{\caption{Отправитель получает доступ к своей памяти}}
+
+    \only<5>{\caption{Получатель при своей следующей попытке чтения памяти
+        получит промах строки, соответственно большее время ожидание}}
+  \end{figure}
+
+  \note<1>{
+
+    В случае атаки при \textbf{промахе строки}, получатель и отправитель
+    пользуются \textbf{разделяемым банком}, но не строкой.
+
+  }
+
+  \note<2>{
+
+    Получатель постоянно открывает одну и ту же строку в банке. Как только
+    отправитель открывает какую-либо другую строку, то у получателя возрастает
+    задержка во время открытия своей строки.
+
+  }
+  \note<5>{
+
+    Таким образом налаживается связь: если в определённый промежуток времени не
+    было промаха строки, то это 0, если промах случился, то 1.
+
+  }
+\end{frame}
+
+\subsubsection{Тепловой канал}
+\begin{frame}{\insertsubsubsection}
+
+  \begin{figure}[h]
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      block/.style = {
+        rectangle,
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      ]
+
+      \node[
+      block,
+      minimum width = 2cm,
+      minimum height = 2cm,
+      label = above:Core 0,
+      ] (core_0) {
+        t$^\circ$C
+      };
+
+      \node[
+      below = of core_0,
+      block,
+      minimum width = 2cm,
+      minimum height = 2cm,
+      label = above:Core 1,
+      ] (core_1) {
+        \only<1>{\color{red}73$^\circ$C}%
+        \only<2>{49$^\circ$C}%
+        \only<3>{\color{red}66$^\circ$C}%
+        \only<4>{33$^\circ$C}%
+        \only<5>{\color{red}81$^\circ$C}%
+        \only<6>{27$^\circ$C}%
+        \only<7>{31$^\circ$C}%
+        \only<8>{t$^\circ$C}%
+      };
+
+      \draw<1> (core_1) -- ++(2, 0) |- node[right, text = Black] {\color{ForestGreen}1} (core_0);
+      \draw<2> (core_1) -- ++(2, 0) |- node[right, text = Black] {1\color{ForestGreen}0} (core_0);
+      \draw<3> (core_1) -- ++(2, 0) |- node[right, text = Black] {10\color{ForestGreen}1} (core_0);
+      \draw<4> (core_1) -- ++(2, 0) |- node[right, text = Black] {101\color{ForestGreen}0} (core_0);
+      \draw<5> (core_1) -- ++(2, 0) |- node[right, text = Black] {1010\color{ForestGreen}1} (core_0);
+      \draw<6> (core_1) -- ++(2, 0) |- node[right, text = Black] {10101\color{ForestGreen}0} (core_0);
+      \draw<7> (core_1) -- ++(2, 0) |- node[right, text = Black] {101010\color{ForestGreen}0} (core_0);
+      \draw<8> (core_1) -- ++(2, 0) |- node[right, text = Black] {1010100} (core_0);
+
+
+    \end{tikzpicture}
+    \caption{Скрытый канал на основе теплового следа}
+  \end{figure}
+
+  \note<1>{
+
+    В 2015 году --- эффективно работает даже при \textbf{наличии жёстких
+      контрмер}: \textbf{псевдоизоляции адресного пространства} критических
+    процессов, либо посредством \textbf{выделения памяти случайным образом} и
+    т. п. Рассматриваемая методика --- \textbf{анализ тепловой активности
+      микропроцессорной системы}.
+
+    Здесь используются следующие два эффекта. \textbf{Во-первых, остаточные
+      тепловые следы в ядре} сохраняются, даже когда процесс прекратил своё
+    исполнение, и этот \textbf{след частично передаётся следующему процессу по
+      расписанию}. Во-вторых, тепловой след \textbf{влияет и на другие ядра}
+    (если эти несколько ядер на одном чипе расположены).
+
+  }
+
+  \note<8>{
+
+    Так, пропускная способность «теплового канала» на сервере Intel Xeon (с
+    двумя процессорами по восемь ядер) составляет 12,5 бит/с. Номер кредитной
+    карты по такому каналу передаётся за промежуток от пяти секунд до четырёх
+    минут.
+
+    Также в 2015 году в рамках демонстрации возможностей скрытого теплового
+    канала было показано, что эта методика позволяет \textbf{идентифицировать
+      приложения на основе их тепловых следов}. При этом с течением времени
+    эффективность и \textbf{производительность скрытых тепловых каналов будет
+      только расти}, потому что пользователю предоставляется все более подробная
+    информация о температуре системы --- чтобы предпринимать \textbf{эффективные
+      меры для охлаждения}.
+
+  }
+
+\end{frame}

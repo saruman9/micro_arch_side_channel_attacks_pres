@@ -1,0 +1,221 @@
+\begin{frame}{\insertsubsection}
+
+  \begin{itemize}
+  \item прерывание планировщика
+  \item инструкции прерывания
+  \item ошибка отсутствия страницы в памяти
+  \item поведенческие изменения (например, возврат кода ошибки)
+  \end{itemize}
+
+  \note{
+
+    Данного рода атаки получают необходимую информацию из исключительных
+    ситуаций, которые происходят при работе процессора. Обычными для процессора
+    исключительными ситуациями являются: прерывание планировщика, прерывания
+    инструкции, ошибка страницы памяти, а также поведенческие изменения,
+    например, инструкции предоставляют пользователю код ошибки.
+
+    Во время возникновения исключительных ситуаций можно получить информацию о
+    работе процессора либо \textbf{напрямую} (основываясь на поведении самого
+    процессора), либо \textbf{косвенно (через измерения времени, при
+      возникновении исключительных ситуаций)}.
+
+    Одним из ярких примеров атак подобного рода является \textbf{атака на
+      систему дедупликации памяти}.
+
+  }
+\end{frame}
+
+\subsubsection{Атаки на систему дедупликации памяти}
+\begin{frame}{\insertsubsubsection}
+
+  \begin{figure}[h]
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      block_split/.style = {
+        rectangle,
+        rectangle split,
+        rectangle split parts = 7,
+        rectangle split empty part width = 1cm,
+        draw,
+        text centered,
+        font = \scriptsize,
+      },
+      ]
+
+      \node[
+      block_split,
+      label = above:Виртуальная\\память 1,
+      rectangle split part fill = {
+        White, White, White, ForestGreen, White,
+        ForestGreen, White
+      },
+      ] (virt_0) {
+        \nodepart{two}
+        \nodepart{three}
+        \nodepart{four}
+        \nodepart{five}
+        \nodepart{six}
+        \nodepart{seven}
+        \nodepart{eight}
+      };
+
+      \node<3-4>[
+      block_split,
+      label = above:Физическая\\память,
+      right = 2cm of virt_0,
+      rectangle split part fill = {
+        White, White, White, White, ForestGreen,
+        White, ForestGreen
+      },
+      ] (phys) {
+        \nodepart{two}
+        \nodepart{three}
+        \nodepart{four}
+        \nodepart{five}
+        \nodepart{six}
+        \nodepart{seven}
+        \nodepart{eight}
+      };
+
+
+      \node<3-4>[
+      block_split,
+      label = above:Разделяемая\\физическая память,
+      right = 2cm of phys,
+      rectangle split part fill = {
+        White, ForestGreen, White, White, Blue,
+        White, White
+      },
+      ] (dedup) {
+        \nodepart{two}
+        \nodepart{three}
+        \nodepart{four}
+        \nodepart{five}
+        \nodepart{six}
+        \nodepart{seven}
+        \nodepart{eight}
+      };
+
+      \node<3-4>[
+      block_split,
+      label = above:Виртуальная\\память 2,
+      right = 2cm of dedup,
+      rectangle split part fill = {
+        ForestGreen, White, White, ForestGreen, White,
+        White, White
+      },
+      ] (virt_1) {
+        \nodepart{two}
+        \nodepart{three}
+        \nodepart{four}
+        \nodepart{five}
+        \nodepart{six}
+        \nodepart{seven}
+        \nodepart{eight}
+      };
+
+      \node<1-2>[
+      block_split,
+      label = above:Разделяемая\\физическая память,
+      right = 3cm of virt_0,
+      rectangle split part fill = {
+        White, ForestGreen, White, White, Blue,
+        White, ForestGreen
+      },
+      ] (phys) {
+        \nodepart{two}
+        \nodepart{three}
+        \nodepart{four}
+        \nodepart{five}
+        \nodepart{six}
+        \nodepart{seven}
+        \nodepart{eight}
+      };
+
+      \node<1-2>[
+      block_split,
+      label = above:Виртуальная\\память 2,
+      right = 3cm of phys,
+      rectangle split part fill = {
+        ForestGreen, White, White, ForestGreen, White,
+        White, White
+      },
+      ] (virt_1) {
+        \nodepart{two}
+        \nodepart{three}
+        \nodepart{four}
+        \nodepart{five}
+        \nodepart{six}
+        \nodepart{seven}
+        \nodepart{eight}
+      };
+
+      \draw<1-2> (virt_0.four east) -> (phys.five west);
+      \draw<1-2> (virt_0.six east) -> (phys.seven west);
+      \draw<1-2> (virt_1.four west) -> (phys.five east);
+      \draw<1-2> (virt_1.one west) -> (phys.two east);
+
+      \draw<2> (virt_0.four east) -> node[above, sloped] {Page fault!} node[below, sloped] {Запись} (phys.five west);
+
+      \draw<3> (virt_0.four east) -> (phys.five west);
+      \draw<3> (virt_0.six east) -> (phys.seven west);
+      \draw<3> (virt_1.four west) -> (dedup.five east);
+      \draw<3> (virt_1.one west) -> (dedup.two east);
+
+      \draw<4> (virt_1.four west) -> (dedup.five east);
+      \draw<4> (virt_1.one west) -> (dedup.two east);
+      \draw<4> (virt_0.four east) -> node[below, sloped] {Запись} node[above, sloped] {244ns} (phys.five west);
+      \draw<4> (virt_0.four west) -- ++(-1, 0) -- ++(0, -2) -- node[below] {Запись} node[above] {275ns} ++(7, 0) |- (dedup.five west);
+
+
+    \end{tikzpicture}
+    \only<1>{\caption{Дедупликация памяти}}\label{dedup_example}
+
+    \only<2>{\caption{Процесс 1 пытается записать данные в разделяемую память}}
+
+    \only<3>{\caption{Запись в дедуплицированную память происходит в режиме
+        Copy-on-Write}}
+  \end{figure}
+
+  \note<1>{
+
+    \textbf{Подсистема дедупликации} контент--ориентированных страниц
+    \textbf{сканирует всю системную память на идентичные физические} страницы
+    памяти и \textbf{склеивает их в одну} физическую страницу.
+
+  }
+
+  \note<2>{
+
+    Подсистема дедупликации проецирует несколько \textbf{идентичных копий
+      физических страниц} памяти \textbf{на одну} разделяемую копию, с доступом
+    в режиме \textbf{«копирование при записи»}. В результате при запросах на
+    чтение каждый процесс получает данные из одной и той же страницы. Если же
+    процесс хочет записать данные, то перед тем, как он сможет это сделать, для
+    него создаётся отдельная копия страницы. В результате \textbf{запись в
+      разделённую страницу вызывает «страничный отказ»}.
+
+  }
+
+  \note<4> {
+
+    Следовательно, \textbf{запись в разделяемую страницу происходит значительно
+      медленнее}, чем запись в обычную страницу. Злоумышленник,
+    \textbf{способный создавать страницы в целевой системе}, может использовать
+    эту разницу во времени, чтобы обнаружить факт \textbf{существования
+      интересующих его страниц}.
+
+  }
+
+\end{frame}

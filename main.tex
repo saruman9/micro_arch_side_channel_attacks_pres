@@ -1,0 +1,282 @@
+% Use this if you generate the presentation itself.
+\documentclass[final, xcolor = table, usenames, dvipsnames, table, aspectratio = 169]{beamer}
+
+% Use this documentclass line for generating the handout
+% \documentclass[final, xcolor = table, dvipsnames, table, handout, draft,
+% aspectratio = 169]{beamer}
+
+% minted load packages: keyval, ifthen, etoolbox, kvoptions, calc, xstring,
+% fancyvrb, ifplatform, xcolor, float, pdftexcmds, lineno
+\usepackage{minted} % minted above polyglossia, because errors
+\usemintedstyle{manni}
+
+%% Two version of compilers (pdflatex, xelatex)
+\usepackage{ifxetex}
+%% XeTeX
+\ifxetex
+    \usepackage{polyglossia} % Multilanguages
+
+    \usepackage{xunicode} % Generate Unicode chars from accented glyphs.
+    \usepackage{xltxtra} % "Extras" for LaTeX users of XeTeX.
+
+    % Support of russian language (hyphenation, styles, etc.)
+    \setmainlanguage[babelshorthands = true]{russian} % default language --- Russian
+    \setotherlanguage{english} % additional language --- English
+
+    %% Fonts
+    \defaultfontfeatures{Ligatures=TeX,Mapping=tex-text}
+    \setmainfont{CMU Serif}
+    \setsansfont{CMU Sans Serif}
+    % \setmainfont{Droid Serif}
+    % \newfontfamily\cyrillicfont{Droid Serif}
+    % \setsansfont{Droid Sans}
+    % \newfontfamily\cyrillicfontsf{Droid Sans}
+    % \setmonofont{CMU Typewriter Text}
+    \setmonofont{TerminusTTF}
+    \newfontfamily\cyrillicfonttt{TerminusTTF}
+\else
+    \usepackage[T2A]{fontenc}
+    \usepackage[utf8]{inputenc}
+    \usepackage{lmodern}
+\fi
+
+\usepackage{graphicx} % Images
+% \usepackage{pdfpages} % PDFs
+\usepackage{pgfpages} % Two screens
+
+% \usepackage{tabu} % Tables
+\usepackage{multirow} % Multirows in tables
+% \usepackage[table]{xcolor} % Colors in tables
+
+% Set path for graphics
+\graphicspath{{./img/}}
+
+%% Vector graphics
+\usepackage{tikz}
+
+\usetikzlibrary{arrows.meta,%
+  automata,%
+  backgrounds,%
+  calc,%
+  decorations.markings,%
+  decorations.pathmorphing,%
+  fit,%
+  graphs,%
+  matrix,%
+  positioning,%
+  shapes.geometric,%
+  shapes.misc,%
+  shapes.multipart,%
+  tikzmark,%
+}
+
+%% Rename captions
+\usepackage[
+figurename = ,
+tablename = ,
+]{caption}
+\renewcommand{\listingscaption}{Листинг}
+
+% ==============================================================================
+
+\mode<presentation>
+{
+    % \usefonttheme[onlymath]{serif}
+    % \usetheme{Console}
+    % \usetheme{Frankfurt}
+    % \usetheme{metropolis}
+
+    % Settings for invisible elements (it and others for DarkConsole should be
+    % commented)
+    % \setbeamercovered{transparent}
+    \setbeamertemplate{navigation symbols}{}
+    % \setbeamertemplate{sidebar right}{}
+    \setbeamertemplate{footline}[frame number]%{%
+
+    %% Notes settings
+    % \setbeameroption{hide notes}
+    % \setbeameroption{show notes}
+    \setbeameroption{show notes on second screen = right}
+    % \setbeameroption{show only notes}
+
+    % Style on slides
+    \setbeamersize{text margin left = 2mm, text margin right = 2mm}
+
+    % Style of notes
+    \setbeamertemplate{note page}[plain]
+    % \setbeamerfont{note date}{size=\scriptsize}
+    % \setbeamerfont{note title}{size=\footnotesize}
+    % \setbeamerfont{note page}{size=\footnotesize}
+}
+
+
+%% Temp bug fix in LaTeX 2018
+\makeatletter
+\let\@@magyar@captionfix\relax
+\makeatother
+
+%% Fix bug with beamer + xelatex + notes
+% https://tex.stackexchange.com/questions/232168/normal-text-is-invisible-when-using-beamer-with-notes-and-xelatex
+\makeatletter
+\def\beamer@framenotesbegin{% at beginning of slide
+     \usebeamercolor[fg]{normal text}
+      \gdef\beamer@noteitems{}%
+      \gdef\beamer@notes{}%
+}
+\makeatother
+
+% ==============================================================================
+
+\title[Атаки по сторонним каналам]{Атаки по сторонним каналам на
+  микроархитектуру, основанные на исполнении кода}
+
+\date[2018]
+{Digital Security \\
+2018}
+\subject{Информационная безопасность}
+
+% ==============================================================================
+
+%% Title page
+\begin{document}
+{
+  \makeatletter
+    \setbeamertemplate{footline}{}
+  \makeatother
+
+  \frame{\titlepage}
+  \note {
+
+  }
+}
+
+%% Add agenda at begin of all sections
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{План}
+    \tableofcontents[%
+    currentsection,%
+    hideothersubsections,%
+    sectionstyle = show/hide,%
+    % subsectionstyle = show/shaded,%
+    ]
+  \end{frame}
+}
+
+\AtBeginSubsection[]
+{
+  \begin{frame}
+    \frametitle{План}
+    \tableofcontents[
+    % currentsection,%
+    currentsubsection,%
+    hideothersubsections,%
+    sectionstyle = show/hide,%
+    subsectionstyle = show/hide,%
+    % subsubsectionstyle = show/hide,%
+    ]
+  \end{frame}
+}
+
+%% Set theme colors
+\tikzset{%
+  text = BlueViolet,%
+  % draw = White,%
+}
+
+%% TikZ picture stub
+\newcommand{\PicStub}[2]{%
+  \begin{figure}[h]
+    \center%
+    \begin{tikzpicture}
+      \node[draw, inner sep = 50] {
+        \LARGE Здесь могла быть ваша картинка
+      };
+    \end{tikzpicture}
+    \caption{#1}\label{fig:#2}
+  \end{figure}
+}
+
+% ------------------------------------------------------------------------------
+
+\begin{frame}{План}
+  \tableofcontents[hideothersubsections]
+\end{frame}
+
+% ------------------------------------------------------------------------------
+
+\section{Введение}
+\input{intro}
+
+% ------------------------------------------------------------------------------
+
+\section{Теория}
+\subsection{Процессор}
+\input{theory_cpu}
+
+\subsection{Кэш--память}
+\input{theory_cache}
+
+\subsection{DRAM}
+\input{theory_dram}
+
+\subsection{Виртуальная память}
+\input{theory_virt_mem}
+
+% ------------------------------------------------------------------------------
+
+\section{Типы атак}
+\subsection{Атаки на кэш}
+\input{attacks_cache}
+
+\subsection{Атаки на предсказатель переходов}
+\input{attacks_branch_pred}
+
+\subsection{Атаки на буфер ассоциативной трансляции}
+\input{attacks_tlb}
+
+\subsection{Атаки, основанные на срабатывании исключительных ситуаций}
+\input{attacks_exception}
+
+\subsection{Атаки на DRAM}
+\input{attacks_dram}
+
+\subsection{Скрытые каналы}
+\input{attacks_covert_channels}
+
+% ------------------------------------------------------------------------------
+
+\section{Атаки, основанные на аппаратных дефектах}
+\input{attacks_fault}
+
+\subsection{Rowhammer}
+\input{attacks_fault_rowhammer}
+
+% ------------------------------------------------------------------------------
+
+\section{Meltdown \& Spectre}
+\subsection{Variant 3}
+\input{attacks_ms_var_3}
+
+\subsection{Variant 3a}
+\input{attacks_ms_var_3a}
+
+\subsection{Variant 1}
+\input{attacks_ms_var_1}
+
+\subsection{Variant 2}
+\input{attacks_ms_var_2}
+
+\subsection{Variant 4}
+\input{attacks_ms_var_4}
+
+\subsection{Производные и не только}
+\input{attacks_ms_others}
+
+% ------------------------------------------------------------------------------
+
+\section{Заключение}
+\input{summary}
+
+\end{document}

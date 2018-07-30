@@ -1,0 +1,43 @@
+\begin{frame}{\insertsubsection}
+
+  Spectre-NG
+  \begin{itemize}
+  \item MeltdownPrime \& SpectrePrime
+  \item SgxPectre
+  \item SMM Speculative Execution Attacks
+  \item BranchScope
+  \item LazyFP
+  \item TLBleed
+  \item ...
+  \end{itemize}
+
+  TotalMeltdown?
+
+  \note{
+
+    \textbf{OpenBSD} --- LazyFP, отключение Hyper-Threading (TLBleed).
+
+    \begin{itemize}
+    \item \textbf{другой способ атаки на кэш} + задействование двух ядер CPU ---
+      утечка данных работы \textbf{протокола согласования содержимого кэша для
+        разных ядер CPU} (Invalidation-Based Coherence Protocol
+    \item позволяет обойти средства изоляции кода и данных, предоставляемые
+      технологией \textbf{Intel SGX} (Software Guard Extensions)
+
+      SMM --- \textbf{режим системного управления} --- запускается специальная
+      программа в привилегированном режиме.
+
+    \item \textbf{variant 2} + вместо BTB --- \textbf{направления ветвления для
+        спекулятивного перехода (directional branch predictor)} и манипулирует
+      содержимым \textbf{таблицы с историей шаблонов переходов (PHT, Pattern
+        History Table)}.
+    \item \textbf{variant 3a} --- «ленивое» режим \textbf{переключения контекста
+        FPU}, при котором реальное восстановление состояния регистров
+      производится \textbf{не сразу} после переключения контекста, а только при
+      выполнении первой инструкции
+    \item ML атака на TLB, с помощью Hyper-Threading технологии (Intel, AMD).
+    \end{itemize}
+
+  }
+
+\end{frame}

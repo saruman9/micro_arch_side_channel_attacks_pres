@@ -1,0 +1,268 @@
+\begin{frame}{\insertsubsection}
+
+  \begin{figure}[h]
+
+    \newcommand*\dramcolor{White, White, White,
+      White, White, White, White}
+
+    \newcommand*\bufcolor{White}
+
+    \only<2>{
+      \renewcommand*\dramcolor{White, ForestGreen, White,
+      White, White, White, White}
+    }
+
+    \only<3-5>{
+      \renewcommand*\dramcolor{White, ForestGreen, White,
+        White, White, White, White}
+      \renewcommand*\bufcolor{ForestGreen}
+    }
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      dram/.style = {
+        rectangle,
+        rectangle split,
+        rectangle split parts = 7,
+        rectangle split part fill = \dramcolor,
+        minimum width = 3cm,
+        draw,
+        text = Black,
+        text centered,
+      },
+      block/.style = {
+        rectangle,
+        draw,
+        fill = ForestGreen,
+        text = White,
+        text centered,
+      },
+      ]
+
+      \node[
+      dram,
+      label = above:DRAM банк,
+      ] (dram) {
+        0123456789
+        \nodepart{two}
+        1234567890
+        \nodepart{three}
+        2345678901
+        \nodepart{four}
+        3456789012
+        \nodepart{five}
+        4567890123
+        \nodepart{six}
+        5678901234
+        \nodepart{seven}
+        6789012345
+        \nodepart{eight}
+      };
+
+      \node[
+      draw,
+      fill = ForestGreen,
+      text = White,
+      left = 3cm of dram,
+      minimum width = 2cm,
+      minimum height = 2cm,
+      ] (cpu) {
+        CPU
+      };
+
+      \node[
+      below = .5 of dram,
+      text = Black,
+      fill = \bufcolor,
+      draw,
+      minimum width = 3cm,
+      ] (buf) {
+        row buffer
+      };
+
+      \draw<3> (dram.two east) -- ++(1, 0) |- node[right] {Открытие} (buf);
+
+      \draw<4-5> (buf) -- (cpu);
+
+
+    \end{tikzpicture}
+    \only<1>{\caption{Работа DRAM (ещё раз)}}\label{fig:draw_row_buffer}
+
+    \only<2>{\caption{CPU запрашивает на чтение строку №1}}
+
+    \only<3>{\caption{DRAM открывает строку №1}}
+
+    \only<4>{\caption{CPU читает строку №1 из буфера строки}}
+
+    \only<5>{\caption{CPU снова запрашивает на чтение строку №1, которая уже
+        есть в буфере строки, чтение происходит быстрее}}
+  \end{figure}
+
+  \note<1>{
+
+    Ещё раз о том, как работает \textbf{row buffer}.
+
+  }
+
+  \note<5>{
+
+    При попадании строки чтение данных происходит быстрее, при промахе строки
+    --- медленнее, что похоже на поведение при работе с кэшем.
+
+    Также существуют атаки непосредственно на DRAM (DRAM addressing,
+    \textbf{DRAMA}). Атака при \textbf{промахе строки} похожа на атаку на кэш
+    \textbf{Prime + Probe}, атака при \textbf{попадании строки} сравнима с
+    атакой \textbf{Flush + Reload}. Оба типа атаки работают и при
+    \textbf{отсутствии разделяемой памяти}. DRAMA эксплуатирует буфер строки
+    DRAM, как будто это \textbf{кэш с прямым отображением используемый банком}.
+
+    Во время подготовки атаки DRAMA применяли методы реверс-инжиниринга,
+    основанные на подобном поведении DRAM, для того, чтобы \textbf{выявить
+      местоположение и архитектуру банков}.
+
+  }
+
+\end{frame}
+
+\subsubsection{Row hit атака (Flush + Reload)}
+\begin{frame}{\insertsubsubsection}
+
+  \begin{figure}[h]
+
+    \newcommand*\dramcolor{Green, NavyBlue, ForestGreen, ForestGreen, White,
+      White, White}
+
+    \newcommand*\bufcolor{Green}
+
+    \only<2>{
+      \renewcommand*\bufcolor{NavyBlue}
+    }
+
+    \only<3>{
+      \renewcommand*\bufcolor{Green}
+    }
+
+    \only<4>{
+      \renewcommand*\bufcolor{NavyBlue}
+    }
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      dram/.style = {
+        rectangle,
+        rectangle split,
+        rectangle split parts = 7,
+        rectangle split part fill = \dramcolor,
+        minimum width = 3cm,
+        draw,
+        text = Black,
+        text centered,
+      },
+      block/.style = {
+        rectangle,
+        draw,
+        fill = ForestGreen,
+        text = White,
+        text centered,
+      },
+      ]
+
+      \node[
+      dram,
+      label = above:DRAM банк,
+      ] (dram) {
+        0123456789
+        \nodepart{two}
+        1234567890
+        \nodepart{three}
+        2345678901
+        \nodepart{four}
+        3456789012
+        \nodepart{five}
+        4567890123
+        \nodepart{six}
+        5678901234
+        \nodepart{seven}
+        6789012345
+        \nodepart{eight}
+      };
+
+      \node[
+      draw,
+      fill = ForestGreen,
+      text = White,
+      left = 3cm of dram,
+      minimum width = 2cm,
+      minimum height = 2cm,
+      ] (cpu) {
+        CPU
+      };
+
+      \node[
+      below = .5 of dram,
+      text = Black,
+      fill = \bufcolor,
+      draw,
+      minimum width = 3cm,
+      ] (buf) {
+        \only<1>{0123456789}%
+        \only<2>{1234567890}%
+        \only<3>{0123456789}%
+        \only<4>{1234567890}%
+      };
+
+      \draw<1> (dram.one east) -- ++(1, 0) |- node[right] {Открытие} (buf);
+      \draw<1> (buf) -- node[below, sloped] {Медленно!} (cpu);
+
+      \draw<2> (dram.two east) -- ++(1, 0) |- node[right] {Открытие} (buf);
+      \draw<2> (buf) -- node[below, sloped] {Медленно!} (cpu);
+
+      \draw<3> (dram.one east) -- ++(1, 0) |- node[right] {Открытие} (buf);
+
+      \draw<4> (dram.two east) -- ++(1, 0) |- node[right] {Открытие} (buf);
+      \draw<4> (buf) -- node[below, sloped] {Быстро\\при повторном\\обращении!} (cpu);
+
+    \end{tikzpicture}
+    \only<1>{\caption{Атакующий запрашивает строку №0, содержимое которой
+        принадлежит атакующему}}
+
+    \only<2>{\caption{Атакующий запрашивает строку №1, содержимое которой
+        частично принадлежит и атакующему, и жертве}}
+
+    \only<3>{\caption{Сбросим (вытесним) буфер и передадим управление
+        программе--жертве}}
+
+    \only<4>{\caption{В случае, если жертва обращалась к данному адресу, то это
+        можно вычислить по времени повторного обращения}}
+  \end{figure}
+
+  \note<1>{
+
+    В случае атаки при \textbf{попадании строки}, атакующий и жертва используют
+    \textbf{одну и ту же строку} DRAM.
+
+  }
+
+  \note<3>{
+
+    Атакующий загружает другую строку в буфер строки (тем самым закрывая
+    открытую строку), что похоже на начало атаки \textbf{Flush + Reload}.
+
+  }
+
+  \note<4>{
+
+    Если жертва \textbf{обращалась} к общей уже закрытой строке, то данная
+    строка снова будет загружена в буфер строки, что выяснится позже при
+    повторном обращении атакующего к этой строке (\textbf{время обращения будет
+      меньше}).
+
+  }
+
+\end{frame}

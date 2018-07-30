@@ -1,0 +1,93 @@
+\begin{frame}{\insertsubsection}
+
+  \begin{figure}[h]
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      ]
+
+      \node[
+      block,
+      ] (tlb) {
+        TLB
+      };
+
+      \node[
+      left = of tlb,
+      text = Black,
+      ] (virt_addr) {
+        Виртуальный\\
+        адрес
+      };
+
+      \node[
+      below = of tlb,
+      text = Black,
+      ] (hit) {
+        Использованный раннее адрес\\
+        вернётся быстрее
+      };
+
+      \node[
+      block,
+      label = above:Таблицы трансляции,
+      right = 6cm of tlb,
+      rectangle split,
+      rectangle split parts = 5,
+      rectangle split empty part width = 1cm,
+      ] (table) {
+        PML4E
+        \nodepart{two}
+        PDPTE
+        \nodepart{three}
+        PDE
+        \nodepart{four}
+        PTE
+        \nodepart{five}
+        Физический адрес
+        \nodepart{six}
+      };
+
+      \draw (virt_addr) -> (tlb);
+      \draw (tlb) -> node[right] {Hit} (hit);
+
+      \draw (tlb) -> node[below] {Miss}
+      node[above, text = Black] {Для прохождения всей\\таблицы трансляции\\
+        необходимо дополнительно\\$\approx40$ тактов} (table);
+
+    \end{tikzpicture}
+    \caption{Translation lookaside buffer (TLB) используется как для ускорения
+      трансляции виртуальных адресов ядерного пространства, так и
+      пользовательского!}\label{tlb_example}
+  \end{figure}
+
+  \note{
+
+    Трансляция адресов должна происходить очень быстро. С использованием таблиц
+    трансляций, расположенных в памяти, данная операция быстро выполняться не
+    может. По этой причине был введён кеш для трансляции адресов, который
+    помогает уменьшить задержку при процессе трансляции --- \textbf{буфер
+      ассоциативной трансляции (translation lookaside buffer, TLB)}.
+
+    Атака впервые была представлена Ralf Hund \textbf{в 2013 году}. Попытка
+    чтения или записи памяти, к которой нет доступа по причине того, что данный
+    участок памяти \textbf{используется ядром, занимает меньше времени}, если бы
+    память не была размечена вовсе, т. к. используемые адреса памяти попадают в
+    кэш независимо от уровня привилегий.
+
+    Это позволяет узнать, какие адреса используются, и более того, узнать какие
+    адреса \textbf{используются той или иной частью ядра}, т. е. данный вид
+    атаки позволяет обойти технику рандомизации памяти в ядерном пространстве
+    (kernel address-space-layout randomization, \textbf{KASLR}).
+
+  }
+\end{frame}

@@ -1,0 +1,975 @@
+\begin{frame}{\insertsubsection}
+
+  \begin{figure}[h]
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      ]
+
+      \node[
+      block,
+      label = above:Кэш,
+      minimum width = 1cm,
+      minimum height = 1cm,
+      ] (cache) {
+        Данные
+      };
+
+      \node[
+      block,
+      label = above:DRAM,
+      below = of cache,
+      minimum width = 3cm,
+      minimum height = 3cm,
+      ] (dram) {
+        Данные
+      };
+
+      \node[
+      block,
+      right = 3cm of $(cache.east)!.5!(dram.east)$,
+      minimum width = 2cm,
+      minimum height = 2cm,
+      ] (cpu) {
+        CPU
+      };
+
+      \draw (cpu) -> node[above, sloped] {0.5 ns -- 7 ns} (cache);
+      \draw (cpu) -> node[below, sloped] {250 ns} (dram);
+
+    \end{tikzpicture}
+    \caption{Кэш --- это не только полезно, но и опасно}\label{cache_faster}
+  \end{figure}
+
+  \note{
+
+    Главное \textbf{предназначение кэш--памяти} --- \textbf{нивелировать
+      задержки} при работе с медленной главной физической памятью. При работе с
+    данными через кэш задержки значительно уменьшаются. Kocher в 1996 году
+    описал возможность использования разницы во времени при обращении к данным
+    для совершения атаки, которая стала называться \textbf{атака на кэш по
+      времени}.
+
+  }
+\end{frame}
+
+
+\begin{frame}{\insertsubsection}
+
+  \begin{figure}[h]
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      ]
+
+      \node[
+      block,
+      label = above:Кэш,
+      minimum width = 1cm,
+      minimum height = 1cm,
+      ] (cache) {
+        Данные
+      };
+
+      \node[
+      block,
+      right = 3cm of cache,
+      minimum width = 2cm,
+      minimum height = 2cm,
+      ] (cpu) {
+        CPU
+      };
+
+      \draw (cpu) -> node[above] {
+        \includegraphics[height = .1\textheight]{hourglass} = ?
+      } (cache);
+
+    \end{tikzpicture}
+    \caption{Для атаки на кэш необходимо знать точное время цикла обращения к
+      ячейке памяти}\label{cache_time_attack}
+  \end{figure}
+
+  \note{
+
+    Для проведения успешной кеш-атаки необходимо \textbf{знать точное время
+      цикла обращения к ячейке памяти}. Ранние кеш--атаки использовали для этих
+    целей \textbf{системные счётчики производительности}, но этот способ
+    \textbf{неэффективен}, поскольку эти счётчики на ARM-процессорах доступны
+    только в привилегированном режиме.
+
+    Однако в 2016 году были предложены \textbf{три альтернативных источника}
+    синхронизации, доступные в том числе и в непривилегированном режиме. Один из
+    них --- запуск \textbf{параллельного синхронизирующего потока}, который
+    непрерывно инкрементирует глобальную переменную. Читая значение этой
+    переменной, злоумышленник может измерять время цикла обращения к ячейке
+    памяти. Об остальных методах \textbf{будет рассказано позже} в ходе
+    повествования.
+
+    Кроме того, в \textbf{ARM--процессорах} действует так называемая политика
+    псевдослучайного замещения, в результате действия которой,
+    \textbf{вытеснение из кеша происходит менее предсказуемо}, чем в процессорах
+    Intel и AMD. Тем не менее в 2016 году была \textbf{продемонстрирована
+      эффективная кеш-атака} даже в таких зашумленных условиях.
+
+  }
+\end{frame}
+
+\subsubsection{Evict + Time}
+\begin{frame}{\insertsubsubsection}
+
+  \begin{enumerate}
+  \item Измерить время выполнения программы--жертвы
+  \item Вытеснить определённый набор кэша
+  \item Снова измерить время выполнения программы--жертвы и сравнить
+  \end{enumerate}
+
+  \note{
+
+    Атакующий запускает несколько вычислений и затем измеряет время,
+    потребовавшееся на завершение данных вычислений. Для определения влияния на
+    конкретный набор кэша, атакующий предварительно вытесняет этот набор перед
+    вторым запуском вычислений. Для второй половины запусков вычислений
+    атакующий производит сравнение времени, и в случае, если время вычислений
+    изменилось, значит именно этот набор кэша использовался для вычислений.
+
+  }
+
+\end{frame}
+
+\begin{frame}{\insertsubsubsection}
+
+  \only<1>{Измерить время выполнения программы--жертвы}
+
+  \only<2,4>{Вытеснить определённый набор кэша}
+
+  \only<3,5>{Снова измерить время выполнения программы--жертвы и сравнить}
+
+  \begin{figure}[h]
+
+  \newcommand*\viccolor{ForestGreen}
+  \newcommand*\attcolor{White}
+  \newcommand*\attcolorone{White}
+
+  \only<4,5>{
+    \renewcommand*\viccolor{BrickRed}
+  }
+  \only<2,3>{
+    \renewcommand*\attcolor{NavyBlue}
+  }
+
+  \only<4,5>{
+    \renewcommand*\attcolorone{NavyBlue}
+  }
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      cache/.style = {
+        matrix of nodes,
+        nodes in empty cells,
+        nodes = {
+          minimum width = .5cm,
+          minimum height = .5cm,
+          draw,
+          align = center,
+          anchor = center,
+        },
+      },
+      ]
+
+      \node<1,3,5>[
+      font = \ttfamily,
+      text = Black,
+      align = left,
+      ] (victim) {
+        long long *rsa\_encrypt(...)
+        \{\\
+          $\cdots$\\
+          for (i = 0; i < size; i++)\{\\
+            encrypted[i] = rsa\_modExp(\\
+              message[i],\\
+              pub->exponent,\\
+              pub->modules);\\
+          \}\\
+          $\cdots$\\
+        \}\\
+      };
+
+      \node<1,3,5>[
+      above = .1 of victim,
+      ] (time) {
+        \only<1>{0.30 ms}
+        \only<3>{0.28 ms}
+        \only<5>{0.56 ms}
+      };
+
+      \node[
+      cache,
+      right = of victim,
+      label = {Кэш (8 наборов, 4 пути)},
+      ] (cache) {
+        \node[fill = ForestGreen] {}; \& \& \& \\
+         \& \& \& \\
+         \& \& \node[fill = ForestGreen] {}; \& \\
+         \& \& \& \\
+         \& \node[fill = ForestGreen] {}; \& \& \node[fill = ForestGreen] {}; \\
+         \& \& \& \\
+        \node[fill = \attcolorone] (attack_1) {}; \& \node[fill = \attcolorone] {}; \& \node[fill = \viccolor] (detect) {}; \& \node[fill = \attcolorone] {}; \\
+        \node[fill = \attcolor] (attack_0) {}; \& \node[fill = \attcolor] {}; \& \node[fill = \attcolor] {}; \& \node[fill = \attcolor] {}; \\
+      };
+
+      \node<2,4,5>[
+      left = of cache,
+      ] (bsd) {
+        \includegraphics[height = .1\textheight]{freebsd}
+      };
+
+      \draw<2>[red] (bsd) -> (attack_0.west);
+      \draw<4>[red] (bsd) -> (attack_1.west);
+      \draw<5>[red] (bsd) -> (detect.center);
+
+    \end{tikzpicture}
+    % \caption{Пример атаки Evict + Time}\label{evict_time_example}
+  \end{figure}
+
+  \note<1>{
+
+    \textbf{Кэш должен быть прогретым.}
+
+  }
+
+  \note<5>{
+
+    \texttt{Evict + Time} метод даёт детальную информацию об используемом наборе
+    кэша, но \textbf{«шум»}, получаемый от других источников, мешает корректно
+    вычислить время исполнения задачи. По этой причине может потребоваться
+    \textbf{несколько тысяч повторений запусков} для получения, например, целого
+    AES ключа. Данный метод требует от атакующего возможности \textbf{точного
+      измерения времени начала и окончания вычислений}. Это может оказаться
+    \textbf{неосуществимым} в случае выполнения атаки \textbf{асинхронно}, так
+    как атакующий не имеет возможности запускать вычисления по своему
+    усмотрению. Преимущество \texttt{Evict + Time} метода в том, что ему
+    \textbf{не требуется работать с разделяемой памятью}.
+
+    \textbf{Усложнённые адресация данных и правила вымещения из кэша} на
+    современных процессорах делает этап очищения данных из набора кэша сложнее
+    и, соответственно, саму атаку с помощью метода \texttt{Evict + Time}.
+
+  }
+\end{frame}
+
+\subsubsection{Prime + Probe}
+\begin{frame}{\insertsubsubsection}
+  \begin{enumerate}
+    \item Заполнить определённые наборы кэша
+    \item Передать управление программе--жертве
+    \item Определить какие наборы кэша всё ещё заполнены нашими данными
+  \end{enumerate}
+
+  \note{
+
+    Вторая техника атаки представленная Osvik'ом оказалось более мощной.
+    Атакующий в течении времени заполняет (primes) набор кэша, а затем измеряет
+    как долго происходит повторный доступ к этим данным.
+
+    Первое применение атаки было \textbf{нацелено на L1 кэш}. Однако,
+    \textbf{обратная разработка} работы \textbf{кэшей последнего уровня} открыла
+    возможность проведения атаки и на данный вид кэшей (2009). Существует
+    множество примеров успешной атаки на криптографические алгоритмы из состава
+    всё того же OpenSSL.
+
+    2011 --- был представлен пример атаки на \textbf{соседние облака и
+      прослушивание соседних виртуальных машин}. Однако, эти атаки были
+    совершены на микроархитектуры \textbf{с простой организацией}, где
+    отсутствовали срезы кэшей и сложные функции по вычислению адресов.
+
+    Позже --- и на современные процессоры, в том числе атака на AES BouncyCastle
+    (\textbf{ARM}), атака на \textbf{TrustZone}, \textbf{Intel SGX анклав}.
+
+  }
+\end{frame}
+
+\begin{frame}{\insertsubsubsection}
+
+  \only<1>{Заполнить определённые наборы кэша}
+
+  \only<2>{Передать управление программе--жертве}
+
+  \only<3-6>{Определить какие наборы кэша всё ещё заполнены нашими данными}
+
+  \begin{figure}[h]
+
+    \newcommand*\viccolor{White}
+    \newcommand*\vicatcolorone{White}
+    \newcommand*\vicatcolortwo{White}
+    \newcommand*\attcolor{NavyBlue}
+    \newcommand*\attcolorone{White}
+
+    \only<1>{
+      \renewcommand*\vicatcolorone{NavyBlue}
+      \renewcommand*\vicatcolortwo{NavyBlue}
+    }
+    \only<2-7>{
+      \renewcommand*\viccolor{ForestGreen}
+    }
+    \only<2-4>{
+      \renewcommand*\vicatcolorone{ForestGreen}
+    }
+    \only<2-6>{
+      \renewcommand*\vicatcolortwo{ForestGreen}
+    }
+    \only<4->{
+      \renewcommand*\vicatcolorone{BrickRed}
+    }
+    \only<6->{
+      \renewcommand*\vicatcolortwo{BrickRed}
+    }
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      cache/.style = {
+        matrix of nodes,
+        nodes in empty cells,
+        nodes = {
+          minimum width = .5cm,
+          minimum height = .5cm,
+          draw,
+          align = center,
+          anchor = center,
+        },
+      },
+      caption/.style = {
+        fill = White,
+        sloped,
+        above,
+        inner sep = 0,
+        outer sep = 3,
+      },
+      ]
+
+      \node[
+      cache,
+      label = {Кэш (8 наборов, 4 пути)},
+      ] (cache) {
+        \&\&\&\\
+        \& \node[fill = \viccolor] (vic_0) {}; \&\&\\
+        \&\&\&\\
+        \&\&\&\\
+        \&\&\&\\
+        \& \node[fill = \viccolor] (vic_1) {}; \& \node[fill = \viccolor] (vic_2) {}; \&\\
+        \&\&\&\\
+        \node[fill = \attcolor] (att_0) {}; \& \node[fill = \vicatcolorone] (vic_3) {}; \& \node[fill = \attcolor] (att_1) {}; \& \node[fill = \vicatcolortwo] (vic_4) {}; \\
+      };
+
+      \node[
+      left = of cache,
+      ] (bsd) {
+        \includegraphics[height = .1\textheight]{freebsd}
+      };
+
+      \node[
+      right = of cache,
+      ] (smile) {
+        \includegraphics[height = .1\textheight]{smile}
+      };
+
+      \node<7>[
+      right = of cache,
+      yshift = 5,
+      ] (aim) {
+        \includegraphics[height = .1\textheight]{aim}
+      };
+
+      \draw<1>[red] (bsd) -> (att_0.west);
+      \draw<2>[LimeGreen] (smile) -> (vic_0.center);
+      \draw<2>[LimeGreen] (smile) -> (vic_1.center);
+      \draw<2>[LimeGreen] (smile) -> (vic_2.center);
+      \draw<2>[LimeGreen] (smile) -> (vic_3.center);
+      \draw<2>[LimeGreen] (smile) -> (vic_4.center);
+      \draw<3>[red] (bsd) -> node[caption] {hit} (att_0.center);
+      \draw<4>[red] (bsd) -> node[caption] {miss} (vic_3.center);
+      \draw<5>[red] (bsd) -> node[caption] {hit} (att_1.center);
+      \draw<6>[red] (bsd) -> node[caption] {miss} (vic_4.center);
+      \draw<7>[red] (bsd) -> node[caption] {Detected!} (att_0.west);
+
+    \end{tikzpicture}
+    % \caption{Пример атаки Prime + Probe}\label{prime_probe_example}
+  \end{figure}
+
+  \note<1> {
+
+    Атака проиллюстрирована в трёх шагах. Атакующий непрерывно заполняет набор
+    кэша, используя доступ к своей памяти и позднее измеряет время доступа (шаг
+    1 и 3).
+
+  }
+
+  \note<2>{
+
+    На шаге 2 жертва, возможно, обращается к участку памяти (не общей), которая
+    расположена в том же наборе кэша.
+
+  }
+
+  \note<3-6>{
+
+    Если жертва обращалась в тот же набор кэша, то время доступа к данным на
+    шаге 3 увеличится, так как один из путей кэша будет заменён, в противном
+    случае время доступа будет меньше.
+
+    \textbf{Время}, затрачиваемое на повторный доступ к набору кэша
+    \textbf{пропорционально количеству путей}, которые были заменены другими
+    процессами. \textbf{Большое время} при измерении означает, что \textbf{по
+      крайней мере один путь кэша был заменён}, и наоборот --- меньшее время
+    указывает на то, что ни один из путей кэша не был заменён.
+
+  }
+
+  \note<7>{
+
+    Атака имеет такую же \textbf{детализацию} направленности атаки, как и Evict
+    + Time атака, т. е. \textbf{набор кэша}. \textbf{Точность атаки больше}, чем
+    в случае с Evict + Time, так как измеряется время \textbf{прямого доступа к
+      данным}, а Evict + Time измеряет время через запуски вычислений, а не
+    напрямую. Но также, как и с Evict + Time атакой, \textbf{усложнение функций
+      адресации и правил вымещения} из кэша делает проведение атаки
+    затруднительным.
+
+  }
+
+\end{frame}
+
+\subsubsection{Flush + Reload}
+\begin{frame}{\insertsubsubsection}
+  \begin{enumerate}
+  \item Отобразить бинарный файл (например, разделяемый объект) в своё адресное
+    пространство
+  \item Сбросить содержимое кэш--линии (код или данные)
+  \item Передать управление программе--жертве
+  \item Определить какие линии кэша были загружены программой--жертвой снова
+  \end{enumerate}
+
+  \note{
+
+    Данная атака считается \textbf{наиболее эффективной} атакой на кэш. Целью
+    данной атаки является не просто набор кэша, а \textbf{отдельная линия кэша},
+    более того, у атакующего существует возможность проверить закэширована ли та
+    или иная область памяти. Атака \texttt{Flush + Reload} выполняется в три
+    фазы.
+
+  }
+\end{frame}
+
+\begin{frame}{\insertsubsubsection}
+
+  \only<1>{Отобразить бинарный файл (например, разделяемый объект) в своё
+    адресное пространство}%
+
+  \only<2>{Сбросить содержимое кэш--линии (код или данные)}%
+
+  \only<3>{Передать управление программе--жертве}%
+
+  \only<4>{Определить какие линии кэша были загружены программой--жертвой
+    снова}%
+
+  \begin{figure}[h]
+
+    \newcommand*\viccolor{ForestGreen}
+    \newcommand*\vicatcolorone{ForestGreen}
+    \newcommand*\vicatcolortwo{ForestGreen}
+    \newcommand*\attcolor{NavyBlue}
+    \newcommand*\attcolorone{White}
+
+    \only<2>{
+      \renewcommand*\vicatcolorone{White}
+      \renewcommand*\vicatcolortwo{White}
+    }
+    \only<3>{
+      \renewcommand*\vicatcolorone{White}
+      \renewcommand*\vicatcolortwo{ForestGreen}
+    }
+    \only<4->{
+      \renewcommand*\vicatcolorone{NavyBlue}
+      \renewcommand*\vicatcolortwo{BrickRed}
+    }
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      cache/.style = {
+        matrix of nodes,
+        nodes in empty cells,
+        nodes = {
+          minimum width = .5cm,
+          minimum height = .5cm,
+          draw,
+          align = center,
+          anchor = center,
+        },
+      },
+      caption/.style = {
+        fill = White,
+        sloped,
+        above,
+        inner sep = 0,
+        outer sep = 3,
+      },
+      ]
+
+      \node[
+      cache,
+      label = {Кэш (8 наборов, 4 пути)},
+      ] (cache) {
+        \& \& \& \\
+        \& \node[fill = \vicatcolorone] (vic_0) {}; \& \& \\
+        \& \& \& \\
+        \& \& \node[fill = \vicatcolortwo] (vic_1) {}; \& \\
+        \& \& \& \\
+        \& \& \& \\
+        \& \& \& \\
+        \& \& \& \\
+      };
+
+      \node[
+      left = of cache,
+      ] (bsd) {
+        \includegraphics[height = .1\textheight]{freebsd}
+      };
+
+      \node[
+      right = of cache,
+      ] (smile) {
+        \includegraphics[height = .1\textheight]{smile}
+      };
+
+      \node<5>[
+      right = of cache,
+      yshift = 5,
+      ] (aim) {
+        \includegraphics[height = .1\textheight]{aim}
+      };
+
+      \draw<1>[Green] (smile) -> (vic_0);
+      \draw<1>[Green] (smile) -> (vic_1);
+      \draw<1>[red] (bsd) -> (vic_0);
+      \draw<1>[red] (bsd) -> (vic_1);
+      \draw<2>[red] (bsd) -> node[caption] {flush} (vic_0);
+      \draw<2>[red] (bsd) -> node[caption] {flush} (vic_1);
+      \draw<3>[Green] (smile) -> (vic_1);
+      \draw<4>[red] (bsd) -> node[caption] {miss} (vic_0);
+      \draw<4>[red] (bsd) -> node[caption] {hit} (vic_1);
+      \draw<5>[red] (bsd) -> node[caption] {Detected!} (vic_1);
+
+    \end{tikzpicture}
+    % \caption{Пример атаки Flush + Reload}\label{flush_reload_example}
+  \end{figure}
+
+  \note<1>{
+
+    \texttt{Flush + Reload} атака работает при условии \textbf{общей памяти},
+    ярким примером может служить общая библиотека, которую использует и
+    атакующий и программа--жертва. По этой причине, в случае, если нет такого
+    элемента, как общая память между атакующим и жертвой, придётся использовать
+    схему атаки \texttt{Prime + Probe}.
+
+  }
+
+  \note<2>{
+
+    Во время первой фазы контролируемый участок памяти удаляется из структуры
+    кэша (удаляется линия кэша с помощью инструкции \textbf{clflush} в случае с
+    Intel).
+
+  }
+
+
+  \note<3>{
+
+    Во второй фазе программа--шпион находится в режиме ожидания, \textbf{давая
+      жертве время воспользоваться} участком памяти.
+
+  }
+
+  \note<4>{
+
+    Во время третьей фазы программа--шпион \textbf{перезагружает} участок памяти
+    и \textbf{замеряет время} загрузки. Если во время второй фазы жертва
+    \textbf{воспользовалась} участком памяти, то этот участок будет доступен из
+    кэша и операция перезагрузки \textbf{пройдёт быстро}. С другой стороны, если
+    линия кэша \textbf{осталась неиспользованной}, понадобится время на загрузку
+    участка и операция перезагрузки пройдёт \textbf{значительно дольше}.
+
+  }
+
+
+  \note<5>{
+
+    Такие методы атаки, как \texttt{Flush + Reload} и \texttt{Flush + Flush}
+    (описан ниже), используют \textbf{непривилегированную} x86--инструкцию
+    сброса \texttt{clflush} для удаления строки данных из кеш--памяти. Однако,
+    за исключением процессоров ARMv8-A, \textbf{ARM--платформы не имеют
+      непривилегированных инструкций сброса кеша}, и поэтому в 2016 году был
+    предложен \textbf{косвенный метод вытеснения кеша}, с использованием эффекта
+    Rowhammer.
+
+  }
+\end{frame}
+
+\subsubsection{Flush + Flush}
+\begin{frame}{\insertsubsubsection}
+
+  \begin{figure}[h]
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      cache/.style = {
+        matrix of nodes,
+        nodes in empty cells,
+        nodes = {
+          minimum width = .5cm,
+          minimum height = .5cm,
+          draw,
+          align = center,
+          anchor = center,
+        },
+      },
+      caption/.style = {
+        fill = White,
+        sloped,
+        above,
+        inner sep = 0,
+        outer sep = 3,
+      },
+      ]
+
+      \node[
+      cache,
+      label = {Кэш (8 наборов, 4 пути)},
+      ] (cache) {
+        \& \& \& \\
+        \& \node[fill = ForestGreen] (vic_0) {}; \& \& \\
+        \& \& \& \\
+        \& \& \node[fill = ForestGreen] (vic_1) {}; \& \\
+        \& \& \& \\
+        \& \& \& \\
+        \& \& \& \\
+        \& \& \& \\
+      };
+
+      \node[
+      left = of cache,
+      ] (bsd) {
+        \includegraphics[height = .1\textheight]{freebsd}
+      };
+
+      \node[
+      right = of cache,
+      text = Black,
+      label = {[White] below:Я слежу за тобой!},
+      ] (smile) {
+        \includegraphics[height = .1\textheight]{smile}
+      };
+
+      \draw[red] (bsd) -> (vic_0);
+      \draw[red] (bsd) -> (vic_1);
+      \draw[red] (bsd) -> (cache-1-1.center);
+      \draw[red] (bsd) -> (cache-1-2.center);
+      \draw[red] (bsd) -> (cache-3-1.center);
+      \draw[red] (bsd) -> (cache-5-3.center);
+      \draw[red] (bsd) -> (cache-6-1.center);
+      \draw[red] (bsd) -> (cache-7-2.center);
+
+    \end{tikzpicture}
+    \caption{Количество и продолжительность обращений к памяти может быть
+      измерено, а атаки на кэш --- обнаружены}\label{cache_attacks_detection}
+  \end{figure}
+
+  \note{
+
+    Атаки типа \texttt{Flush + Reload} и \texttt{Prime + Probe} производят
+    \textbf{большое количество обращений} к памяти, продолжительность которых
+    \textbf{можно измерить} (при помощи системных счётчиков производительности),
+    по этой причине они \textbf{могут быть опознаны} процессором.
+
+    Атака \textbf{Flush + Flush} представляет из себя \textbf{стелс--версию}
+    атаки \texttt{Flush + Reload}.
+
+  }
+
+\end{frame}
+
+\begin{frame}{\insertsubsubsection}
+
+  \begin{figure}[h]
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      cache/.style = {
+        matrix of nodes,
+        nodes in empty cells,
+        nodes = {
+          minimum width = .5cm,
+          minimum height = .5cm,
+          draw,
+          align = center,
+          anchor = center,
+        },
+      },
+      caption/.style = {
+        fill = White,
+        sloped,
+        above,
+        inner sep = 0,
+        outer sep = 3,
+      },
+      ]
+
+      \node[
+      cache,
+      label = {Кэш (8 наборов, 4 пути)},
+      ] (cache) {
+        \& \& \& \\
+        \& \node[fill = ForestGreen] (vic_0) {}; \& \& \\
+        \& \& \& \\
+        \& \& \node[fill = ForestGreen] (vic_1) {}; \& \\
+        \& \& \& \\
+        \& \& \& \\
+        \& \& \& \\
+        \& \& \& \\
+      };
+
+      \node[
+      left = of cache,
+      ] (bsd) {
+        \includegraphics[height = .1\textheight]{freebsd}
+      };
+
+      \draw[red] (bsd) -> node[caption, text = BlueViolet] {3.83ns} (vic_0);
+      \draw[red] (bsd) -> node[caption, text = BlueViolet] {4.85ns} (vic_1);
+      \draw[red] (bsd) -> node[caption, text = Black] {0.96ns} (cache-7-4.center);
+      \draw[red] (bsd) -> node[caption, text = Black] {1.06ns} (cache-8-1.center);
+
+    \end{tikzpicture}
+    \caption{Инструкция для сброса кэша срабатывает за различное время в
+      зависимости от того, находятся ли сейчас какие-либо данные в кэше или
+      нет}\label{flush_flush_example}
+  \end{figure}
+
+  \note{
+
+    Было выяснено, что \textbf{инструкция для сброса кэша срабатывает за
+      различное время} в зависимости от того, находятся ли сейчас какие-либо
+    данные в кэше или нет. В случае, если данные, которые подвергаются
+    вытеснению \textbf{присутствуют}, то вытеснение происходит
+    \textbf{медленнее}. Таким образом вместо повторной загрузки данных в кэш,
+    атакующий снова вытесняет кэш и также измеряет время.
+
+  }
+\end{frame}
+
+\subsubsection{Evict + Reload}
+\begin{frame}{\insertsubsubsection}
+
+  \only<1>{Отобразить бинарный файл (например, разделяемый объект) в своё
+    адресное пространство}
+
+  \only<2>{Вытеснить содержимое кэш--линии (код или данные)}
+
+  \only<3>{Передать управление программе--жертве}
+
+  \only<4>{Определить какие линии кэша были загружены программой--жертвой снова}
+
+  \begin{figure}[h]
+
+    \newcommand*\viccolor{ForestGreen}
+    \newcommand*\vicatcolorone{ForestGreen}
+    \newcommand*\vicatcolortwo{ForestGreen}
+    \newcommand*\attcolor{White}
+    \newcommand*\attcolorone{White}
+
+    \only<2>{
+      \renewcommand*\vicatcolorone{NavyBlue}
+    }
+    \only<2->{
+      \renewcommand*\attcolor{NavyBlue}
+      \renewcommand*\vicatcolortwo{NavyBlue}
+    }
+    \only<3>{
+      \renewcommand*\vicatcolorone{BrickRed}
+      % \renewcommand*\vicatcolortwo{ForestGreen}
+    }
+    \only<4->{
+      \renewcommand*\vicatcolorone{BrickRed}
+      % \renewcommand*\vicatcolortwo{ForestGreen}
+    }
+
+    \begin{tikzpicture}[
+      align = center,
+      ->,
+      > = Stealth,
+      thick,
+      ampersand replacement = \&,
+      block/.style = {
+        draw,
+        fill = ForestGreen,
+        text = White,
+      },
+      cache/.style = {
+        matrix of nodes,
+        nodes in empty cells,
+        nodes = {
+          minimum width = .5cm,
+          minimum height = .5cm,
+          draw,
+          align = center,
+          anchor = center,
+        },
+      },
+      caption/.style = {
+        fill = White,
+        sloped,
+        above,
+        inner sep = 0,
+        outer sep = 3,
+      },
+      ]
+
+      \node[
+      cache,
+      label = {Кэш (8 наборов, 4 пути)},
+      ] (cache) {
+        \& \& \& \\
+        \node[fill = \attcolor] (evict_0) {}; \& \node[fill = \vicatcolorone] (vic_0) {}; \& \node[fill = \attcolor] {}; \& \node[fill = \attcolor] {}; \\
+        \& \& \& \\
+        \node[fill = \attcolor] (evict_1) {}; \& \node[fill = \attcolor] {}; \& \node[fill = \vicatcolortwo] (vic_1) {}; \& \node[fill = \attcolor] {}; \\
+        \& \& \& \\
+        \& \& \& \\
+        \& \& \& \\
+        \& \& \& \\
+      };
+
+      \node[
+      left = of cache,
+      ] (bsd) {
+        \includegraphics[height = .1\textheight]{freebsd}
+      };
+
+      \node[
+      right = of cache,
+      ] (smile) {
+        \includegraphics[height = .1\textheight]{smile}
+      };
+
+      \node<5>[
+      right = of cache,
+      yshift = 5,
+      ] (aim) {
+        \includegraphics[height = .1\textheight]{aim}
+      };
+
+      \draw<1>[green] (smile) -> (vic_0);
+      \draw<1>[green] (smile) -> (vic_1);
+      \draw<1>[red] (bsd) -> (vic_0);
+      \draw<1>[red] (bsd) -> (vic_1);
+      \draw<2>[red] (bsd) -> node[caption] {evict} (evict_0.west);
+      \draw<2>[red] (bsd) -> node[caption] {evict} (evict_1.west);
+      \draw<3>[green] (smile) -> (vic_0);
+      \draw<4>[red] (bsd) -> node[caption] {hit} (vic_0);
+      \draw<4>[red] (bsd) -> node[caption] {miss} (vic_1);
+      \draw<5>[red] (bsd) -> node[caption] {Detected!} (vic_0);
+
+    \end{tikzpicture}
+    % \caption{Пример атаки Flush + Reload}\label{flush_reload_example}
+  \end{figure}
+
+  \note<1>{
+
+    Атака представляет из себя \textbf{модифицированную версию Flush + Reload} и
+    имеет смысл для архитектур, где \textbf{инструкция вытеснения} из кэша
+    доступна \textbf{только в привилегированном режиме}, например, для ARM.
+
+  }
+
+  \note<2>{
+
+    Суть атаки заключается в том, что \textbf{для вытеснения} нужной линии кэша
+    происходит \textbf{заполнение кэш--памяти большим количеством
+      взаимосвязанных адресов}, в результате чего механизм, отвечающий за
+    вытеснение, сам начнёт вытеснять нужную нам линию кэша.
+
+  }
+
+  \note<5>{
+
+    Новый (2017 год) тип атаки на кэш от
+    \href{https://www.vusec.net/projects/anc/}{Systems and Network Security
+      Group at VU Amsterdam}.
+
+    Атака представляет из себя \textbf{модифицированную версию Evict + Time}.
+    Были использованы \textbf{новые методы для расчёт времени} (Time to Tick ---
+    ввиду ограничений на стандартный счётчик, который теперь отсчитывает такты,
+    не измеряя точное время доступа к памяти, отсчитываются такты после
+    обращения к памяти; Shared Memory Counter --- параллельный счётчик на
+    отдельном ядре; пример на рисунке \ref{fig:arc_new_timers}). Также
+    \textbf{использовалась атака Prime + Probe} на MMU (Memory Management Unit),
+    для возможности проведения атаки на кэш последнего уровня.
+
+  }
+
+\end{frame}
