@@ -4,7 +4,7 @@
 
   \begin{figure}[h]
     \includegraphics[height = .7\textheight]{spectre_logo}
-    \caption{Spectre}
+    % \caption{Spectre}
   \end{figure}
 
   \note{
@@ -13,210 +13,208 @@
   }
 \end{frame}
 
-\subsubsection{Предсказатель переходов и его тренировка}
-\begin{frame}{\insertsubsubsection}
+% \subsubsection{Предсказатель переходов и его тренировка}
+% \begin{frame}{\insertsubsubsection}
 
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      ampersand replacement = \&,
-      block/.style = {
-        rectangle,
-        draw,
-        fill = ForestGreen,
-        text = White,
-        text centered,
-      },
-      ]
+%   \begin{figure}[h]
+%     \begin{tikzpicture}[
+%       align = center,
+%       ->,
+%       > = Stealth,
+%       thick,
+%       ampersand replacement = \&,
+%       block/.style = {
+%         rectangle,
+%         draw,
+%         fill = ForestGreen,
+%         text = White,
+%         text centered,
+%       },
+%       ]
 
-      \node[
-      text = Black,
-      font = \ttfamily,
-      ] (code) {
-        Animal* a = \color{ForestGreen}\only<1-4>{bird}\only<5->{fish};
-      };
+%       \node[
+%       text = Black,
+%       font = \ttfamily,
+%       ] (code) {
+%         Animal* a = \color{ForestGreen}\only<1-4>{bird}\only<5->{fish};
+%       };
 
-      \node[
-      below = .5 of code,
-      text = Black,
-      font = \ttfamily,
-      ] (move) {
-        a->move()
-      };
+%       \node[
+%       below = .5 of code,
+%       text = Black,
+%       font = \ttfamily,
+%       ] (move) {
+%         a->move()
+%       };
 
-      \node[
-      below left = 3 of move,
-      text = Black,
-      font = \ttfamily,
-      minimum width = 3cm,
-      ] (cache) {
-        arr1[untrusted]
-      };
+%       \node[
+%       below left = 3 of move,
+%       text = Black,
+%       font = \ttfamily,
+%       minimum width = 3cm,
+%       ] (cache) {
+%         arr1[untrusted]
+%       };
 
-      \node[
-      circle,
-      below = of move,
-      text = White,
-      fill = ForestGreen,
-      draw,
-      label = below:Предсказание,
-      ] (zero) {
-        \only<1-3>{swim()}%
-        \only<4->{fly()}%
-      };
+%       \node[
+%       circle,
+%       below = of move,
+%       text = White,
+%       fill = ForestGreen,
+%       draw,
+%       label = below:Предсказание,
+%       ] (zero) {
+%         \only<1-3>{swim()}%
+%         \only<4->{fly()}%
+%       };
 
-      \node[
-      below right = 3 of move,
-      text = Black,
-      font = \ttfamily,
-      minimum width = 3cm,
-      ] (zero) {
-        0
-      };
+%       \node[
+%       below right = 3 of move,
+%       text = Black,
+%       font = \ttfamily,
+%       minimum width = 3cm,
+%       ] (zero) {
+%         0
+%       };
 
-      \draw<1-2,4-5,7> (move) -> node[above, sloped] {fly()} (cache);
-      \draw<1,3,4-6> (move) -> node[above, sloped] {swim()} (zero);
+%       \draw<1-2,4-5,7> (move) -> node[above, sloped] {fly()} (cache);
+%       \draw<1,3,4-6> (move) -> node[above, sloped] {swim()} (zero);
 
-      \draw<2>[ForestGreen] (move) -> node[above, sloped] {swim()} node[below, sloped] {Спекулятивно} (zero);
-      \draw<3>[ForestGreen] (move) -> node[above, sloped] {fly()} node[below, sloped] {Реально} (cache);
+%       \draw<2>[ForestGreen] (move) -> node[above, sloped] {swim()} node[below, sloped] {Спекулятивно} (zero);
+%       \draw<3>[ForestGreen] (move) -> node[above, sloped] {fly()} node[below, sloped] {Реально} (cache);
 
-      \draw<6>[ForestGreen] (move) -> node[above, sloped] {fly()} node[below, sloped] {Спекулятивно} (cache);
-      \draw<7>[ForestGreen] (move) -> node[above, sloped] {swim()} node[below, sloped] {Реально} (zero);
+%       \draw<6>[ForestGreen] (move) -> node[above, sloped] {fly()} node[below, sloped] {Спекулятивно} (cache);
+%       \draw<7>[ForestGreen] (move) -> node[above, sloped] {swim()} node[below, sloped] {Реально} (zero);
 
-    \end{tikzpicture}
-    % \caption{}
+%     \end{tikzpicture}
+%     % \caption{}
 
-  \end{figure}
+%   \end{figure}
 
-  \note<1>{
+%   \note<1>{
 
-    Ранее уже рассказывалось про предсказатель переходов, а также про буфер.
+%     Ранее уже рассказывалось про предсказатель переходов, а также про буфер.
 
-    Для атаки требуется досконально знать, \textbf{как работает предсказатель
-      переходов}.
+%     Для атаки требуется досконально знать, \textbf{как работает предсказатель
+%       переходов}.
 
-  }
+%   }
 
-  \note<6>{
+%   \note<6>{
 
-    \textbf{Внимание}, спекулятивно выполняется натренированная нами ветка! В
-    итоге будет исполняться код, который совершит атаку на кэш.
+%     \textbf{Внимание}, спекулятивно выполняется натренированная нами ветка! В
+%     итоге будет исполняться код, который совершит атаку на кэш.
 
-  }
-\end{frame}
+%   }
+% \end{frame}
 
-\begin{frame}{\insertsubsubsection}
+% \begin{frame}{\insertsubsubsection}
 
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      ampersand replacement = \&,
-      bp/.style = {
-        rectangle,
-        rectangle split,
-        rectangle split parts = 2,
-        rectangle split horizontal,
-        rectangle split part fill = {
-          ForestGreen, NavyBlue
-        },
-        draw,
-        text = White,
-      },
-      ]
+%   \begin{figure}[h]
+%     \begin{tikzpicture}[
+%       align = center,
+%       ->,
+%       > = Stealth,
+%       thick,
+%       ampersand replacement = \&,
+%       bp/.style = {
+%         rectangle,
+%         rectangle split,
+%         rectangle split parts = 2,
+%         rectangle split horizontal,
+%         rectangle split part fill = {
+%           ForestGreen, NavyBlue
+%         },
+%         draw,
+%         text = White,
+%       },
+%       ]
 
-      \node[
-      bp,
-      ] (bp) {
-        \color{Black}0xEBE45A82
-        \nodepart{two}
-        T,T,N,N,T,T,N,N
-        \nodepart{three}
-      };
+%       \node[
+%       bp,
+%       ] (bp) {
+%         \color{Black}0xEBE45A82
+%         \nodepart{two}
+%         T,T,N,N,T,T,N,N
+%         \nodepart{three}
+%       };
 
-      \node[
-      bp,
-      above left = of bp.center,
-      label = above:Процесс A,
-      ] (proc_a) {
-        0x0000 \color{Black}EBE45A82
-        \nodepart{two}
-        Переход A
-        \nodepart{three}
-      };
+%       \node[
+%       bp,
+%       above left = of bp.center,
+%       label = above:Процесс A,
+%       ] (proc_a) {
+%         0x0000 \color{Black}EBE45A82
+%         \nodepart{two}
+%         Переход A
+%         \nodepart{three}
+%       };
 
-      \node[
-      bp,
-      above right = of bp.center,
-      label = above:Процесс B (ядро/гипервизор),
-      ] (proc_b) {
-        0xFFFF \color{Black}EBE45A82
-        \nodepart{two}
-        Переход B
-        \nodepart{three}
-      };
+%       \node[
+%       bp,
+%       above right = of bp.center,
+%       label = above:Процесс B (ядро/гипервизор),
+%       ] (proc_b) {
+%         0xFFFF \color{Black}EBE45A82
+%         \nodepart{two}
+%         Переход B
+%         \nodepart{three}
+%       };
 
-      \draw (proc_a.one south) |- (bp.one west);
-      \draw (proc_b.one west) -> (bp.one north);
-
-
-    \end{tikzpicture}
-    \caption{В BTB используются виртуальные адреса, а также возникают коллизии}
-
-  \end{figure}
+%       \draw (proc_a.one south) |- (bp.one west);
+%       \draw (proc_b.one west) -> (bp.one north);
 
 
-  \note{
+%     \end{tikzpicture}
+%     \caption{В BTB используются виртуальные адреса, а также возникают коллизии}
 
-    Из-за того, что возникают коллизии в таблице BTB, мы можем
-    \textbf{натренировать} его таким образом, чтобы спекулятивно исполнялся
-    нужный нам переход.
+%   \end{figure}
 
-    Существует \textbf{не один способ} тренировки предсказателя переходов.
 
-    Также существует возможность создания ROP цепочки из \textbf{гаджетов
-      программы-жертвы} и натренировать на него, но для этого требуется знать
-    адрес. Чтобы \textbf{узнать адрес перехода} можно применить \textbf{атаку по
-      сторонним каналам} на предсказатель переходов.
+%   \note{
 
-  }
-\end{frame}
+%     Из-за того, что возникают коллизии в таблице BTB, мы можем
+%     \textbf{натренировать} его таким образом, чтобы спекулятивно исполнялся
+%     нужный нам переход.
 
-\subsubsection{И снова спекулятивное выполнение}
-\begin{frame}[fragile]{\insertsubsubsection}
+%     Существует \textbf{не один способ} тренировки предсказателя переходов.
 
-  \begin{minted}{c}
-  if (untrusted_offset_from_user < array1_size)
-    y = array2[((array1[untrusted_offset_from_user] & 1) * 0x100) + 0x200];
-  \end{minted}
+%     Также существует возможность создания ROP цепочки из \textbf{гаджетов
+%       программы-жертвы} и натренировать на него, но для этого требуется знать
+%     адрес. Чтобы \textbf{узнать адрес перехода} можно применить \textbf{атаку по
+%       сторонним каналам} на предсказатель переходов.
 
-  \note{
+%   }
+% \end{frame}
 
-    Ничего нового, используется всё тот же код, чаще всего ROP цепочка, которая
-    приводит к атакам на кэш.
+% \subsubsection{И снова спекулятивное выполнение}
+% \begin{frame}[fragile]{\insertsubsubsection}
 
-  }
-\end{frame}
+%   \begin{minted}{c}
+%   if (untrusted_offset_from_user < array1_size)
+%     y = array2[((array1[untrusted_offset_from_user] & 1) * 0x100) + 0x200];
+%   \end{minted}
+
+%   \note{
+
+%     Ничего нового, используется всё тот же код, чаще всего ROP цепочка, которая
+%     приводит к атакам на кэш.
+
+%   }
+% \end{frame}
 
 \subsubsection{Предотвращение}
 \begin{frame}{\insertsubsubsection}
 
-  \LARGE
-
   Частично такое же, как и в случае с Variant 1
 
   \begin{itemize}
-  \item отключение предсказателя переходов (Indirect Branch Restrict
-    Speculation)
+  \item отключение предсказателя переходов
   \item очистка буфера предсказателя переходов при переключении контекста
-    (Indirect Branch Predictor Barrier)
-  \item выключение/включение MMU
+  \item вставка «барьеров» (Indirect Branch Restrict Speculation, Indirect
+    Branch Predictor Barrier и др.)
   \item retpoline --- «оборачивание» косвенных переходов
+  \item oo7 --- умное «оборачивание» косвенных переходов
   \end{itemize}
 
   \note{

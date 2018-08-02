@@ -258,20 +258,20 @@
   }
 \end{frame}
 
-\begin{frame}{\insertsubsubsection. Не по порядку}
-  \begin{figure}[h]
-    \center%
-    \includegraphics[height = .8\textheight]{Intel_Nehalem_arch}
-    \caption{Микроархитектура Intel Nehalem в 4-х ядерной реализации}
-  \end{figure}
+% \begin{frame}{\insertsubsubsection. Не по порядку}
+%   \begin{figure}[h]
+%     \center%
+%     \includegraphics[height = .8\textheight]{Intel_Nehalem_arch}
+%     \caption{Микроархитектура Intel Nehalem в 4-х ядерной реализации}
+%   \end{figure}
 
-  \note{
+%   \note{
 
-    На слайде представлено более полное описание микроархитектуры, но мы же
-    \textbf{рассмотрим упрощённую версию}.
+%     На слайде представлено более полное описание микроархитектуры, но мы же
+%     \textbf{рассмотрим упрощённую версию}.
 
-  }
-\end{frame}
+%   }
+% \end{frame}
 
 \begin{frame}<1>[label = reorder_exe]{\insertsubsubsection. Не по порядку}
 
@@ -368,7 +368,7 @@
       инструкций не по порядку)}\label{fig:exe_out_of_order}
   \end{figure}
 
-  \note{
+  \note<1>{
 
     Рисунок \ref{fig:exe_out_of_order}, \textbf{выполнение инструкций не по
       порядку}.
@@ -383,186 +383,195 @@
     для оптимизации вычислений.
 
   }
-\end{frame}
 
-\begin{frame}{\insertsubsubsection. Не по порядку}
+  \note<2->{
 
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      double = ForestGreen,
-      double distance = 1pt,
-      % node distance = .6,
-      c_node/.style = {
-        circle,
-        draw,
-        fill = ForestGreen,
-        text = White,
-        minimum width = 1cm,
-        text width = .5cm,
-        text centered,
-      },
-      block/.style = {
-        rectangle,
-        draw,
-        fill = ForestGreen,
-        text = White,
-        minimum width = 3cm,
-        text width = 3cm,
-        text centered,
-      },
-      ]
+    О работе Reorder Buffer \textbf{рассказано не будет}, существует множество
+    его реализаций.
 
-      \node[block,
-      rectangle split,
-      rectangle split parts = 6] (code) {
-        R1 = LOAD A \\
-        \nodepart{two}
-        R2 = LOAD B \\
-        \nodepart{three}
-        R3 = R1 + R2 \\
-        \nodepart{four}
-        R1 = 1 \\
-        \nodepart{five}
-        R2 = 2 \\
-        \nodepart{six}
-        R3 = R1 + R2 \\
-      };
-
-      \node[c_node, right = 3 of code.north east] (r1_1) {
-        R1
-      };
-
-      \node[c_node, right = of r1_1] (r2_1) {
-        R2
-      };
-
-      \node[c_node, below = of $(r1_1)!0.5!(r2_1)$,
-      label = right:Есть зависимость от данных] (r3_1) {
-        R3
-      };
-
-      \node[c_node, below = 2 of r1_1] (r1_2) {
-        R1
-      };
-
-      \node[c_node, right = of r1_2] (r2_2) {
-        R2
-      };
-
-      \node[c_node, below = of $(r1_2)!0.5!(r2_2)$,
-      label = right:Нет зависимости от данных] (r3_2) {
-        R3
-      };
-
-      \path (r1_1) edge (r3_1)
-      (r2_1) edge (r3_1)
-      (r1_2) edge (r3_2)
-      (r2_2) edge (r3_2);
-
-    \end{tikzpicture}
-    \caption{Пример выполнения инструкций не по
-      порядку}\label{fig:exe_out_of_order_example}
-  \end{figure}
-
-  \note{
-
-    Представлен пример кода, который имеет и зависимые, и независимые от других
-    данных участки. \textbf{На следующем слайде} будет представлено, как RoB
-    обрабатывает такой код.
+    Ниже \textbf{будет рассказано} о работе этих элементов.
 
   }
 \end{frame}
 
-\begin{frame}{\insertsubsubsection. Не по порядку}
+% \begin{frame}{\insertsubsubsection. Не по порядку}
 
-  \begin{columns}
-    \begin{column}{.3\textwidth}
-      \begin{figure}[h]
-        \center
-        \begin{tikzpicture}[
-          align = center,
-          thick,
-          block/.style = {
-            rectangle,
-            draw,
-            text = White,
-            minimum width = 3cm,
-            text width = 3cm,
-            text centered,
-          },
-          ]
+%   \begin{figure}[h]
+%     \begin{tikzpicture}[
+%       align = center,
+%       ->,
+%       > = Stealth,
+%       thick,
+%       double = ForestGreen,
+%       double distance = 1pt,
+%       % node distance = .6,
+%       c_node/.style = {
+%         circle,
+%         draw,
+%         fill = ForestGreen,
+%         text = White,
+%         minimum width = 1cm,
+%         text width = .5cm,
+%         text centered,
+%       },
+%       block/.style = {
+%         rectangle,
+%         draw,
+%         fill = ForestGreen,
+%         text = White,
+%         minimum width = 3cm,
+%         text width = 3cm,
+%         text centered,
+%       },
+%       ]
 
-          \node[block,
-          rectangle split,
-          rectangle split parts = 6,
-          rectangle split part fill = {Maroon, Maroon, Maroon, ForestGreen, ForestGreen, ForestGreen},
-          ] (code) {
-            R1 = LOAD A \\
-            \nodepart{two}
-            R2 = LOAD B \\
-            \nodepart{three}
-            R3 = R1 + R2 \\
-            \nodepart{four}
-            R1 = 1 \\
-            \nodepart{five}
-            R1 = 2 \\
-            \nodepart{six}
-            R3 = R1 + R2 \\
-          };
-        \end{tikzpicture}
-        \caption{Порядок выполнения}
-      \end{figure}
-    \end{column}
+%       \node[block,
+%       rectangle split,
+%       rectangle split parts = 6] (code) {
+%         R1 = LOAD A \\
+%         \nodepart{two}
+%         R2 = LOAD B \\
+%         \nodepart{three}
+%         R3 = R1 + R2 \\
+%         \nodepart{four}
+%         R1 = 1 \\
+%         \nodepart{five}
+%         R2 = 2 \\
+%         \nodepart{six}
+%         R3 = R1 + R2 \\
+%       };
 
-    \begin{tikzpicture}
-      \draw[line width = 3pt, -{Stealth[length = 1cm]}] (-2,0) -- (0,0);
-    \end{tikzpicture}
+%       \node[c_node, right = 3 of code.north east] (r1_1) {
+%         R1
+%       };
 
-    \begin{column}{.6\textwidth}
-      \begin{table}[h]
-        \begin{tabular}{|c|m{1.4cm}|c|m{1.3cm}|m{1cm}|}
-          \hline
-          №&Имя регистра&Инструкция&Зависи\-мости&Гото\-во?\\
-          \hline%
-          \rowcolor{Maroon}%
-          \color{White}1&\color{White}P1 = R1&\color{White}P1 = LOAD A&\color{White}-&\color{White}-\\
-          \hline%
-          \rowcolor{Maroon}%
-          \color{White}2&\color{White}P2 = R2&\color{White}P2 = LOAD B&\color{White}-&\color{White}-\\
-          \hline%
-          \rowcolor{Maroon}%
-          \color{White}3&\color{White}P3 = R3&\color{White} P3 = P1 + P2&\color{White} 1, 2&\color{White}-\\
-          \hline%
-          \rowcolor{ForestGreen}%
-          \color{White}4&\color{White}P4 = R1&\color{White}P4 = 1&\color{White}-&\color{White}+\\
-          \hline%
-          \rowcolor{ForestGreen}%
-          \color{White}5&\color{White}P5 = R2&\color{White}P5 = 1&\color{White}-&\color{White}+\\
-          \hline%
-          \rowcolor{ForestGreen}%
-          \color{White}6&\color{White}P6 = R3&\color{White}P6 = P4 + P5&\color{White}4, 5&\color{White}-\\
-          \hline%
-        \end{tabular}
-        \caption{Re-Order Buffer (ROB)}
-      \end{table}
-    \end{column}
-  \end{columns}
+%       \node[c_node, right = of r1_1] (r2_1) {
+%         R2
+%       };
 
-  \note{
+%       \node[c_node, below = of $(r1_1)!0.5!(r2_1)$,
+%       label = right:Есть зависимость от данных] (r3_1) {
+%         R3
+%       };
 
-    RoB \textbf{внутри себя производит трансляцию} в требуемый ему вид,
-    переименовывает регистры, реорганизует опкоды.
+%       \node[c_node, below = 2 of r1_1] (r1_2) {
+%         R1
+%       };
 
-    Именно по этой причине код может исполняться внутри процессора не по
-    порядку.
+%       \node[c_node, right = of r1_2] (r2_2) {
+%         R2
+%       };
 
-  }
+%       \node[c_node, below = of $(r1_2)!0.5!(r2_2)$,
+%       label = right:Нет зависимости от данных] (r3_2) {
+%         R3
+%       };
 
-\end{frame}
+%       \path (r1_1) edge (r3_1)
+%       (r2_1) edge (r3_1)
+%       (r1_2) edge (r3_2)
+%       (r2_2) edge (r3_2);
+
+%     \end{tikzpicture}
+%     \caption{Пример выполнения инструкций не по
+%       порядку}\label{fig:exe_out_of_order_example}
+%   \end{figure}
+
+%   \note{
+
+%     Представлен пример кода, который имеет и зависимые, и независимые от других
+%     данных участки. \textbf{На следующем слайде} будет представлено, как RoB
+%     обрабатывает такой код.
+
+%   }
+% \end{frame}
+
+% \begin{frame}{\insertsubsubsection. Не по порядку}
+
+%   \begin{columns}
+%     \begin{column}{.3\textwidth}
+%       \begin{figure}[h]
+%         \center
+%         \begin{tikzpicture}[
+%           align = center,
+%           thick,
+%           block/.style = {
+%             rectangle,
+%             draw,
+%             text = White,
+%             minimum width = 3cm,
+%             text width = 3cm,
+%             text centered,
+%           },
+%           ]
+
+%           \node[block,
+%           rectangle split,
+%           rectangle split parts = 6,
+%           rectangle split part fill = {Maroon, Maroon, Maroon, ForestGreen, ForestGreen, ForestGreen},
+%           ] (code) {
+%             R1 = LOAD A \\
+%             \nodepart{two}
+%             R2 = LOAD B \\
+%             \nodepart{three}
+%             R3 = R1 + R2 \\
+%             \nodepart{four}
+%             R1 = 1 \\
+%             \nodepart{five}
+%             R1 = 2 \\
+%             \nodepart{six}
+%             R3 = R1 + R2 \\
+%           };
+%         \end{tikzpicture}
+%         \caption{Порядок выполнения}
+%       \end{figure}
+%     \end{column}
+
+%     \begin{tikzpicture}
+%       \draw[line width = 3pt, -{Stealth[length = 1cm]}] (-2,0) -- (0,0);
+%     \end{tikzpicture}
+
+%     \begin{column}{.6\textwidth}
+%       \begin{table}[h]
+%         \begin{tabular}{|c|m{1.4cm}|c|m{1.3cm}|m{1cm}|}
+%           \hline
+%           №&Имя регистра&Инструкция&Зависи\-мости&Гото\-во?\\
+%           \hline%
+%           \rowcolor{Maroon}%
+%           \color{White}1&\color{White}P1 = R1&\color{White}P1 = LOAD A&\color{White}-&\color{White}-\\
+%           \hline%
+%           \rowcolor{Maroon}%
+%           \color{White}2&\color{White}P2 = R2&\color{White}P2 = LOAD B&\color{White}-&\color{White}-\\
+%           \hline%
+%           \rowcolor{Maroon}%
+%           \color{White}3&\color{White}P3 = R3&\color{White} P3 = P1 + P2&\color{White} 1, 2&\color{White}-\\
+%           \hline%
+%           \rowcolor{ForestGreen}%
+%           \color{White}4&\color{White}P4 = R1&\color{White}P4 = 1&\color{White}-&\color{White}+\\
+%           \hline%
+%           \rowcolor{ForestGreen}%
+%           \color{White}5&\color{White}P5 = R2&\color{White}P5 = 1&\color{White}-&\color{White}+\\
+%           \hline%
+%           \rowcolor{ForestGreen}%
+%           \color{White}6&\color{White}P6 = R3&\color{White}P6 = P4 + P5&\color{White}4, 5&\color{White}-\\
+%           \hline%
+%         \end{tabular}
+%         \caption{Re-Order Buffer (ROB)}
+%       \end{table}
+%     \end{column}
+%   \end{columns}
+
+%   \note{
+
+%     RoB \textbf{внутри себя производит трансляцию} в требуемый ему вид,
+%     переименовывает регистры, реорганизует опкоды.
+
+%     Именно по этой причине код может исполняться внутри процессора не по
+%     порядку.
+
+%   }
+
+% \end{frame}
 
 \againframe<2>{reorder_exe}
 
@@ -618,10 +627,25 @@
     он может выполниться на самом деле. Если угаданный путь был верным, то
     процессор просто берёт информацию, которую получил заранее, в противном
     случае \textbf{информация} о ходе спекулятивного выполнения просто
-    \textbf{удаляется}. Другая идея заключается в том, что процессор выполняет
-    инструкции не по порядку: инструкции, которые зависят от каких-либо данных
-    ожидают своего выполнения, пока инструкции, которые ни от чего не зависят
-    выполняются.
+    \textbf{удаляется}.
+
+    Существуют:
+
+    \begin{itemize}
+    \item Статическое предсказание
+    \item Динамическое предсказание
+      \begin{itemize}
+      \item счётчик с насыщением
+      \item адаптивный двухуровневый предсказатель
+      \item локальный предсказатель перехода
+      \item глобальный предсказатель перехода
+      \item гибридный предсказатель перехода
+      \item предсказатель для цикла
+      \item предсказатель косвенных переходов
+      \item предсказатель инструкций возврата
+      \item предсказатель, основанный на машинном обучении
+      \end{itemize}
+    \end{itemize}
 
   }
 \end{frame}

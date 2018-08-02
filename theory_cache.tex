@@ -366,287 +366,312 @@
 
 \end{frame}
 
-\subsubsection{Кэш с прямым отображением}
+\subsubsection{Типы кэш-памяти}
 \begin{frame}{\insertsubsubsection}
-
-
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      ampersand replacement = \&,
-      mem/.style = {
-        draw,
-        minimum width = 2cm,
-        rectangle split,
-        rectangle split parts = 3,
-        rectangle split horizontal,
-        rectangle split every empty part = {},
-        rectangle split empty part width = width("n бит"),
-      },
-      cache/.style = {
-        matrix of nodes,
-        nodes in empty cells,
-        nodes = {
-          minimum width = 3cm,
-          minimum height = .8cm,
-          draw,
-          align = center,
-          anchor = center,
-        },
-        right delimiter = \},
-      },
-      ]
-
-      \node[cache,
-      label = above:Кэш,
-      label = {
-        [label distance = 10]right:$2^n$\\линий\\кэша
-      },
-      ] (cache) {
-        Тег \& Данные \\
-        \& \\
-        \& \\
-        \& \\
-      };
-
-      \node[
-      below = of cache-3-2,
-      ] (b_bits) {
-        Смещение в данных на $2^b$ байт
-      };
-
-      \node[mem,
-      left = of cache-1-1.west,
-      label = above:Адрес памяти,
-      ] (addr) {
-        \nodepart{two}
-        \textit{n} бит
-        \nodepart{three}
-        \textit{b} бит
-        \nodepart{four}
-      };
-
-      \node[
-      draw,
-      dashed,
-      below = of addr.one south,
-      rectangle,
-      minimum width = 1cm,
-      minimum height = 1cm,
-      ] (f) {
-        f
-      };
-
-      \node[
-      circle,
-      draw,
-      below = of cache-4-1,
-      ] (hit) {
-        hit?
-      };
-
-      \node[below = .5 of hit] (final) {};
-
-      \draw (addr.one south) -> (f);
-      \draw (f) |- node[below right] {Тег} (hit);
-      \draw (hit) -> (final);
-      \draw (cache-3-1.center) -> (hit);
-      \draw (addr.two south) |- node[below right] {Индекс кэша} (cache-3-1.west);
-      \draw (b_bits) -> (cache-3-2.center);
-
-
-    \end{tikzpicture}
-    % \caption{Схема работы кэша с прямым
-    %   отображением}\label{fig:directly_mapped_cache}
-  \end{figure}
+  \begin{itemize}
+  \item кэш с прямым отображением (direct mapped cache)
+  \item полностью ассоциативный кэш (fully associative cache)
+  \item наборно-ассоциативный кэш (2/4/8/12-way set associative cache)
+  \end{itemize}
 
   \note{
 
-    Кэш состоит из $2^n$ \textbf{линий кэша}, каждая линия содержит \textbf{тег}
-    и $2^b$ байт \textbf{ассоциированных данных}. Тег вычисляется из
-    соответствующего адреса памяти, который добавляется в эту кэш линию.
-    \textbf{Тег используется} в дальнейшем для того, чтобы определять
-    \textbf{присутствие} того или иного адреса в линии кэша. Последние
-    \textit{b} бит адреса \textbf{используются} в качестве \textbf{смещения для
-      данных} в линии кэша. Современные процессоры имеют длину линии кэша в
-    \textit{64 байта}, т. е. \texttt{b = 6}. \textbf{Средние} \textit{n} бит
-    адреса памяти \textbf{используются в качестве \textit{индекса кэша}},
-    который говорит о номере линии кэша, в котором содержатся данные.
-
-    Размер кэша определяет, как много бит будет использовано, т. е. как много
-    индексов будет использовано. \textbf{Адреса с теми же \textit{n} битами}
-    являются \textbf{конгруэнтными}, так как они отображают те же линии кэша.
-
-    Главная \textbf{проблема} такого вида кэша --- это то, что кэш может
-    \textbf{хранить единственную} линию кэша из всех конгруэнтных.
-    Следовательно, если процессору требуется работать с двумя или более
-    конгруэнтными линиями кэша, то такого рода кэш будет совершать множество
-    промахов.
-
+    \begin{enumerate}
+    \item Главная \textbf{проблема} такого вида кэша --- это то, что кэш может
+      \textbf{хранить единственную} линию кэша из всех \textbf{конгруэнтных}.
+      Следовательно, если процессору требуется работать с двумя или более
+      конгруэнтными линиями кэша, то такого рода кэш будет совершать
+      \textbf{множество промахов}.
+    \item Такие кэши становятся более \textbf{дорогими с увеличением путей}.
+      Поэтому они обычно содержат небольшое количество путей, например, в
+      современных процессорах используются \textbf{буферы ассоциативной
+        трансляции (translation-lookaside buffers TLB)} с 64 путями.
+    \end{enumerate}
+    
   }
-
 \end{frame}
 
-\subsubsection{Полностью ассоциативный кэш}
-\begin{frame}{\insertsubsubsection}
-
-  \newcommand*\nodeonecolor{White}
-  \newcommand*\nodetwocolor{White}
-  \newcommand*\nodethreecolor{White}
-  \newcommand*\arrowonecolor{Black}
-  \newcommand*\arrowtwocolor{Black}
-  \newcommand*\arrowthreecolor{Black}
-
-  \only<2>{
-    \renewcommand*\nodeonecolor{Red}
-    \renewcommand*\arrowonecolor{Red}
-  }
-  \only<3>{
-    \renewcommand*\nodetwocolor{Red}
-    \renewcommand*\arrowtwocolor{Red}
-  }
-  \only<4>{
-    \renewcommand*\nodethreecolor{ForestGreen}
-    \renewcommand*\arrowthreecolor{ForestGreen}
-  }
-
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      ampersand replacement = \&,
-      mem/.style = {
-        draw,
-        minimum width = 2cm,
-        rectangle split,
-        rectangle split parts = 2,
-        rectangle split horizontal,
-        rectangle split every empty part = {},
-        rectangle split empty part width = width("bbbbbbbbbbbbbbb"),
-      },
-      cache/.style = {
-        matrix of nodes,
-        nodes in empty cells,
-        nodes = {
-          minimum width = 3cm,
-          minimum height = .8cm,
-          draw,
-          align = center,
-          anchor = center,
-        },
-      },
-      ]
-
-      \node[cache,
-      label = above:Кэш,
-      ] (cache) {
-        Тег \& Данные \\
-        \& \\
-        \& \\
-        \& \\
-      };
-
-      \node[mem,
-      left = of cache-1-1.west,
-      label = above:Адрес памяти,
-      ] (addr) {
-        \nodepart{two}
-        \textit{b} бит
-        \nodepart{three}
-      };
-
-      \node[
-      draw,
-      dashed,
-      below = of addr.one south,
-      rectangle,
-      minimum width = 1cm,
-      minimum height = 1cm,
-      ] (f) {
-        f
-      };
-
-      \node[
-      fill = \nodeonecolor,
-      text = Black,
-      circle,
-      draw,
-      below = 2cm of cache-2-1,
-      ] (hit_1) {
-        \only<1>{hit?}
-        \only<2->{miss}
-      };
-
-      \node[
-      fill = \nodetwocolor,
-      text = Black,
-      circle,
-      draw,
-      below right = 0.1 of hit_1,
-      ] (hit_2) {
-        \only<1-2>{hit?}
-        \only<3->{miss}
-      };
-
-      \node[
-      fill = \nodethreecolor,
-      text = Black,
-      circle,
-      draw,
-      below right = 0.1 of hit_2,
-      ] (hit_3) {
-        \only<1-3>{hit?}
-        \only<4->{hit!}
-      };
-
-      \node<4>[below = of cache-4-2] (data) {
-        Данные
-      };
-
-      \draw (addr.one south) -> (f);
-      \draw (f) |- node[below right] {Тег} (hit_1);
-      \draw (f) |- (hit_2);
-      \draw (f) |- (hit_3);
-      \draw[\arrowonecolor] (cache-2-1.center) -> (hit_1);
-      \draw[\arrowtwocolor] ([xshift = 0.8cm]cache-3-1.center) -> (hit_2);
-      \draw[\arrowthreecolor] ([xshift = 1cm]cache-4-1.center) -> (hit_3);
-      \draw<4>[\arrowthreecolor] (cache-4-2.center) -> (data);
+% \subsubsection{Кэш с прямым отображением}
+% \begin{frame}{\insertsubsubsection}
 
 
-    \end{tikzpicture}
-    % \caption{Схема работы полностью ассоциативного
-    %   кэша}\label{fig:fully_associative_cache}
-  \end{figure}
+%   \begin{figure}[h]
+%     \begin{tikzpicture}[
+%       align = center,
+%       ->,
+%       > = Stealth,
+%       thick,
+%       ampersand replacement = \&,
+%       mem/.style = {
+%         draw,
+%         minimum width = 2cm,
+%         rectangle split,
+%         rectangle split parts = 3,
+%         rectangle split horizontal,
+%         rectangle split every empty part = {},
+%         rectangle split empty part width = width("n бит"),
+%       },
+%       cache/.style = {
+%         matrix of nodes,
+%         nodes in empty cells,
+%         nodes = {
+%           minimum width = 3cm,
+%           minimum height = .8cm,
+%           draw,
+%           align = center,
+%           anchor = center,
+%         },
+%         right delimiter = \},
+%       },
+%       ]
 
-  \note<1>{
+%       \node[cache,
+%       label = above:Кэш,
+%       label = {
+%         [label distance = 10]right:$2^n$\\линий\\кэша
+%       },
+%       ] (cache) {
+%         Тег \& Данные \\
+%         \& \\
+%         \& \\
+%         \& \\
+%       };
 
-    Проблема конгруэнтности \textbf{решается в полностью ассоциативном кэше}.
+%       \node[
+%       below = of cache-3-2,
+%       ] (b_bits) {
+%         Смещение в данных на $2^b$ байт
+%       };
 
-    Такой вид кэша не содержит индексов и каких-либо линий кэша. Вместо этого он
-    хранит множество \textbf{путей кэша}, которые в свою очередь содержат
-    данные. \textbf{Тег} теперь \textbf{используется для определения
-      существования адреса в кэше} и какой именно путь кэша содержит
-    ассоциированные данные.
+%       \node[mem,
+%       left = of cache-1-1.west,
+%       label = above:Адрес памяти,
+%       ] (addr) {
+%         \nodepart{two}
+%         \textit{n} бит
+%         \nodepart{three}
+%         \textit{b} бит
+%         \nodepart{four}
+%       };
 
-    \textbf{Пример на следующих слайдах!}
+%       \node[
+%       draw,
+%       dashed,
+%       below = of addr.one south,
+%       rectangle,
+%       minimum width = 1cm,
+%       minimum height = 1cm,
+%       ] (f) {
+%         f
+%       };
 
-  }
+%       \node[
+%       circle,
+%       draw,
+%       below = of cache-4-1,
+%       ] (hit) {
+%         hit?
+%       };
 
-  \note<2->{
+%       \node[below = .5 of hit] (final) {};
 
-    Такие кэши становятся более \textbf{дорогими с увеличением путей}. Поэтому
-    они обычно содержат небольшое количество путей, например, в современных
-    процессорах используются \textbf{буферы ассоциативной трансляции
-      (translation-lookaside buffers TLB)} с 64 путями.
+%       \draw (addr.one south) -> (f);
+%       \draw (f) |- node[below right] {Тег} (hit);
+%       \draw (hit) -> (final);
+%       \draw (cache-3-1.center) -> (hit);
+%       \draw (addr.two south) |- node[below right] {Индекс кэша} (cache-3-1.west);
+%       \draw (b_bits) -> (cache-3-2.center);
 
-  }
 
-\end{frame}
+%     \end{tikzpicture}
+%     % \caption{Схема работы кэша с прямым
+%     %   отображением}\label{fig:directly_mapped_cache}
+%   \end{figure}
+
+%   \note{
+
+%     Кэш состоит из $2^n$ \textbf{линий кэша}, каждая линия содержит \textbf{тег}
+%     и $2^b$ байт \textbf{ассоциированных данных}. Тег вычисляется из
+%     соответствующего адреса памяти, который добавляется в эту кэш линию.
+%     \textbf{Тег используется} в дальнейшем для того, чтобы определять
+%     \textbf{присутствие} того или иного адреса в линии кэша. Последние
+%     \textit{b} бит адреса \textbf{используются} в качестве \textbf{смещения для
+%       данных} в линии кэша. Современные процессоры имеют длину линии кэша в
+%     \textit{64 байта}, т. е. \texttt{b = 6}. \textbf{Средние} \textit{n} бит
+%     адреса памяти \textbf{используются в качестве \textit{индекса кэша}},
+%     который говорит о номере линии кэша, в котором содержатся данные.
+
+%     Размер кэша определяет, как много бит будет использовано, т. е. как много
+%     индексов будет использовано. \textbf{Адреса с теми же \textit{n} битами}
+%     являются \textbf{конгруэнтными}, так как они отображают те же линии кэша.
+
+%     Главная \textbf{проблема} такого вида кэша --- это то, что кэш может
+%     \textbf{хранить единственную} линию кэша из всех конгруэнтных.
+%     Следовательно, если процессору требуется работать с двумя или более
+%     конгруэнтными линиями кэша, то такого рода кэш будет совершать множество
+%     промахов.
+
+%   }
+
+% \end{frame}
+
+% \subsubsection{Полностью ассоциативный кэш}
+% \begin{frame}{\insertsubsubsection}
+
+%   \newcommand*\nodeonecolor{White}
+%   \newcommand*\nodetwocolor{White}
+%   \newcommand*\nodethreecolor{White}
+%   \newcommand*\arrowonecolor{Black}
+%   \newcommand*\arrowtwocolor{Black}
+%   \newcommand*\arrowthreecolor{Black}
+
+%   \only<2>{
+%     \renewcommand*\nodeonecolor{Red}
+%     \renewcommand*\arrowonecolor{Red}
+%   }
+%   \only<3>{
+%     \renewcommand*\nodetwocolor{Red}
+%     \renewcommand*\arrowtwocolor{Red}
+%   }
+%   \only<4>{
+%     \renewcommand*\nodethreecolor{ForestGreen}
+%     \renewcommand*\arrowthreecolor{ForestGreen}
+%   }
+
+%   \begin{figure}[h]
+%     \begin{tikzpicture}[
+%       align = center,
+%       ->,
+%       > = Stealth,
+%       thick,
+%       ampersand replacement = \&,
+%       mem/.style = {
+%         draw,
+%         minimum width = 2cm,
+%         rectangle split,
+%         rectangle split parts = 2,
+%         rectangle split horizontal,
+%         rectangle split every empty part = {},
+%         rectangle split empty part width = width("bbbbbbbbbbbbbbb"),
+%       },
+%       cache/.style = {
+%         matrix of nodes,
+%         nodes in empty cells,
+%         nodes = {
+%           minimum width = 3cm,
+%           minimum height = .8cm,
+%           draw,
+%           align = center,
+%           anchor = center,
+%         },
+%       },
+%       ]
+
+%       \node[cache,
+%       label = above:Кэш,
+%       ] (cache) {
+%         Тег \& Данные \\
+%         \& \\
+%         \& \\
+%         \& \\
+%       };
+
+%       \node[mem,
+%       left = of cache-1-1.west,
+%       label = above:Адрес памяти,
+%       ] (addr) {
+%         \nodepart{two}
+%         \textit{b} бит
+%         \nodepart{three}
+%       };
+
+%       \node[
+%       draw,
+%       dashed,
+%       below = of addr.one south,
+%       rectangle,
+%       minimum width = 1cm,
+%       minimum height = 1cm,
+%       ] (f) {
+%         f
+%       };
+
+%       \node[
+%       fill = \nodeonecolor,
+%       text = Black,
+%       circle,
+%       draw,
+%       below = 2cm of cache-2-1,
+%       ] (hit_1) {
+%         \only<1>{hit?}
+%         \only<2->{miss}
+%       };
+
+%       \node[
+%       fill = \nodetwocolor,
+%       text = Black,
+%       circle,
+%       draw,
+%       below right = 0.1 of hit_1,
+%       ] (hit_2) {
+%         \only<1-2>{hit?}
+%         \only<3->{miss}
+%       };
+
+%       \node[
+%       fill = \nodethreecolor,
+%       text = Black,
+%       circle,
+%       draw,
+%       below right = 0.1 of hit_2,
+%       ] (hit_3) {
+%         \only<1-3>{hit?}
+%         \only<4->{hit!}
+%       };
+
+%       \node<4>[below = of cache-4-2] (data) {
+%         Данные
+%       };
+
+%       \draw (addr.one south) -> (f);
+%       \draw (f) |- node[below right] {Тег} (hit_1);
+%       \draw (f) |- (hit_2);
+%       \draw (f) |- (hit_3);
+%       \draw[\arrowonecolor] (cache-2-1.center) -> (hit_1);
+%       \draw[\arrowtwocolor] ([xshift = 0.8cm]cache-3-1.center) -> (hit_2);
+%       \draw[\arrowthreecolor] ([xshift = 1cm]cache-4-1.center) -> (hit_3);
+%       \draw<4>[\arrowthreecolor] (cache-4-2.center) -> (data);
+
+
+%     \end{tikzpicture}
+%     % \caption{Схема работы полностью ассоциативного
+%     %   кэша}\label{fig:fully_associative_cache}
+%   \end{figure}
+
+%   \note<1>{
+
+%     Проблема конгруэнтности \textbf{решается в полностью ассоциативном кэше}.
+
+%     Такой вид кэша не содержит индексов и каких-либо линий кэша. Вместо этого он
+%     хранит множество \textbf{путей кэша}, которые в свою очередь содержат
+%     данные. \textbf{Тег} теперь \textbf{используется для определения
+%       существования адреса в кэше} и какой именно путь кэша содержит
+%     ассоциированные данные.
+
+%     \textbf{Пример на следующих слайдах!}
+
+%   }
+
+%   \note<2->{
+
+%     Такие кэши становятся более \textbf{дорогими с увеличением путей}. Поэтому
+%     они обычно содержат небольшое количество путей, например, в современных
+%     процессорах используются \textbf{буферы ассоциативной трансляции
+%       (translation-lookaside buffers TLB)} с 64 путями.
+
+%   }
+
+% \end{frame}
 
 \subsubsection{Наборно--ассоциативный кэш}
 \begin{frame}{\insertsubsubsection}
@@ -678,8 +703,8 @@
           align = center,
           anchor = center,
         },
-        text = Black,
         right delimiter = \},
+        text = Black,
       },
       ]
 
@@ -689,7 +714,7 @@
         [label distance = 10]right:$2^n$\\наборов\\кэша
       },
       ] (cache) {
-        \node[fill = black!30]{Тег 1-го пути}; \& \node[fill = black!30]{Данные 1-го пути}; \\
+        \node[fill = black!30](cache_1_1){Тег 1-го пути}; \& \node[fill = black!30]{Данные 1-го пути}; \\
         \node[fill = black!10]{Тег 2-го пути}; \& \node[fill = black!10]{Данные 2-го пути}; \\
         \node[fill = black!30](tag_1){}; \& \node[fill = black!30](data_1){}; \\
         \node[fill = black!10](tag_2){}; \& \node[fill = black!10](data_2){}; \\
@@ -699,7 +724,7 @@
       };
 
       \node[mem,
-      left = of cache-1-1.west,
+      left = of cache_1_1.west,
       label = above:Адрес памяти,
       ] (addr) {
         \nodepart{two}
@@ -723,7 +748,7 @@
       \node[
       circle,
       draw,
-      below = of cache-4-1,
+      below = 2 of tag_2,
       ] (hit_1) {
         hit?
       };
@@ -815,369 +840,19 @@
 \end{frame}
 
 \subsubsection{Режимы адресации}
-\begin{frame}{\insertsubsubsection. VIVT}
-
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      ampersand replacement = \&,
-      mem/.style = {
-        draw,
-        minimum width = 2cm,
-        rectangle split,
-        rectangle split parts = 3,
-        rectangle split horizontal,
-        rectangle split every empty part = {},
-        rectangle split empty part width = width("n бит"),
-      },
-      cache/.style = {
-        matrix of nodes,
-        nodes in empty cells,
-        nodes = {
-          font = \scriptsize,
-          minimum width = 3cm,
-          minimum height = .6cm,
-          draw,
-          align = center,
-          anchor = center,
-        },
-        right delimiter = \},
-        text = Black,
-      },
-      ]
-
-      \node[cache,
-      label = above:Кэш,
-      label = {
-        [label distance = 10]right:$2^n$\\наборов\\кэша
-      },
-      ] (cache) {
-        \node[fill = black!30]{Тег 1-го пути}; \& \node[fill = black!30]{Данные 1-го пути}; \\
-        \node[fill = black!10]{Тег 2-го пути}; \& \node[fill = black!10]{Данные 2-го пути}; \\
-        \node[fill = black!30](tag_1){}; \& \node[fill = black!30](data_1){}; \\
-        \node[fill = black!10](tag_2){}; \& \node[fill = black!10](data_2){}; \\
-        \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
-        \node[fill = black!10]{}; \& \node[fill = black!10]{}; \\
-        \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
-      };
-
-      \node[mem,
-      left = of cache-1-1.west,
-      label = above:Виртуальный адрес памяти,
-      ] (addr) {
-        \nodepart{two}
-        \textit{n} бит
-        \nodepart{three}
-        \textit{b} бит
-        \nodepart{four}
-      };
-
-      \node[
-      draw,
-      dashed,
-      below = of addr.one south,
-      rectangle,
-      minimum width = 1cm,
-      minimum height = 1cm,
-      ] (f) {
-        f
-      };
-
-      \node[
-      circle,
-      draw,
-      below = of cache-4-1,
-      ] (hit_1) {
-        hit?
-      };
-
-      \draw (addr.one south) -> (f);
-      \draw (addr.two south) |- node[below right] {Индекс\\ набора кэша} (cache.west);
-
-      \draw (f) |- node[below right] {Тег} (hit_1);
-
-      \draw (tag_1.center) -> (hit_1);
-
-    \end{tikzpicture}
-    \caption{Виртуальная индексация виртуальное
-      тагетирование}\label{fig:vivt_cache}
-  \end{figure}
+\begin{frame}{\insertsubsubsection}
+  \begin{itemize}
+  \item Virtually indexed, virtually tagged (VIVT)
+  \item Physically indexed, virtually tagged (PIVT)
+  \item Virtually indexed, physically tagged (VIPT)
+  \item Physically indexed, physically tagged (PIPT)
+  \end{itemize}
 
   \note{
 
     Кэши могут использовать как \textbf{виртуальные адреса}, так и
     \textbf{физические для вычисления индекса кэша и тега}. На практике
     используется три способа вычисления данных.
-
-    \begin{itemize}
-    \item Виртуальный тег не уникален при переключении контекста ---
-      \textbf{данные не могут быть разделяемыми}
-    \item Трансляция адреса не происходит --- \textbf{быстрая скорость работы}
-    \end{itemize}
-
-    \textbf{Виртуальная индексация виртуальное тагетирование (virtually-indexed
-      virtually-tagged VIVT)}. Используется для маленьких данных, с которыми
-    производятся быстрые операции, в \textbf{ARM процессорах} используются в
-    качестве \textbf{кэша инструкций}.
-
-  }
-\end{frame}
-
-\begin{frame}{\insertsubsubsection. PIPT}
-
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      ampersand replacement = \&,
-      mem/.style = {
-        draw,
-        minimum width = 2cm,
-        rectangle split,
-        rectangle split parts = 3,
-        rectangle split horizontal,
-        rectangle split every empty part = {},
-        rectangle split empty part width = width("n бит"),
-      },
-      cache/.style = {
-        matrix of nodes,
-        nodes in empty cells,
-        nodes = {
-          font = \scriptsize,
-          minimum width = 3cm,
-          minimum height = .6cm,
-          draw,
-          align = center,
-          anchor = center,
-        },
-        right delimiter = \},
-        text = Black,
-      },
-      ]
-
-      \node[cache,
-      label = above:Кэш,
-      label = {
-        [label distance = 10]right:$2^n$\\наборов\\кэша
-      },
-      ] (cache) {
-        \node[fill = black!30]{Тег 1-го пути}; \& \node[fill = black!30]{Данные 1-го пути}; \\
-        \node[fill = black!10]{Тег 2-го пути}; \& \node[fill = black!10]{Данные 2-го пути}; \\
-        \node[fill = black!30](tag_1){}; \& \node[fill = black!30](data_1){}; \\
-        \node[fill = black!10](tag_2){}; \& \node[fill = black!10](data_2){}; \\
-        \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
-        \node[fill = black!10]{}; \& \node[fill = black!10]{}; \\
-        \node[fill = black!30](point){}; \& \node[fill = black!30]{}; \\
-      };
-
-      \node[mem,
-      left = of cache-1-1.west,
-      label = above:Виртуальный адрес памяти,
-      ] (addr) {
-        \nodepart{two}
-        \textit{n} бит
-        \nodepart{three}
-        \textit{b} бит
-        \nodepart{four}
-      };
-
-      \node[
-      draw,
-      dashed,
-      below = .5 of addr,
-      xshift = -.6cm,
-      ] (tlb) {
-        TLB
-      };
-
-      \node[mem,
-      below = 1.6 of addr,
-      ] (addr_phys) {
-        \nodepart{two}
-        \textit{n} бит
-        \nodepart{three}
-        \textit{b} бит
-        \nodepart{four}
-      };
-
-      \node[
-      draw,
-      dashed,
-      below = .5 of addr_phys.one south,
-      rectangle,
-      minimum width = 1cm,
-      minimum height = 1cm,
-      ] (f) {
-        f
-      };
-
-      \node[
-      circle,
-      draw,
-      below = of cache-4-1,
-      ] (hit_1) {
-        hit?
-      };
-
-      \draw (addr_phys.one south) -> (f);
-      \draw (addr_phys.two south) |- node[below right] {Индекс\\ набора кэша} (point);
-
-      \draw (addr.205) -> (tlb);
-      \draw (tlb) -> (addr_phys.155);
-      \draw (addr.three south) -> (addr_phys.three north);
-
-      \draw (f) |- node[below right] {Тег} (hit_1);
-
-      \draw (tag_1.center) -> (hit_1);
-
-    \end{tikzpicture}
-    \caption{Физическая индексация физическое
-      тагетирование}\label{fig:pipt_cache}
-  \end{figure}
-
-  \note{
-
-    \textbf{Физическая индексация физическое тагетирование (physically-indexed
-      physically-tagged PIPT)}. Используется \textbf{тег и индекс из физического
-      адреса}.
-
-    \begin{itemize}
-    \item Тег будет уникальным даже при смене контекста --- \textbf{разделяемая
-        память будет реально разделяемой}
-    \item Смена контекста --- \textbf{большие задержки}
-    \end{itemize}
-
-    Используется для кэшей данных и инструкций, задержка по большей части
-    уменьшается посредством использования кэшей в системе трансляции адресов
-    (TLB).
-
-  }
-
-\end{frame}
-
-\begin{frame}{\insertsubsubsection. VIPT}
-
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      ampersand replacement = \&,
-      mem/.style = {
-        draw,
-        minimum width = 2cm,
-        rectangle split,
-        rectangle split parts = 3,
-        rectangle split horizontal,
-        rectangle split every empty part = {},
-        rectangle split empty part width = width("n бит"),
-      },
-      cache/.style = {
-        matrix of nodes,
-        nodes in empty cells,
-        nodes = {
-          font = \scriptsize,
-          minimum width = 3cm,
-          minimum height = .6cm,
-          draw,
-          align = center,
-          anchor = center,
-        },
-        right delimiter = \},
-        text = Black,
-      },
-      ]
-
-      \node[cache,
-      label = above:Кэш,
-      label = {
-        [label distance = 10]right:$2^n$\\наборов\\кэша
-      },
-      ] (cache) {
-        \node[fill = black!30]{Тег 1-го пути}; \& \node[fill = black!30]{Данные 1-го пути}; \\
-        \node[fill = black!10]{Тег 2-го пути}; \& \node[fill = black!10]{Данные 2-го пути}; \\
-        \node[fill = black!30](tag_1){}; \& \node[fill = black!30](data_1){}; \\
-        \node[fill = black!10](tag_2){}; \& \node[fill = black!10](data_2){}; \\
-        \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
-        \node[fill = black!10]{}; \& \node[fill = black!10]{}; \\
-        \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
-      };
-
-      \node[mem,
-      left = of cache-1-1.west,
-      label = above:Виртуальный адрес памяти,
-      ] (addr) {
-        \nodepart{two}
-        \textit{n} бит
-        \nodepart{three}
-        \textit{b} бит
-        \nodepart{four}
-      };
-
-      \node[
-      draw,
-      dashed,
-      below = .5 of addr,
-      xshift = -.6cm,
-      ] (tlb) {
-        TLB
-      };
-
-      \node[mem,
-      below = 1.6 of addr,
-      ] (addr_phys) {
-        \nodepart{two}
-        \textit{n} бит
-        \nodepart{three}
-        \textit{b} бит
-        \nodepart{four}
-      };
-
-      \node[
-      draw,
-      dashed,
-      below = .5 of addr_phys.one south,
-      rectangle,
-      minimum width = 1cm,
-      minimum height = 1cm,
-      ] (f) {
-        f
-      };
-
-      \node[
-      circle,
-      draw,
-      below = of cache-4-1,
-      ] (hit_1) {
-        hit?
-      };
-
-      \draw (addr_phys.one south) -> (f);
-      \draw (addr.two south) |- node[below right] {Индекс\\ набора кэша} (tag_1);
-
-      \draw (addr.205) -> (tlb);
-      \draw (tlb) -> (addr_phys.155);
-      \draw (addr.three east) -- ++(0.7, 0) -- ++(0, -1) |- (addr_phys.three east);
-
-      \draw (f) |- node[below right] {Тег} (hit_1);
-
-      \draw (tag_1.center) -> (hit_1);
-
-    \end{tikzpicture}
-    \caption{Виртуальная индексация физическое
-      тагетирование}\label{fig:vipt_cache}
-  \end{figure}
-
-  \note{
-
-    \textbf{Виртуальная индексация физическое тагетирование (virtually-indexed
-      physically-tagged VIPT).}
 
     Позволяет использовать \textbf{тег из физического адреса}, при этом
     небольшая задержка, так как для поиска в первую очередь и чаще всего
@@ -1190,5 +865,383 @@
     \end{itemize}
 
   }
-
 \end{frame}
+
+% \subsubsection{Режимы адресации}
+% \begin{frame}{\insertsubsubsection. VIVT}
+
+%   \begin{figure}[h]
+%     \begin{tikzpicture}[
+%       align = center,
+%       ->,
+%       > = Stealth,
+%       thick,
+%       ampersand replacement = \&,
+%       mem/.style = {
+%         draw,
+%         minimum width = 2cm,
+%         rectangle split,
+%         rectangle split parts = 3,
+%         rectangle split horizontal,
+%         rectangle split every empty part = {},
+%         rectangle split empty part width = width("n бит"),
+%       },
+%       cache/.style = {
+%         matrix of nodes,
+%         nodes in empty cells,
+%         nodes = {
+%           font = \scriptsize,
+%           minimum width = 3cm,
+%           minimum height = .6cm,
+%           draw,
+%           align = center,
+%           anchor = center,
+%         },
+%         right delimiter = \},
+%         text = Black,
+%       },
+%       ]
+
+%       \node[cache,
+%       label = above:Кэш,
+%       label = {
+%         [label distance = 10]right:$2^n$\\наборов\\кэша
+%       },
+%       ] (cache) {
+%         \node[fill = black!30]{Тег 1-го пути}; \& \node[fill = black!30]{Данные 1-го пути}; \\
+%         \node[fill = black!10]{Тег 2-го пути}; \& \node[fill = black!10]{Данные 2-го пути}; \\
+%         \node[fill = black!30](tag_1){}; \& \node[fill = black!30](data_1){}; \\
+%         \node[fill = black!10](tag_2){}; \& \node[fill = black!10](data_2){}; \\
+%         \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
+%         \node[fill = black!10]{}; \& \node[fill = black!10]{}; \\
+%         \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
+%       };
+
+%       \node[mem,
+%       left = of cache-1-1.west,
+%       label = above:Виртуальный адрес памяти,
+%       ] (addr) {
+%         \nodepart{two}
+%         \textit{n} бит
+%         \nodepart{three}
+%         \textit{b} бит
+%         \nodepart{four}
+%       };
+
+%       \node[
+%       draw,
+%       dashed,
+%       below = of addr.one south,
+%       rectangle,
+%       minimum width = 1cm,
+%       minimum height = 1cm,
+%       ] (f) {
+%         f
+%       };
+
+%       \node[
+%       circle,
+%       draw,
+%       below = of cache-4-1,
+%       ] (hit_1) {
+%         hit?
+%       };
+
+%       \draw (addr.one south) -> (f);
+%       \draw (addr.two south) |- node[below right] {Индекс\\ набора кэша} (cache.west);
+
+%       \draw (f) |- node[below right] {Тег} (hit_1);
+
+%       \draw (tag_1.center) -> (hit_1);
+
+%     \end{tikzpicture}
+%     \caption{Виртуальная индексация виртуальное
+%       тагетирование}\label{fig:vivt_cache}
+%   \end{figure}
+
+%   \note{
+
+%     Кэши могут использовать как \textbf{виртуальные адреса}, так и
+%     \textbf{физические для вычисления индекса кэша и тега}. На практике
+%     используется три способа вычисления данных.
+
+%     \begin{itemize}
+%     \item Виртуальный тег не уникален при переключении контекста ---
+%       \textbf{данные не могут быть разделяемыми}
+%     \item Трансляция адреса не происходит --- \textbf{быстрая скорость работы}
+%     \end{itemize}
+
+%     \textbf{Виртуальная индексация виртуальное тагетирование (virtually-indexed
+%       virtually-tagged VIVT)}. Используется для маленьких данных, с которыми
+%     производятся быстрые операции, в \textbf{ARM процессорах} используются в
+%     качестве \textbf{кэша инструкций}.
+
+%   }
+% \end{frame}
+
+% \begin{frame}{\insertsubsubsection. PIPT}
+
+%   \begin{figure}[h]
+%     \begin{tikzpicture}[
+%       align = center,
+%       ->,
+%       > = Stealth,
+%       thick,
+%       ampersand replacement = \&,
+%       mem/.style = {
+%         draw,
+%         minimum width = 2cm,
+%         rectangle split,
+%         rectangle split parts = 3,
+%         rectangle split horizontal,
+%         rectangle split every empty part = {},
+%         rectangle split empty part width = width("n бит"),
+%       },
+%       cache/.style = {
+%         matrix of nodes,
+%         nodes in empty cells,
+%         nodes = {
+%           font = \scriptsize,
+%           minimum width = 3cm,
+%           minimum height = .6cm,
+%           draw,
+%           align = center,
+%           anchor = center,
+%         },
+%         right delimiter = \},
+%         text = Black,
+%       },
+%       ]
+
+%       \node[cache,
+%       label = above:Кэш,
+%       label = {
+%         [label distance = 10]right:$2^n$\\наборов\\кэша
+%       },
+%       ] (cache) {
+%         \node[fill = black!30]{Тег 1-го пути}; \& \node[fill = black!30]{Данные 1-го пути}; \\
+%         \node[fill = black!10]{Тег 2-го пути}; \& \node[fill = black!10]{Данные 2-го пути}; \\
+%         \node[fill = black!30](tag_1){}; \& \node[fill = black!30](data_1){}; \\
+%         \node[fill = black!10](tag_2){}; \& \node[fill = black!10](data_2){}; \\
+%         \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
+%         \node[fill = black!10]{}; \& \node[fill = black!10]{}; \\
+%         \node[fill = black!30](point){}; \& \node[fill = black!30]{}; \\
+%       };
+
+%       \node[mem,
+%       left = of cache-1-1.west,
+%       label = above:Виртуальный адрес памяти,
+%       ] (addr) {
+%         \nodepart{two}
+%         \textit{n} бит
+%         \nodepart{three}
+%         \textit{b} бит
+%         \nodepart{four}
+%       };
+
+%       \node[
+%       draw,
+%       dashed,
+%       below = .5 of addr,
+%       xshift = -.6cm,
+%       ] (tlb) {
+%         TLB
+%       };
+
+%       \node[mem,
+%       below = 1.6 of addr,
+%       ] (addr_phys) {
+%         \nodepart{two}
+%         \textit{n} бит
+%         \nodepart{three}
+%         \textit{b} бит
+%         \nodepart{four}
+%       };
+
+%       \node[
+%       draw,
+%       dashed,
+%       below = .5 of addr_phys.one south,
+%       rectangle,
+%       minimum width = 1cm,
+%       minimum height = 1cm,
+%       ] (f) {
+%         f
+%       };
+
+%       \node[
+%       circle,
+%       draw,
+%       below = of cache-4-1,
+%       ] (hit_1) {
+%         hit?
+%       };
+
+%       \draw (addr_phys.one south) -> (f);
+%       \draw (addr_phys.two south) |- node[below right] {Индекс\\ набора кэша} (point);
+
+%       \draw (addr.205) -> (tlb);
+%       \draw (tlb) -> (addr_phys.155);
+%       \draw (addr.three south) -> (addr_phys.three north);
+
+%       \draw (f) |- node[below right] {Тег} (hit_1);
+
+%       \draw (tag_1.center) -> (hit_1);
+
+%     \end{tikzpicture}
+%     \caption{Физическая индексация физическое
+%       тагетирование}\label{fig:pipt_cache}
+%   \end{figure}
+
+%   \note{
+
+%     \textbf{Физическая индексация физическое тагетирование (physically-indexed
+%       physically-tagged PIPT)}. Используется \textbf{тег и индекс из физического
+%       адреса}.
+
+%     \begin{itemize}
+%     \item Тег будет уникальным даже при смене контекста --- \textbf{разделяемая
+%         память будет реально разделяемой}
+%     \item Смена контекста --- \textbf{большие задержки}
+%     \end{itemize}
+
+%     Используется для кэшей данных и инструкций, задержка по большей части
+%     уменьшается посредством использования кэшей в системе трансляции адресов
+%     (TLB).
+
+%   }
+
+% \end{frame}
+
+% \begin{frame}{\insertsubsubsection. VIPT}
+
+%   \begin{figure}[h]
+%     \begin{tikzpicture}[
+%       align = center,
+%       ->,
+%       > = Stealth,
+%       thick,
+%       ampersand replacement = \&,
+%       mem/.style = {
+%         draw,
+%         minimum width = 2cm,
+%         rectangle split,
+%         rectangle split parts = 3,
+%         rectangle split horizontal,
+%         rectangle split every empty part = {},
+%         rectangle split empty part width = width("n бит"),
+%       },
+%       cache/.style = {
+%         matrix of nodes,
+%         nodes in empty cells,
+%         nodes = {
+%           font = \scriptsize,
+%           minimum width = 3cm,
+%           minimum height = .6cm,
+%           draw,
+%           align = center,
+%           anchor = center,
+%         },
+%         right delimiter = \},
+%         text = Black,
+%       },
+%       ]
+
+%       \node[cache,
+%       label = above:Кэш,
+%       label = {
+%         [label distance = 10]right:$2^n$\\наборов\\кэша
+%       },
+%       ] (cache) {
+%         \node[fill = black!30]{Тег 1-го пути}; \& \node[fill = black!30]{Данные 1-го пути}; \\
+%         \node[fill = black!10]{Тег 2-го пути}; \& \node[fill = black!10]{Данные 2-го пути}; \\
+%         \node[fill = black!30](tag_1){}; \& \node[fill = black!30](data_1){}; \\
+%         \node[fill = black!10](tag_2){}; \& \node[fill = black!10](data_2){}; \\
+%         \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
+%         \node[fill = black!10]{}; \& \node[fill = black!10]{}; \\
+%         \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
+%       };
+
+%       \node[mem,
+%       left = of cache-1-1.west,
+%       label = above:Виртуальный адрес памяти,
+%       ] (addr) {
+%         \nodepart{two}
+%         \textit{n} бит
+%         \nodepart{three}
+%         \textit{b} бит
+%         \nodepart{four}
+%       };
+
+%       \node[
+%       draw,
+%       dashed,
+%       below = .5 of addr,
+%       xshift = -.6cm,
+%       ] (tlb) {
+%         TLB
+%       };
+
+%       \node[mem,
+%       below = 1.6 of addr,
+%       ] (addr_phys) {
+%         \nodepart{two}
+%         \textit{n} бит
+%         \nodepart{three}
+%         \textit{b} бит
+%         \nodepart{four}
+%       };
+
+%       \node[
+%       draw,
+%       dashed,
+%       below = .5 of addr_phys.one south,
+%       rectangle,
+%       minimum width = 1cm,
+%       minimum height = 1cm,
+%       ] (f) {
+%         f
+%       };
+
+%       \node[
+%       circle,
+%       draw,
+%       below = of cache-4-1,
+%       ] (hit_1) {
+%         hit?
+%       };
+
+%       \draw (addr_phys.one south) -> (f);
+%       \draw (addr.two south) |- node[below right] {Индекс\\ набора кэша} (tag_1);
+
+%       \draw (addr.205) -> (tlb);
+%       \draw (tlb) -> (addr_phys.155);
+%       \draw (addr.three east) -- ++(0.7, 0) -- ++(0, -1) |- (addr_phys.three east);
+
+%       \draw (f) |- node[below right] {Тег} (hit_1);
+
+%       \draw (tag_1.center) -> (hit_1);
+
+%     \end{tikzpicture}
+%     \caption{Виртуальная индексация физическое
+%       тагетирование}\label{fig:vipt_cache}
+%   \end{figure}
+
+%   \note{
+
+%     \textbf{Виртуальная индексация физическое тагетирование (virtually-indexed
+%       physically-tagged VIPT).}
+
+%     Позволяет использовать \textbf{тег из физического адреса}, при этом
+%     небольшая задержка, так как для поиска в первую очередь и чаще всего
+%     требуется определить номер набора, который задан виртуальным адресом.
+
+%     \begin{itemize}
+%     \item уникальный тег --- \textbf{возможность применять разделяемые данные}
+%     \item всё происходит быстро, потому что \textbf{трансляция} адреса
+%       происходит \textbf{параллельно} поиску \textbf{индекса кэша}
+%     \end{itemize}
+
+%   }
+
+% \end{frame}

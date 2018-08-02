@@ -271,218 +271,218 @@
   }
 \end{frame}
 
-\begin{frame}{\insertsubsubsection. x86-64}
+% \begin{frame}{\insertsubsubsection. x86-64}
 
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      double = ForestGreen,
-      block_split/.style = {
-        rectangle,
-        rectangle split,
-        rectangle split parts = 6,
-        draw,
-        % fill = ForestGreen,
-        text = White,
-        text centered,
-        font = \scriptsize,
-      },
-      block/.style = {
-        rectangle,
-        draw,
-        fill = ForestGreen,
-        text = White,
-        text centered,
-      },
-      ]
+%   \begin{figure}[h]
+%     \begin{tikzpicture}[
+%       align = center,
+%       ->,
+%       > = Stealth,
+%       thick,
+%       double = ForestGreen,
+%       block_split/.style = {
+%         rectangle,
+%         rectangle split,
+%         rectangle split parts = 6,
+%         draw,
+%         % fill = ForestGreen,
+%         text = White,
+%         text centered,
+%         font = \scriptsize,
+%       },
+%       block/.style = {
+%         rectangle,
+%         draw,
+%         fill = ForestGreen,
+%         text = White,
+%         text centered,
+%       },
+%       ]
 
-      \node[block] (reg) {
-        CR3
-      };
+%       \node[block] (reg) {
+%         CR3
+%       };
 
-      \node[block_split, right = of reg, label = above:PML4,
-      rectangle split part fill = {
-        ForestGreen, ForestGreen, ForestGreen, Blue, ForestGreen, ForestGreen
-      },
-      ] (pml4) {
-        PML4E 0
-        \nodepart{two}
-        PML4E 1
-        \nodepart{three}
-        $\cdots$
-        \nodepart{four}
-        \#PML4EI
-        \nodepart{five}
-        $\cdots$
-        \nodepart{six}
-        PML4E 511
-      };
+%       \node[block_split, right = of reg, label = above:PML4,
+%       rectangle split part fill = {
+%         ForestGreen, ForestGreen, ForestGreen, Blue, ForestGreen, ForestGreen
+%       },
+%       ] (pml4) {
+%         PML4E 0
+%         \nodepart{two}
+%         PML4E 1
+%         \nodepart{three}
+%         $\cdots$
+%         \nodepart{four}
+%         \#PML4EI
+%         \nodepart{five}
+%         $\cdots$
+%         \nodepart{six}
+%         PML4E 511
+%       };
 
-      \node[block_split, right = of pml4, label = above:PDPT,
-      rectangle split part fill = {
-        ForestGreen, ForestGreen, ForestGreen, Mahogany, ForestGreen, ForestGreen
-      },
-      ] (pdpt) {
-        PDPTE 0
-        \nodepart{two}
-        PDPTE 1
-        \nodepart{three}
-        $\cdots$
-        \nodepart{four}
-        \#PDPTEI
-        \nodepart{five}
-        $\cdots$
-        \nodepart{six}
-        PDPTE 511
-      };
+%       \node[block_split, right = of pml4, label = above:PDPT,
+%       rectangle split part fill = {
+%         ForestGreen, ForestGreen, ForestGreen, Mahogany, ForestGreen, ForestGreen
+%       },
+%       ] (pdpt) {
+%         PDPTE 0
+%         \nodepart{two}
+%         PDPTE 1
+%         \nodepart{three}
+%         $\cdots$
+%         \nodepart{four}
+%         \#PDPTEI
+%         \nodepart{five}
+%         $\cdots$
+%         \nodepart{six}
+%         PDPTE 511
+%       };
 
-      \node[block_split, right = of pdpt, label = above:Page Directory,
-      rectangle split part fill = {
-        ForestGreen, ForestGreen, ForestGreen, PineGreen, ForestGreen, ForestGreen
-      },
-      ] (pd) {
-        PDE 0
-        \nodepart{two}
-        PDE 1
-        \nodepart{three}
-        $\cdots$
-        \nodepart{four}
-        PDE \#PDI
-        \nodepart{five}
-        $\cdots$
-        \nodepart{six}
-        PDE 511
-      };
+%       \node[block_split, right = of pdpt, label = above:Page Directory,
+%       rectangle split part fill = {
+%         ForestGreen, ForestGreen, ForestGreen, PineGreen, ForestGreen, ForestGreen
+%       },
+%       ] (pd) {
+%         PDE 0
+%         \nodepart{two}
+%         PDE 1
+%         \nodepart{three}
+%         $\cdots$
+%         \nodepart{four}
+%         PDE \#PDI
+%         \nodepart{five}
+%         $\cdots$
+%         \nodepart{six}
+%         PDE 511
+%       };
 
-      \node[block_split, right = of pd, label = above:Page Table,
-      rectangle split part fill = {
-        ForestGreen, ForestGreen, ForestGreen, RoyalBlue, ForestGreen, ForestGreen
-      },
-      ] (pt) {
-        PTE 0
-        \nodepart{two}
-        PTE 1
-        \nodepart{three}
-        $\cdots$
-        \nodepart{four}
-        PTE \#PTI
-        \nodepart{five}
-        $\cdots$
-        \nodepart{six}
-        PTE 511
-      };
+%       \node[block_split, right = of pd, label = above:Page Table,
+%       rectangle split part fill = {
+%         ForestGreen, ForestGreen, ForestGreen, RoyalBlue, ForestGreen, ForestGreen
+%       },
+%       ] (pt) {
+%         PTE 0
+%         \nodepart{two}
+%         PTE 1
+%         \nodepart{three}
+%         $\cdots$
+%         \nodepart{four}
+%         PTE \#PTI
+%         \nodepart{five}
+%         $\cdots$
+%         \nodepart{six}
+%         PTE 511
+%       };
 
-      \node[block_split, right = of pt, label = above:4 KiB Page,
-      rectangle split part fill = {
-        ForestGreen, ForestGreen, ForestGreen, brown, ForestGreen, ForestGreen
-      },
-      ] (page) {
-        Byte 0
-        \nodepart{two}
-        Byte 1
-        \nodepart{three}
-        $\cdots$
-        \nodepart{four}
-        Offset
-        \nodepart{five}
-        $\cdots$
-        \nodepart{six}
-        Byte 4095
-      };
+%       \node[block_split, right = of pt, label = above:4 KiB Page,
+%       rectangle split part fill = {
+%         ForestGreen, ForestGreen, ForestGreen, brown, ForestGreen, ForestGreen
+%       },
+%       ] (page) {
+%         Byte 0
+%         \nodepart{two}
+%         Byte 1
+%         \nodepart{three}
+%         $\cdots$
+%         \nodepart{four}
+%         Offset
+%         \nodepart{five}
+%         $\cdots$
+%         \nodepart{six}
+%         Byte 4095
+%       };
 
-      \node[draw,
-      text = White,
-      text centered,
-      rectangle split,
-      rectangle split horizontal,
-      rectangle split parts = 5,
-      below = of pd,
-      rectangle split part fill = {
-        Blue, Mahogany, PineGreen, RoyalBlue, brown
-      },
-      label = below:48-битный виртуальный адрес,
-      ] (virt) {
-        PML4I (9B)
-        \nodepart{two}
-        PDPTI (9B)
-        \nodepart{three}
-        PDI (9B)
-        \nodepart{four}
-        PTI (9B)
-        \nodepart{five}
-        Offset (12B)
-      };
+%       \node[draw,
+%       text = White,
+%       text centered,
+%       rectangle split,
+%       rectangle split horizontal,
+%       rectangle split parts = 5,
+%       below = of pd,
+%       rectangle split part fill = {
+%         Blue, Mahogany, PineGreen, RoyalBlue, brown
+%       },
+%       label = below:48-битный виртуальный адрес,
+%       ] (virt) {
+%         PML4I (9B)
+%         \nodepart{two}
+%         PDPTI (9B)
+%         \nodepart{three}
+%         PDI (9B)
+%         \nodepart{four}
+%         PTI (9B)
+%         \nodepart{five}
+%         Offset (12B)
+%       };
 
 
-      \path (reg) edge (pml4.north west)
-      (pml4.four east) edge (pdpt.north west)
-      (pdpt.four east) edge (pd.north west)
-      (pd.four east) edge (pt.north west)
-      (pt.four east) edge (page.north west);
+%       \path (reg) edge (pml4.north west)
+%       (pml4.four east) edge (pdpt.north west)
+%       (pdpt.four east) edge (pd.north west)
+%       (pd.four east) edge (pt.north west)
+%       (pt.four east) edge (page.north west);
 
-    \end{tikzpicture}
-    \caption{Трансляция адресного пространства для страниц в 4KB на x86-64
-      процессорах}\label{fig:address_translation_tables}
-  \end{figure}
+%     \end{tikzpicture}
+%     \caption{Трансляция адресного пространства для страниц в 4KB на x86-64
+%       процессорах}\label{fig:address_translation_tables}
+%   \end{figure}
 
-  \note{
+%   \note{
 
-    Массив, который отображает 48-битное пространство --- занимает 512GB, что
-    \textbf{не рационально}. Используется \textbf{многоуровневая трансляция}.
+%     Массив, который отображает 48-битное пространство --- занимает 512GB, что
+%     \textbf{не рационально}. Используется \textbf{многоуровневая трансляция}.
 
-    \texttt{CR3} регистр изменяется в соответствии с \textbf{контекстом}
-    выполнения, что обеспечивает \textbf{изоляцию}.
+%     \texttt{CR3} регистр изменяется в соответствии с \textbf{контекстом}
+%     выполнения, что обеспечивает \textbf{изоляцию}.
 
-    Современные процессоры Intel имеют 4 уровня трансляции адресов (см.
-    рисунок \ref{fig:address_translation_tables}]).
+%     Современные процессоры Intel имеют 4 уровня трансляции адресов (см.
+%     рисунок \ref{fig:address_translation_tables}]).
 
-    \begin{enumerate}
-    \item PML4 (page map level) --- 48-битное виртуальное адресное пространство
-      на 512 регионов по 512GB.
-    \item Таблица указателей директории страниц PDPT (page directory pointer
-      tables) --- на 512 записей по 1GB виртуальной памяти. Эта 1GB виртуальная
-      страница может напрямую ссылаться на 1GB страницу или страницу директорий
-      PD (page directory).
-    \item PD --- 512 ячеек по 2MB.
-    \item PT (page table) --- 4KB.
-    \end{enumerate}
+%     \begin{enumerate}
+%     \item PML4 (page map level) --- 48-битное виртуальное адресное пространство
+%       на 512 регионов по 512GB.
+%     \item Таблица указателей директории страниц PDPT (page directory pointer
+%       tables) --- на 512 записей по 1GB виртуальной памяти. Эта 1GB виртуальная
+%       страница может напрямую ссылаться на 1GB страницу или страницу директорий
+%       PD (page directory).
+%     \item PD --- 512 ячеек по 2MB.
+%     \item PT (page table) --- 4KB.
+%     \end{enumerate}
 
-  }
+%   }
 
-\end{frame}
+% \end{frame}
 
-\begin{frame}{Трансляция адресов. ARM}
+% \begin{frame}{Трансляция адресов. ARM}
 
-  \begin{figure}[h]
-    \includegraphics[height = 0.9\textheight]{arm_addr_transl}
-    \caption{Трансляция адресного пространства на ARMv5+
-      процессорах}\label{fig:armv5_addr_transl}
-  \end{figure}
+%   \begin{figure}[h]
+%     \includegraphics[height = 0.9\textheight]{arm_addr_transl}
+%     \caption{Трансляция адресного пространства на ARMv5+
+%       процессорах}\label{fig:armv5_addr_transl}
+%   \end{figure}
 
-  \note{
+%   \note{
 
-    Что касается ARM архитектуры, то там складывается похожая картина. Есть
-    несколько отличий: используются \textbf{отображения других размеров} (1MB
-    --- секции, 64KB --- большие страницы, 4KB --- маленькие страницы и 1KB ---
-    крошечные страницы, на поздних версиях большего размера); используется
-    регистр \texttt{c2} (часть \texttt{CP15} регистров) (\textbf{Translation
-      Table Base Register TTBR}) для получения указателя на таблицу в физическом
-    адресном пространстве, содержащую описания секции или страницы (или и того и
-    другого); в отличии от Intel используется \textbf{двухуровневая трансляция}
-    (см. рисунок \ref{fig:armv5_addr_transl}) и другие.
+%     Что касается ARM архитектуры, то там складывается похожая картина. Есть
+%     несколько отличий: используются \textbf{отображения других размеров} (1MB
+%     --- секции, 64KB --- большие страницы, 4KB --- маленькие страницы и 1KB ---
+%     крошечные страницы, на поздних версиях большего размера); используется
+%     регистр \texttt{c2} (часть \texttt{CP15} регистров) (\textbf{Translation
+%       Table Base Register TTBR}) для получения указателя на таблицу в физическом
+%     адресном пространстве, содержащую описания секции или страницы (или и того и
+%     другого); в отличии от Intel используется \textbf{двухуровневая трансляция}
+%     (см. рисунок \ref{fig:armv5_addr_transl}) и другие.
 
-    На современных ARM процессорах (Cortex-A) используется два регистра для
-    хранения физического адреса таблицы трансляции адресов (\texttt{TTBR0} и
-    \texttt{TTBR1}). Обычно один из них используется для
-    \textbf{пользовательского пространства}, а другой для \textbf{пространства
-      адресов ядра}. Это может служит причиной, почему некоторые атаки работают
-    на x86-64 процессорах, но \textbf{не работают на ARM}. При попытке доступа
-    из пользовательского контекста выполнения к регистру, который отвечает за
-    адресацию в ядерном пространстве, возникает исключение.
+%     На современных ARM процессорах (Cortex-A) используется два регистра для
+%     хранения физического адреса таблицы трансляции адресов (\texttt{TTBR0} и
+%     \texttt{TTBR1}). Обычно один из них используется для
+%     \textbf{пользовательского пространства}, а другой для \textbf{пространства
+%       адресов ядра}. Это может служит причиной, почему некоторые атаки работают
+%     на x86-64 процессорах, но \textbf{не работают на ARM}. При попытке доступа
+%     из пользовательского контекста выполнения к регистру, который отвечает за
+%     адресацию в ядерном пространстве, возникает исключение.
 
-  }
+%   }
 
-\end{frame}
+% \end{frame}

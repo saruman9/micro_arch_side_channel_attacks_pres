@@ -34,7 +34,7 @@ pdflatex: main.tex
 	latexmk -pdf -pdflatex="pdflatex --shell-escape -interaction=nonstopmode %O %S" -use-make $<
 
 main.pdf: main.tex
-	latexmk -pdf -pdflatex="lualatex --shell-escape %O %S" -use-make $<
+	latexmk -pdf -pdflatex="xelatex --shell-escape %O %S" -use-make $<
 
 ignore-errors: main.tex
 	latexmk -pdf -pdflatex="xelatex --shell-escape -halt-on-error %O %S" -use-make $<

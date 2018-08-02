@@ -7,11 +7,8 @@
   \item SMM Speculative Execution Attacks
   \item BranchScope
   \item LazyFP
-  \item TLBleed
   \item ...
   \end{itemize}
-
-  TotalMeltdown?
 
   \note{
 
@@ -24,8 +21,8 @@
     \item позволяет обойти средства изоляции кода и данных, предоставляемые
       технологией \textbf{Intel SGX} (Software Guard Extensions)
 
-      SMM --- \textbf{режим системного управления} --- запускается специальная
-      программа в привилегированном режиме.
+    \item SMM --- \textbf{режим системного управления} --- запускается
+      специальная программа в привилегированном режиме.
 
     \item \textbf{variant 2} + вместо BTB --- \textbf{направления ветвления для
         спекулятивного перехода (directional branch predictor)} и манипулирует
@@ -35,7 +32,33 @@
         FPU}, при котором реальное восстановление состояния регистров
       производится \textbf{не сразу} после переключения контекста, а только при
       выполнении первой инструкции
+    \end{itemize}
+
+  }
+
+\end{frame}
+
+\begin{frame}{\insertsubsection}
+
+  \begin{itemize}
+  \item TLBleed
+  \item Spectre 1.1, 1.2 (Speculative Buffer Overflows)
+  \item SpectreRSB
+  \item NetSpectre
+  \item ...
+  \end{itemize}
+
+  TotalMeltdown?
+
+  \note{
+
+    \begin{itemize}
     \item ML атака на TLB, с помощью Hyper-Threading технологии (Intel, AMD).
+    \item Spectre 1 + Buffer Overflows, спекулятивная запись.
+    \item Засорение RSB (return stack buffer), спекулятивное выполнение после
+      return.
+    \item Производится \textbf{поиск leak и transmit гаджетов}, низкая
+      производительность (1-3 байта за 3-8 часов).
     \end{itemize}
 
   }
