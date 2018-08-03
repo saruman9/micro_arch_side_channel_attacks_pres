@@ -131,7 +131,7 @@ tablename = ,
   каналам на микроархитектуру, основанные на исполнении кода}
 
 \author{Abc Xyz\\
-@dura\_lex}
+@dura\_lex\vspace{2.1cm}}
 
 \date[2018]
 {DCG\#7812 \\
@@ -147,10 +147,17 @@ tablename = ,
     \setbeamertemplate{footline}{}
   \makeatother
 
-  \frame{\titlepage}
-  \note {
+  \begin{frame}
+    \tikz [remember picture,overlay]
+      \node at
+          ([yshift=3.5cm]current page.south)
+          {\includegraphics[width=.2\textwidth]{dcg_logo}};
+    \titlepage
 
-  }
+    \note {
+
+    }
+  \end{frame}
 }
 
 %% Add agenda at begin of all sections
@@ -259,28 +266,28 @@ tablename = ,
 % ------------------------------------------------------------------------------
 
 \section{Meltdown \& Spectre}
-\subsection{Variant 3}
-\input{attacks_ms_var_3}
+% \subsection{Variant 3}
+% \input{attacks_ms_var_3}
 
-%%% \subsection{Variant 3a}
-%%% \input{attacks_ms_var_3a}
+% %%% \subsection{Variant 3a}
+% %%% \input{attacks_ms_var_3a}
 
-\subsection{Variant 1}
-\input{attacks_ms_var_1}
+% \subsection{Variant 1}
+% \input{attacks_ms_var_1}
 
-\subsection{Variant 2}
-\input{attacks_ms_var_2}
+% \subsection{Variant 2}
+% \input{attacks_ms_var_2}
 
-\subsection{Variant 4}
-\input{attacks_ms_var_4}
+% \subsection{Variant 4}
+% \input{attacks_ms_var_4}
 
 \subsection{Производные и не только}
 \input{attacks_ms_others}
 
-% ------------------------------------------------------------------------------
-
-\section{Абстрактный пример эксплуатации}
+\subsection{Абстрактный пример эксплуатации}
 \input{exploitation}
+
+% ------------------------------------------------------------------------------
 
 \section{Заключение}
 \input{summary}
