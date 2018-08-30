@@ -1,4 +1,4 @@
-\subsubsection{Алгоритм работы DRAM}
+\subsubsection{Reading from DRAM}
 \begin{frame}{\insertsubsubsection}
 
   \begin{figure}[h]
@@ -45,7 +45,7 @@
 
       \node[
       dram,
-      label = above:DRAM банк,
+      label = above:DRAM bank,
       ] (dram) {
         0123456789
         \nodepart{two}
@@ -85,26 +85,25 @@
         \only<3-5>{1234567890}%
       };
 
-      \draw<2, 5> (cpu) -- node[sloped, above] {Чтение} (dram.two west);
+      \draw<2, 5> (cpu) -- node[sloped, above] {Reading} (dram.two west);
 
-      \draw<3> (dram.two east) -- ++(1, 0) |- node[right] {Открытие} (buf);
+      \draw<3> (dram.two east) -- ++(1, 0) |- node[right] {Copy} (buf);
 
       \draw<4> (buf) -- (cpu);
 
-      \draw<5> (buf) -- node[sloped, above] {Быстрее!} (cpu);
+      \draw<5> (buf) -- node[sloped, above] {Faster!} (cpu);
 
 
     \end{tikzpicture}
-    \only<1>{\caption{Работа DRAM (ещё раз)}}\label{fig:draw_row_buffer}
+    \only<1>{\caption{Reading from DRAM}}\label{fig:draw_row_buffer}
 
-    \only<2>{\caption{CPU запрашивает на чтение строку №1}}
+    \only<2>{\caption{CPU reads row 1, row buffer empty}}
 
-    \only<3>{\caption{DRAM открывает строку №1}}
+    % \only<3>{\caption{DRAM открывает строку №1}}
 
-    \only<4>{\caption{CPU читает строку №1 из буфера строки}}
+    % \only<4>{\caption{CPU читает строку №1 из буфера строки}}
 
-    \only<5>{\caption{CPU снова запрашивает на чтение строку №1, которая уже
-        есть в буфере строки, чтение происходит быстрее}}
+    \only<5>{\caption{CPU reads row 1, row buffer now full}}
   \end{figure}
 
   \note<1>{
@@ -122,13 +121,13 @@
 
 \end{frame}
 
-\subsubsection{Типы атак на DRAM}
+\subsubsection{Complex DRAM-based attacks}
 \begin{frame}{\insertsubsubsection}
   \begin{itemize}
   \item DRAMA
   \item Row hit (Flush + Reload)
   \item Row miss (Prime + Probe)
-  \item и др.
+  \item and etc.
   \end{itemize}
 
   \note{

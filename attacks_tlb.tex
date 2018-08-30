@@ -25,21 +25,21 @@
       left = of tlb,
       text = Black,
       ] (virt_addr) {
-        Виртуальный\\
-        адрес
+        Virtual\\
+        Address
       };
 
       \node[
       below = of tlb,
       text = Black,
       ] (hit) {
-        Использованный раннее адрес\\
-        вернётся быстрее
+        Mapped address\\
+        returns quicker!
       };
 
       \node[
       block,
-      label = above:Таблицы трансляции,
+      label = above:Translation table,
       right = 6cm of tlb,
       rectangle split,
       rectangle split parts = 5,
@@ -53,7 +53,7 @@
         \nodepart{four}
         PTE
         \nodepart{five}
-        Физический адрес
+        Physical address
         \nodepart{six}
       };
 
@@ -61,13 +61,13 @@
       \draw (tlb) -> node[right] {Hit} (hit);
 
       \draw (tlb) -> node[below] {Miss}
-      node[above, text = Black] {Для прохождения всей\\таблицы трансляции\\
-        необходимо дополнительно\\$\approx40$ тактов} (table);
+      node[above, text = Black] {Unmapped address\\takes $\approx$ 40 cycles\\
+        more for page table walk} (table);
 
     \end{tikzpicture}
-    \caption{Translation lookaside buffer (TLB) используется как для ускорения
-      трансляции виртуальных адресов ядерного пространства, так и
-      пользовательского!}\label{tlb_example}
+    \caption{A translation lookaside buffer (TLB) is a memory cache that is used
+      to reduce the time taken to access a user memory
+      location}\label{tlb_example}
   \end{figure}
 
   \note{

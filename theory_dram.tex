@@ -1,4 +1,4 @@
-\subsubsection{Алгоритм работы}
+\subsubsection{How DRAM works}
 \begin{frame}{\insertsubsubsection}
 
   \newcommand*\dramcolor{ForestGreen, ForestGreen, ForestGreen, ForestGreen, ForestGreen, ForestGreen, ForestGreen}
@@ -25,7 +25,7 @@
       minimum height = 1cm,
       text centered,
       ] (proc) {
-        Процессор
+        CPU
       };
 
 
@@ -35,8 +35,8 @@
       text = White,
       right = 2 of proc,
       ] (mmu) {
-        Контроллер\\
-        памяти
+        Memory\\
+        controller
       };
 
       \node[
@@ -48,21 +48,21 @@
       rectangle split part fill = {\dramcolor},
       minimum width = 2cm,
       ] (dram) {
-        Строка 0
+        Row 0
         \nodepart{two}
-        Строка 1
+        Row 1
         \nodepart{three}
-        Строка 2
+        Row 2
         \nodepart{four}
-        Строка 3
+        Row 3
         \nodepart{five}
-        Строка 4
+        Row 4
         \nodepart{six}
-        Строка 5
+        Row 5
         \nodepart{seven}
-        Строка 6
+        Row 6
         \nodepart{seven}
-        Строка 7
+        Row 7
         \nodepart{eight}
       };
 
@@ -75,8 +75,8 @@
       rotate = 90,
       anchor = south,
       ] (r_buf) {
-        \only<1>{Буфер строки}
-        \only<2>{Строка 2}
+        \only<1>{Row buffer}
+        \only<2>{Row 2}
       };
 
 
@@ -85,12 +85,12 @@
       label = above:DRAM массив,
       ] {};
 
-      \draw (proc) -- node[above] {Шина\\памяти} (mmu);
-      \draw (mmu) -- node[above] {Запрос} (r_buf);
+      \draw (proc) -- node[above] {Memory\\bus} (mmu);
+      \draw (mmu) -- node[above] {Request} (r_buf);
 
     \end{tikzpicture}
-    \caption{Простая компьютерная система с единственным DRAM
-      массивом}\label{dram_example}
+    \caption{A very simple computer system, with a single DRAM
+      array}\label{dram_example}
   \end{figure}
 
   \note<1>{
@@ -128,7 +128,7 @@
 
 \end{frame}
 
-\subsubsection{Физическое строение}
+\subsubsection{DRAM organization}
 \begin{frame}{\insertsubsubsection}
 
   \begin{figure}[h]
@@ -166,16 +166,16 @@
         \includegraphics[height = .3\textheight]{cpu}
       };
 
-      \draw<2-4> (cpu) -- ++(2, 0) -- ++(0, 1)  |- node[above] {Канал 0} (dram_0.west);
-      \draw<2-4> (cpu) -- ++(2, 0) -- ++(0, -1) |- node[below] {Канал 1} (dram_1.west);
+      \draw<2-4> (cpu) -- ++(2, 0) -- ++(0, 1)  |- node[above] {Channel 0} (dram_0.west);
+      \draw<2-4> (cpu) -- ++(2, 0) -- ++(0, -1) |- node[below] {Channel 1} (dram_1.west);
 
       \node<3-4>[
       right = 0.1 of dram_0,
       ] (rank_0) {
-        впереди DIMM:\\ранг 0
+        Front of DIMM:\\rank 0
       };
 
-      \draw<3-4> (dram_0) to [out = 80, in = 60, looseness = 8] node[above] {позади DIMM: ранг 1} (dram_0);
+      \draw<3-4> (dram_0) to [out = 80, in = 60, looseness = 8] node[above] {Back of DIMM: rank 1} (dram_0);
       \draw<3-4> (dram_0) -> (rank_0);
 
       \draw<4>[red,
@@ -183,17 +183,17 @@
       very thick,
       ] (2.25, -2.9) rectangle (2.85, -2.1);
 
-      \node<4> (chip_capt) at (3.5, -2.4) {Чип};
+      \node<4> (chip_capt) at (3.5, -2.4) {Chip};
 
       \node<5>[bank,
       ] (bank_0) {
-        Строка 0
+        Row 0
         \nodepart{two}
-        Строка 1
+        Row 1
         \nodepart{three}
         $\cdots$
         \nodepart{four}
-        Строка 32767
+        Row 32767
         \nodepart{five}
       };
 
@@ -204,25 +204,25 @@
       fill = Blue,
       text = White,
       ] (r_buf_0) {
-        Буфер строки
+        Row buffer
       };
 
       \node<5>[
       fit = (bank_0) (r_buf_0),
       draw,
-      label = above:Банк 0,
+      label = above:Bank 0,
       ] {};
 
       \node<5>[bank,
       right = of bank_0,
       ] (bank_1) {
-        Строка 0
+        Row 0
         \nodepart{two}
-        Строка 1
+        Row 1
         \nodepart{three}
         $\cdots$
         \nodepart{four}
-        Строка 32767
+        Row 32767
         \nodepart{five}
       };
 
@@ -233,26 +233,26 @@
       fill = Blue,
       text = White,
       ] (r_buf_1) {
-        Буфер строки
+        Row buffer
       };
 
       \node<5>[
       fit = (bank_1) (r_buf_1),
       draw,
-      label = above:Банк 1,
+      label = above:Bank 1,
       ] {};
 
 
       \node<5>[bank,
       right = of bank_1,
       ] (bank_n) {
-        Строка 0
+        Row 0
         \nodepart{two}
-        Строка 1
+        Row 1
         \nodepart{three}
         $\cdots$
         \nodepart{four}
-        Строка 32767
+        Row 32767
         \nodepart{five}
       };
 
@@ -263,13 +263,13 @@
       fill = Blue,
       text = White,
       ] (r_buf_n) {
-        Буфер строки
+        Row buffer
       };
 
       \node<5>[
       fit = (bank_n) (r_buf_n),
       draw,
-      label = above:Банк n,
+      label = above:Bank n,
       ] {};
 
       \node<5>[
@@ -280,12 +280,12 @@
       minimum width = 2cm,
       minimum height = 2cm,
       above = of bank_1,
-      label = above:Чип,
+      label = above:Chip,
       ] (chip) {
-        Банк 0\\
-        Банк 1\\
+        Bank 0\\
+        Bank 1\\
         $\cdots$\\
-        Банк n
+        Bank n
       };
 
       \node<6>[
@@ -295,24 +295,24 @@
       text = White,
       fill = ForestGreen,
       draw,
-      label = above:Строка DRAM,
+      label = above:Row of DRAM,
       ] (dram_row) {
-        Ячейка 0
+        Cell 0
         \nodepart{two}
-        Ячейка 1
+        Cell 1
         \nodepart{three}
-        Ячейка 2
+        Cell 2
         \nodepart{four}
         $\cdots$
         \nodepart{five}
-        Ячейка n
+        Cell n
         \nodepart{six}
       };
 
       \node<6>[
       below = of dram_row,
       ] (cap) {
-        Конденсатор
+        Capacitor
       };
 
       \draw<6> (cap) -> (dram_row.one south);
@@ -321,7 +321,7 @@
       \draw<6> (cap) -> (dram_row.five south);
 
     \end{tikzpicture}
-    \caption{Архитектура DRAM}\label{dram_arch}
+    % \caption{DRAM organization}\label{dram_arch}
   \end{figure}
 
   \note<1>{

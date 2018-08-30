@@ -127,8 +127,8 @@ tablename = ,
 
 % ==============================================================================
 
-\title[Введение в атаки по сторонним каналам]{Введение в атаки по сторонним
-  каналам на микроархитектуру, основанные на исполнении кода}
+\title[Introduction to software-based microarchitectural side-channel
+attacks]{Introduction to software-based microarchitectural side-channel attacks}
 
 \author{Abc Xyz\\
 @dura\_lex\vspace{2.1cm}}
@@ -136,7 +136,7 @@ tablename = ,
 \date[2018]
 {DCG\#7812 \\
 2018}
-\subject{Информационная безопасность}
+\subject{Information security}
 
 % ==============================================================================
 
@@ -150,7 +150,7 @@ tablename = ,
   \begin{frame}
     \tikz [remember picture,overlay]
       \node at
-          ([yshift=3.5cm]current page.south)
+          ([yshift=3.9cm]current page.south)
           {\includegraphics[width=.2\textwidth]{dcg_logo}};
     \titlepage
 
@@ -164,7 +164,7 @@ tablename = ,
 \AtBeginSection[]
 {
   \begin{frame}
-    \frametitle{План}
+    \frametitle{Agenda}
     \tableofcontents[%
     currentsection,%
     hideothersubsections,%
@@ -177,7 +177,7 @@ tablename = ,
 \AtBeginSubsection[]
 {
   \begin{frame}
-    \frametitle{План}
+    \frametitle{Agenda}
     \tableofcontents[
     % currentsection,%
     currentsubsection,%
@@ -210,22 +210,22 @@ tablename = ,
 
 % ------------------------------------------------------------------------------
 
-\begin{frame}{План}
+\begin{frame}{Agenda}
   \tableofcontents[hideothersubsections]
 \end{frame}
 
 % ------------------------------------------------------------------------------
 
-\section{Введение}
+\section{Introduction}
 \input{intro}
 
 % ------------------------------------------------------------------------------
 
-\section{Теория}
-\subsection{Процессор}
+\section{Theory}
+\subsection{CPU}
 \input{theory_cpu}
 
-\subsection{Кэш--память}
+\subsection{Cache}
 \input{theory_cache}
 
 \subsection{DRAM}
@@ -236,28 +236,28 @@ tablename = ,
 
 % ------------------------------------------------------------------------------
 
-\section{Типы атак}
-\subsection{Атаки на кэш}
+\section{Basic attacks}
+\subsection{Cache attacks}
 \input{attacks_cache}
 
-\subsection{Атаки на предсказатель переходов}
+\subsection{Branch-prediction attacks}
 \input{attacks_branch_pred}
 
-\subsection{Атаки на буфер ассоциативной трансляции}
+\subsection{TLB-based attacks}
 \input{attacks_tlb}
 
-\subsection{Атаки, основанные на срабатывании исключительных ситуаций}
+\subsection{Exception-based attacks}
 \input{attacks_exception}
 
-\subsection{Атаки на DRAM}
+\subsection{DRAM-based attacks}
 \input{attacks_dram}
 
-\subsection{Скрытые каналы}
+\subsection{Covert channels}
 \input{attacks_covert_channels}
 
 % ------------------------------------------------------------------------------
 
-\section{Атаки, основанные на аппаратных дефектах}
+\section{Software-based Microarchitectural Fault Attacks}
 \input{attacks_fault}
 
 \subsection{Rowhammer}
@@ -281,15 +281,15 @@ tablename = ,
 % \subsection{Variant 4}
 % \input{attacks_ms_var_4}
 
-\subsection{Производные и не только}
+\subsection{Derived attacks and not only}
 \input{attacks_ms_others}
 
-\subsection{Абстрактный пример эксплуатации}
+\subsection{Abstract example of exploitation}
 \input{exploitation}
 
 % ------------------------------------------------------------------------------
 
-\section{Заключение}
+\section{Summary}
 \input{summary}
 
 \input{biblio}

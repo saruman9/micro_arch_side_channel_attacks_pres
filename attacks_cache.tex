@@ -15,11 +15,11 @@
 
       \node[
       block,
-      label = above:Кэш,
+      label = above:Cache,
       minimum width = 1cm,
       minimum height = 1cm,
       ] (cache) {
-        Данные
+        Data
       };
 
       \node[
@@ -29,7 +29,7 @@
       minimum width = 3cm,
       minimum height = 3cm,
       ] (dram) {
-        Данные
+        Data
       };
 
       \node[
@@ -45,7 +45,8 @@
       \draw (cpu) -> node[below, sloped] {250 ns} (dram);
 
     \end{tikzpicture}
-    \caption{Кэш --- это не только полезно, но и опасно}\label{cache_faster}
+    \caption{Timing attack --- attack exploiting differences in the execution
+      time of an algorithm}\label{cache_faster}
   \end{figure}
 
   \note{
@@ -473,11 +474,11 @@
 \subsubsection{Flush + Reload}
 \begin{frame}{\insertsubsubsection}
   \begin{enumerate}
-  \item Отобразить бинарный файл (например, разделяемый объект) в своё адресное
-    пространство
-  \item Сбросить содержимое кэш--линии (код или данные)
-  \item Передать управление программе--жертве
-  \item Определить какие линии кэша были загружены программой--жертвой снова
+  \item Map binary (e.g., shared object) into address space
+  \item Flush a cache line (code or data) from the cache
+  \item Schedule the victim's program
+  \item Check if corresponding cache line from step 2 has been loaded by the
+    victim's program
   \end{enumerate}
 
   \note{
@@ -493,15 +494,14 @@
 
 \begin{frame}{\insertsubsubsection}
 
-  \only<1>{Отобразить бинарный файл (например, разделяемый объект) в своё
-    адресное пространство}%
+  \only<1>{Map binary (e.g., shared object) into address space}%
 
-  \only<2>{Сбросить содержимое кэш--линии (код или данные)}%
+  \only<2>{Flush a cache line (code or data) from the cache}%
 
-  \only<3>{Передать управление программе--жертве}%
+  \only<3>{Schedule the victim's program}%
 
-  \only<4>{Определить какие линии кэша были загружены программой--жертвой
-    снова}%
+  \only<4>{Check if corresponding cache line from step 2 has been loaded by the
+    victim's program}%
 
   \begin{figure}[h]
 
@@ -557,7 +557,7 @@
 
       \node[
       cache,
-      label = {Кэш (8 наборов, 4 пути)},
+      label = {Cache (8 sets, 4 ways)},
       ] (cache) {
         \& \& \& \\
         \& \node[fill = \vicatcolorone] (vic_0) {}; \& \& \\
@@ -654,7 +654,7 @@
   }
 \end{frame}
 
-\subsubsection{Другие типы атак на кэш}
+\subsubsection{Cache attacks}
 \begin{frame}{\insertsubsubsection}
   \begin{itemize}
   \item Evict + Time
@@ -663,7 +663,7 @@
   \item Flush + Flush
   \item Evict + Reload
   \item AnC (ASLR $\oplus$ Cache)
-  \item и др.
+  \item and etc.
   \end{itemize}
 
   \note{

@@ -268,12 +268,12 @@
 
 % \end{frame}
 
-\subsubsection{Необходимые примитивы Rowhammer}
+\subsubsection{Rowhammer. Exploitation primitives}
 \begin{frame}{\insertsubsubsection}
   \begin{itemize}
-  \item быстрый некэшируемый доступ к памяти
-  \item определение местонахождения уязвимых строк DRAM
-  \item знание функций адресации физической памяти
+  \item Fast uncached memory access
+  \item Physical memory massaging
+  \item Physical memory addressing
   \end{itemize}
 
   \note{
@@ -296,15 +296,15 @@
   }
 \end{frame}
 
-\subsubsection{Разновидности Rowhammer}
+\subsubsection{Variations of Rowhammer}
 \begin{frame}{\insertsubsubsection}
 
   \begin{itemize}
-  \item Flip Feng Shui --- целенаправленный Rowhammer
-  \item Throwhammer --- удалённая атака
-  \item Nethammer --- улучшенная удалённая атака
-  \item Drammer, RAMpage --- атака на ARM
-  \item Glitch --- улучшенная атака на ARM
+  \item Flip Feng Shui --- targeted Rowhammer
+  \item Throwhammer --- remote Rowhammer
+  \item Nethammer --- better remote Rowhammer
+  \item Drammer, RAMpage --- exploitation ARM-based hardware
+  \item Glitch --- better exploitation ARM-based hardware
   \end{itemize}
 
   \note{

@@ -3,7 +3,7 @@
   \begin{figure}[h]
     \center%
     \includegraphics[height = .8\textheight]{multicore_cpu}
-    \caption{Архитектура многоядерного процессора}
+    \caption{Architecture of multicore CPU}
   \end{figure}
 
   \note{
@@ -92,7 +92,7 @@
       inner sep = 15,
       fit = (mmu) (load_unit) (exec_unit) (l1_data),
       draw = Black,
-      label = above left:Ядро,
+      label = above left:Core,
       ] (core) {};
 
       \node[mem_node, below = .2 of core] (l3) {
@@ -124,15 +124,15 @@
       \path (cr3)                edge                                       (pt_walker)
             (pt_walker.175)      edge node[above] {Fill}                    (tlb.10)
             (tlb.350)            edge node[below] {Miss}                    (pt_walker.185)
-            (exec_unit.east)     edge[<->] node[below = .3cm] {Вирт. адрес} (mmu)
+            (exec_unit.east)     edge[<->] node[below = .3cm] {Virt. addr.} (mmu)
             (load_unit.east)     edge[<->]                                  (mmu)
-            (mmu)                edge node[right] {Физ. адрес}              (l1_data)
+            (mmu)                edge node[right] {Phys. addr.}             (l1_data)
             (l1_data)            edge                                       (l2)
             (l2)                 edge[<->]                                  (l3);
 
     \end{tikzpicture}
-    \caption{Абстрактная архитектура элементов ядра, работающих с
-      данными}\label{fig:core_elements}
+    \caption{Abstract architecture of core and memory
+      organization}\label{fig:core_elements}
   \end{figure}
 
   \note<1>{
@@ -162,8 +162,8 @@
   }
 \end{frame}
 
-\subsubsection{Конвейеризация}
-\begin{frame}{\insertsubsubsection. По порядку}
+\subsubsection{Pipelining}
+\begin{frame}{\insertsubsubsection. In-Order}
 
   \begin{figure}[h]
     \begin{tikzpicture}[
@@ -234,8 +234,7 @@
       \draw (bp.south)   |- node{} (id.west);
 
     \end{tikzpicture}
-    \caption{Элементы системы выполнения современного процессора (выполнение по
-      порядку)}\label{fig:exe_in_order}
+    \caption{Elements of a modern in-order core}\label{fig:exe_in_order}
   \end{figure}
 
   \note{
@@ -273,7 +272,7 @@
 %   }
 % \end{frame}
 
-\begin{frame}<1>[label = reorder_exe]{\insertsubsubsection. Не по порядку}
+\begin{frame}<1>[label = reorder_exe]{\insertsubsubsection. Out-of-Order}
 
   \begin{figure}[h]
     \begin{tikzpicture}[
@@ -364,8 +363,7 @@
       \draw[<->] (l1_d) -| (l2.south);
 
     \end{tikzpicture}
-    \caption{Элементы системы выполнения современного процессора (выполнение
-      инструкций не по порядку)}\label{fig:exe_out_of_order}
+    \caption{Elements of a modern out-of-order core}\label{fig:exe_out_of_order}
   \end{figure}
 
   \note<1>{
@@ -575,7 +573,7 @@
 
 \againframe<2>{reorder_exe}
 
-\subsubsection{Оптимизатор потока инструкций}
+\subsubsection{Branch Prediction and Speculation}
 \begin{frame}{\insertsubsubsection}
 
 
@@ -615,8 +613,8 @@
       \draw (if.east) -| node[above] {$\omega = 0.53$} (comp.north);
 
     \end{tikzpicture}
-    \caption{\texttt{get\_secret\_key()} может выполниться
-      спекулятивно}\label{fig:if_speculative_example}
+    \caption{\texttt{get\_secret\_key()} can be executed
+      speculatively}\label{fig:if_speculative_example}
   \end{figure}
 
   \note{
@@ -650,13 +648,13 @@
   }
 \end{frame}
 
-\subsubsection{Многоядерность}
+\subsubsection{Multicore}
 \begin{frame}{\insertsubsubsection}
 
   \begin{figure}[h]
     \center%
     \includegraphics[height = .8\textheight]{Hwloc}
-    \caption{Архитектура многоядерного процессора AMD Bulldozer}
+    \caption{Architecture of multicore CPU AMD Bulldozer}
   \end{figure}
 
   \note{

@@ -168,8 +168,8 @@
       block,
       below = .5 of ht,
       ] (chips) {
-        Другие\\
-        чипы
+        Other\\
+        chips
       };
 
       \draw[<->] (core_0) -- (c1_0);
@@ -194,8 +194,7 @@
       \draw[<->] (mc) -- (dram);
 
     \end{tikzpicture}
-    \caption{Архитектура процессора относительно
-      кэшей}\label{fig:proc_cache_arch}
+    \caption{The flow of data through a modern platform}\label{fig:proc_cache_arch}
   \end{figure}
 
   \note{
@@ -256,7 +255,7 @@
 
       \node[block,
       rectangle split part fill = {\virtcolor},
-      label = above:Виртуальная память,
+      label = above:Virtual memory,
       ] (virt) {
         0xf200
         \nodepart{two}
@@ -274,7 +273,7 @@
 
       \node[cache,
       right = of virt,
-      label = above:Адрес,
+      label = above:Address,
       ] (cache_addr) {
         \only<1-3>{0xf200}%
         \only<4>{0xf000}%
@@ -285,7 +284,7 @@
 
       \node[cache,
       right = 0 of cache_addr,
-      label = above:Содержимое,
+      label = above:Data,
       fill = NavyBlue,
       ] (cache_content) {
         \only<1-3>{\color{White}Kernel secret 0}%
@@ -298,13 +297,13 @@
       \node[
       rectangle,
       fit = (cache_addr) (cache_content),
-      label = {below:Кэш (L1, L2, LLC)},
+      label = {below:Cache (L1, L2, LLC)},
       inner sep = 0,
       ] {};
 
       \node[block,
       right = of cache_content,
-      label = above:Физическая память\\(DRAM),
+      label = above:Physical memory\\(DRAM),
       ] (phys) {
         0x1000
         \nodepart{two}
@@ -334,8 +333,7 @@
       \draw<4>[BrickRed] (phys.six west) -- ++(-.3, 0) |- (cache_content.one east);
 
     \end{tikzpicture}
-    \caption{Пример взаимодействия с
-      кэшем}\label{fig:cache_manipulation_example}
+    \caption{Algorithm of CPU cache}\label{fig:cache_manipulation_example}
   \end{figure}
 
   \note<1>{
@@ -366,12 +364,12 @@
 
 \end{frame}
 
-\subsubsection{Типы кэш-памяти}
+\subsubsection{Types of cache}
 \begin{frame}{\insertsubsubsection}
   \begin{itemize}
-  \item кэш с прямым отображением (direct mapped cache)
-  \item полностью ассоциативный кэш (fully associative cache)
-  \item наборно-ассоциативный кэш (2/4/8/12-way set associative cache)
+  \item Direct-mapped cache
+  \item Fully-associative cache
+  \item 2/4/8/12-way set associative cache
   \end{itemize}
 
   \note{
@@ -673,7 +671,7 @@
 
 % \end{frame}
 
-\subsubsection{Наборно--ассоциативный кэш}
+\subsubsection{Two-way set associative cache}
 \begin{frame}{\insertsubsubsection}
 
   \begin{figure}[h]
@@ -709,13 +707,13 @@
       ]
 
       \node[cache,
-      label = above:Кэш,
+      label = above:Cache,
       label = {
-        [label distance = 10]right:$2^n$\\наборов\\кэша
+        [label distance = 10]right:$2^n$\\sets
       },
       ] (cache) {
-        \node[fill = black!30](cache_1_1){Тег 1-го пути}; \& \node[fill = black!30]{Данные 1-го пути}; \\
-        \node[fill = black!10]{Тег 2-го пути}; \& \node[fill = black!10]{Данные 2-го пути}; \\
+        \node[fill = black!30](cache_1_1){Way 1 Tag}; \& \node[fill = black!30]{Way 1 Data}; \\
+        \node[fill = black!10]{Way 2 Tag}; \& \node[fill = black!10]{Way 2 Data}; \\
         \node[fill = black!30](tag_1){}; \& \node[fill = black!30](data_1){}; \\
         \node[fill = black!10](tag_2){}; \& \node[fill = black!10](data_2){}; \\
         \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
@@ -725,12 +723,12 @@
 
       \node[mem,
       left = of cache_1_1.west,
-      label = above:Адрес памяти,
+      label = above:Memory Address,
       ] (addr) {
         \nodepart{two}
-        \textit{n} бит
+        \textit{n} bits
         \nodepart{three}
-        \textit{b} бит
+        \textit{b} bits
         \nodepart{four}
       };
 
@@ -762,9 +760,9 @@
       };
 
       \draw (addr.one south) -> (f);
-      \draw (f) |- node[below right] {Тег} (hit_1);
+      \draw (f) |- node[below right] {Tag} (hit_1);
       \draw (f) |- node[below right] {}    (hit_2);
-      \draw (addr.two south) |- node[below right] {Индекс\\ набора кэша} (cache.west);
+      \draw (addr.two south) |- node[below right] {Cache index} (cache.west);
 
       \draw (tag_1.center) -> (hit_1);
       \draw ([xshift = 0.8cm]tag_2.center) -> (hit_2);
@@ -794,7 +792,7 @@
 
 \end{frame}
 
-\subsubsection{Правила вымещения из кэша}
+\subsubsection{Cache replacement policies}
 \begin{frame}{\insertsubsubsection}
 
   \begin{itemize}
@@ -813,7 +811,7 @@
     \item adaptive replacement cache, \texttt{ARC}
     \item clock with adaptive replacement, \texttt{CAR}
     \item multi queue, \texttt{MQ}
-    \item и другие.
+    \item and etc.
   \end{itemize}
 
   \note{
@@ -839,7 +837,7 @@
 
 \end{frame}
 
-\subsubsection{Режимы адресации}
+\subsubsection{Addressing modes}
 \begin{frame}{\insertsubsubsection}
   \begin{itemize}
   \item Virtually indexed, virtually tagged (VIVT)

@@ -30,7 +30,7 @@
       cache,
       label = {Branch Target Buffer},
       ] (btb) {
-        Тэг-адрес \& Адрес перехода \\
+        Address tag \& Target \\
         \& \\
         \& \\
         0xebe45a82 \& ??? \\
@@ -42,7 +42,7 @@
       \node[
       draw,
       left = 7cm of btb.north,
-      label = above:Виртуальный адрес (user space),
+      label = above:Virtual address (user space),
       ] (addr_user) {
         0x0000 \color{ForestGreen}EBE45A82
       };
@@ -50,7 +50,7 @@
       \node[
       draw,
       below = 4cm of addr_user,
-      label = below:Виртуальный адрес (kernel space),
+      label = below:Virtual address (kernel space),
       ] (addr_kernel) {
         0xFFFF \color{ForestGreen}EBE45A82
       };
@@ -60,7 +60,7 @@
       block,
       minimum width = 1cm,
       minimum height = 1cm,
-      label = left:Функция\\индексации,
+      label = left:Indexing\\function,
       ] (f) {
         f(x)
       };
@@ -70,8 +70,8 @@
       \draw (f) -> (btb.west);
 
     \end{tikzpicture}
-    \caption{Тег вычисляется, основываясь на последних байтах виртуального
-      адреса}\label{btb_tag}
+    \caption{Branch Target Buffer addressing scheme in Haswell
+      processor}\label{btb_tag}
   \end{figure}
 
   \note{
