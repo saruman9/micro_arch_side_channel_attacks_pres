@@ -35,6 +35,8 @@
 *.vrb
 *.xdy
 *.tdo
+*.sty
 
 *.swp
 _*
+.latex-cache
