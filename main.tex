@@ -1,13 +1,16 @@
 % Use this if you generate the presentation itself.
-\documentclass[final, xcolor = table, usenames, dvipsnames, table, aspectratio = 169]{beamer}
+\documentclass[final, xcolor = table, usenames,%
+dvipsnames, table, aspectratio = 169]{beamer}
 
 % Use this documentclass line for generating the handout
 % \documentclass[final, xcolor = table, dvipsnames, table, handout, draft,
 % aspectratio = 169]{beamer}
 
+\usepackage{appendixnumberbeamer}
+
 % minted load packages: keyval, ifthen, etoolbox, kvoptions, calc, xstring,
 % fancyvrb, ifplatform, xcolor, float, pdftexcmds, lineno
-\usepackage{minted} % minted above polyglossia, because errors
+\usepackage[outputdir = ../.latex-cache]{minted} % minted above polyglossia, because errors
 \usemintedstyle{manni}
 
 %% Two version of compilers (pdflatex, xelatex)
@@ -24,9 +27,9 @@
     \setotherlanguage{english} % additional language --- English
 
     %% Fonts
-    \defaultfontfeatures{Ligatures=TeX,Mapping=tex-text}
-    \setmainfont{CMU Serif}
-    \setsansfont{CMU Sans Serif}
+    % \defaultfontfeatures{Ligatures=TeX,Mapping=tex-text}
+    % \setmainfont{CMU Serif}
+    % \setsansfont{CMU Sans Serif}
     % \setmainfont{Droid Serif}
     % \newfontfamily\cyrillicfont{Droid Serif}
     % \setsansfont{Droid Sans}
@@ -70,50 +73,25 @@
   tikzmark,%
 }
 
-%% Rename captions
-\usepackage[
-figurename = ,
-tablename = ,
-]{caption}
-\renewcommand{\listingscaption}{Листинг}
-
 % ==============================================================================
 
 \mode<presentation>
 {
-    % \usefonttheme[onlymath]{serif}
-    % \usetheme{Console}
-    % \usetheme{Frankfurt}
-    % \usetheme{metropolis}
 
-    % Settings for invisible elements (it and others for DarkConsole should be
-    % commented)
-    % \setbeamercovered{transparent}
-    \setbeamertemplate{navigation symbols}{}
-    % \setbeamertemplate{sidebar right}{}
-    \setbeamertemplate{footline}[frame number]%{%
+  %% Theme settings
+  \usetheme{dsec}
+  \dsecset{progressbar = frametitle}
+  \dsecset{subsectionpage = progressbar}
 
-    %% Notes settings
-    % \setbeameroption{hide notes}
-    % \setbeameroption{show notes}
-    \setbeameroption{show notes on second screen = right}
-    % \setbeameroption{show only notes}
+  %% Notes settings
+  % \setbeameroption{hide notes}
+  % \setbeameroption{show notes}
+  % \setbeameroption{show notes on second screen = right}
+  % \setbeameroption{show only notes}
 
-    % Style on slides
-    \setbeamersize{text margin left = 2mm, text margin right = 2mm}
-
-    % Style of notes
-    \setbeamertemplate{note page}[plain]
-    % \setbeamerfont{note date}{size=\scriptsize}
-    % \setbeamerfont{note title}{size=\footnotesize}
-    % \setbeamerfont{note page}{size=\footnotesize}
+  % Style of notes
+  \setbeamertemplate{note page}[plain]
 }
-
-
-%% Temp bug fix in LaTeX 2018
-\makeatletter
-\let\@@magyar@captionfix\relax
-\makeatother
 
 %% Fix bug with beamer + xelatex + notes
 % https://tex.stackexchange.com/questions/232168/normal-text-is-invisible-when-using-beamer-with-notes-and-xelatex
@@ -129,65 +107,21 @@ tablename = ,
 
 \title[Introduction to software-based microarchitectural side-channel
 attacks]{Introduction to software-based microarchitectural side-channel attacks}
+\subtitle{}
 
 \author{Abc Xyz\\
-@dura\_lex\vspace{2.1cm}}
+@dura\_lex}
+\institute{\includegraphics[height = 1.2cm]{conf_logo.png}}
+\titlegraphic{\includegraphics[height = 0.9cm]{logo.pdf}}
 
-\date[2018]
-{DCG\#7812 \\
-2018}
+\date{}
 \subject{Information security}
 
 % ==============================================================================
 
-%% Title page
 \begin{document}
-{
-  \makeatletter
-    \setbeamertemplate{footline}{}
-  \makeatother
 
-  \begin{frame}
-    \tikz [remember picture,overlay]
-      \node at
-          ([yshift=3.9cm]current page.south)
-          {\includegraphics[width=.2\textwidth]{dcg_logo}};
-    \titlepage
-
-    \note {
-
-    }
-  \end{frame}
-}
-
-%% Add agenda at begin of all sections
-\AtBeginSection[]
-{
-  \begin{frame}
-    \frametitle{Agenda}
-    \tableofcontents[%
-    currentsection,%
-    hideothersubsections,%
-    sectionstyle = show/hide,%
-    % subsectionstyle = show/shaded,%
-    ]
-  \end{frame}
-}
-
-\AtBeginSubsection[]
-{
-  \begin{frame}
-    \frametitle{Agenda}
-    \tableofcontents[
-    % currentsection,%
-    currentsubsection,%
-    hideothersubsections,%
-    sectionstyle = show/hide,%
-    subsectionstyle = show/hide,%
-    % subsubsectionstyle = show/hide,%
-    ]
-  \end{frame}
-}
+\maketitle
 
 %% Set theme colors
 \tikzset{%
@@ -195,22 +129,10 @@ attacks]{Introduction to software-based microarchitectural side-channel attacks}
   % draw = White,%
 }
 
-%% TikZ picture stub
-\newcommand{\PicStub}[2]{%
-  \begin{figure}[h]
-    \center%
-    \begin{tikzpicture}
-      \node[draw, inner sep = 50] {
-        \LARGE Здесь могла быть ваша картинка
-      };
-    \end{tikzpicture}
-    \caption{#1}\label{fig:#2}
-  \end{figure}
-}
-
 % ------------------------------------------------------------------------------
 
 \begin{frame}{Agenda}
+  \setbeamertemplate{section in toc}[sections numbered]
   \tableofcontents[hideothersubsections]
 \end{frame}
 
@@ -291,6 +213,8 @@ attacks]{Introduction to software-based microarchitectural side-channel attacks}
 
 \section{Summary}
 \input{summary}
+
+\appendix
 
 \input{biblio}
 
