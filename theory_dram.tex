@@ -1,11 +1,11 @@
 \subsubsection{How DRAM works}
 \begin{frame}{\insertsubsubsection}
 
-  \newcommand*\dramcolor{ForestGreen, ForestGreen, ForestGreen, ForestGreen, ForestGreen, ForestGreen, ForestGreen}
+  \newcommand*\dramcolor{dWhite, dWhite, dWhite, dWhite, dWhite, dWhite, dWhite}
 
   \only<2>{
-    \renewcommand*\dramcolor{BrickRed, BrickRed, Blue, BrickRed, BrickRed, BrickRed,
-      BrickRed}
+    \renewcommand*\dramcolor{dWhite, dWhite, dGreen, dWhite, dWhite, dWhite,
+      dWhite}
   }
 
   \begin{figure}[h]
@@ -13,83 +13,70 @@
       align = center,
       ->,
       > = Stealth,
-      thick,
-      double = ForestGreen,
+      barstyle/.style 2 args = {%
+        draw = dBlue,
+        minimum width = 2em,
+        fit = {(####1.south) (####1.north)},
+        inner ysep = 0pt,
+        label = {[rotate = 90]center:####2}
+      },
       ]
 
       \node[
-      draw,
-      fill = ForestGreen,
-      text = White,
+      draw = dGreen,
       minimum width = 2cm,
-      minimum height = 1cm,
-      text centered,
-      ] (proc) {
-        CPU
-      };
+      ] (proc) {CPU};
 
 
       \node[
-      draw,
-      fill = ForestGreen,
-      text = White,
-      right = 2 of proc,
-      ] (mmu) {
-        Memory\\
-        controller
-      };
+      draw = dGreen,
+      right = 3 of proc,
+      ] (mmu) {Memory controller};
 
       \node[
-      draw,
-      text = White,
-      right = 2 of mmu,
+      draw = dGreen,
+      right = 3 of mmu,
       rectangle split,
       rectangle split parts = 7,
       rectangle split part fill = {\dramcolor},
       minimum width = 2cm,
-      ] (dram) {
-        Row 0
-        \nodepart{two}
-        Row 1
-        \nodepart{three}
-        Row 2
-        \nodepart{four}
-        Row 3
-        \nodepart{five}
-        Row 4
-        \nodepart{six}
-        Row 5
-        \nodepart{seven}
-        Row 6
-        \nodepart{seven}
-        Row 7
-        \nodepart{eight}
+      ] (dram) {%
+        Row 0%
+        \nodepart{two}%
+        Row 1%
+        \nodepart{three}%
+        Row 2%
+        \nodepart{four}%
+        Row 3%
+        \nodepart{five}%
+        Row 4%
+        \nodepart{six}%
+        Row 5%
+        \nodepart{seven}%
+        Row 6%
+        \nodepart{seven}%
+        Row 7%
       };
 
       \node[
-      draw,
-      fill = Blue,
-      text = White,
+      barstyle={dram}{%
+        \only<1>{Row buffer}%
+        \only<2>{Row 2}%
+      },
       left = 0 of dram,
-      minimum width = 4.45cm,
-      rotate = 90,
-      anchor = south,
-      ] (r_buf) {
-        \only<1>{Row buffer}
-        \only<2>{Row 2}
-      };
+      ] (r_buf) {};
 
 
       \node[
       fit = (dram) (r_buf),
-      label = above:DRAM массив,
+      label = above:DRAM array,
       ] {};
 
-      \draw (proc) -- node[above] {Memory\\bus} (mmu);
+      \draw (proc) -- node[above] {Memory bus} (mmu);
       \draw (mmu) -- node[above] {Request} (r_buf);
 
     \end{tikzpicture}
-    \caption{A very simple computer system, with a single DRAM
+    \caption{A simple computer system with a single DRAM
       array}\label{dram_example}
   \end{figure}
 
@@ -136,76 +123,62 @@
       align = center,
       ->,
       > = Stealth,
-      thick,
-      double = ForestGreen,
       bank/.style = {
-        draw,
-        fill = ForestGreen,
-        text = White,
+        draw = dGreen,
         rectangle split,
-        rectangle split parts = 4,
+        rectangle split parts = 3,
       },
       ]
 
-      \node<1>[inner sep = 0, label = above:DIMM] (dram) {
-        \includegraphics[height = .3\textheight]{DRAM_ddr4}
+      \node<1>[inner sep = 0, label = above:DIMM] (dram) {%
+        \includegraphics[height = .3\textheight]{DRAM_ddr4}%
       };
 
-      \node<2-4>[inner sep = 0] (dram_0) {
-        \includegraphics[height = .2\textheight]{DRAM_ddr4}
+      \node<2-4>[inner sep = 0] (dram_0) {%
+        \includegraphics[height = .2\textheight]{DRAM_ddr4}%
       };
 
-      \node<2-4>[inner sep = 0, below = of dram_0] (dram_1) {
-        \includegraphics[height = .2\textheight]{DRAM_ddr4}
+      \node<2-4>[inner sep = 0, below = of dram_0] (dram_1) {%
+        \includegraphics[height = .2\textheight]{DRAM_ddr4}%
       };
 
       \node<2-4>[
       inner sep = 0,
       left = 2cm of $(dram_0.west)!.5!(dram_1.west)$,
-      ] (cpu) {
-        \includegraphics[height = .3\textheight]{cpu}
-      };
+      ] (cpu) {\includegraphics[height = .3\textheight]{cpu}};
 
       \draw<2-4> (cpu) -- ++(2, 0) -- ++(0, 1)  |- node[above] {Channel 0} (dram_0.west);
       \draw<2-4> (cpu) -- ++(2, 0) -- ++(0, -1) |- node[below] {Channel 1} (dram_1.west);
 
       \node<3-4>[
-      right = 0.1 of dram_0,
-      ] (rank_0) {
-        Front of DIMM:\\rank 0
-      };
+      right = 0.3 of dram_0,
+      ] (rank_0) {Front of DIMM:\\rank 0};
 
-      \draw<3-4> (dram_0) to [out = 80, in = 60, looseness = 8] node[above] {Back of DIMM: rank 1} (dram_0);
+      \draw<3-4> (dram_0) to [out = 80, in = 60, looseness = 8]%
+          node[above] {Back of DIMM: rank 1} (dram_0);
       \draw<3-4> (dram_0) -> (rank_0);
 
-      \draw<4>[red,
+      \draw<4>[dRed,
       rounded corners,
       very thick,
-      ] (2.25, -2.9) rectangle (2.85, -2.1);
+      ] (2.10, -2.7) rectangle (2.67, -2.0);
 
       \node<4> (chip_capt) at (3.5, -2.4) {Chip};
 
       \node<5>[bank,
-      ] (bank_0) {
-        Row 0
-        \nodepart{two}
-        Row 1
-        \nodepart{three}
-        $\cdots$
-        \nodepart{four}
-        Row 32767
-        \nodepart{five}
+      ] (bank_0) {%
+        Row 0%
+        \nodepart{two}%
+        $\cdots$%
+        \nodepart{three}%
+        Row 32767%
       };
 
       \node<5>[
-      draw,
-      below = .1 of bank_0,
       rectangle,
-      fill = Blue,
-      text = White,
-      ] (r_buf_0) {
-        Row buffer
-      };
+      draw = dBlue,
+      below = .1 of bank_0,
+      ] (r_buf_0) {Row buffer};
 
       \node<5>[
       fit = (bank_0) (r_buf_0),
@@ -215,26 +188,19 @@
 
       \node<5>[bank,
       right = of bank_0,
-      ] (bank_1) {
-        Row 0
-        \nodepart{two}
-        Row 1
-        \nodepart{three}
-        $\cdots$
-        \nodepart{four}
-        Row 32767
-        \nodepart{five}
+      ] (bank_1) {%
+        Row 0%
+        \nodepart{two}%
+        $\cdots$%
+        \nodepart{three}%
+        Row 32767%
       };
 
       \node<5>[
-      draw,
-      below = .1 of bank_1,
       rectangle,
-      fill = Blue,
-      text = White,
-      ] (r_buf_1) {
-        Row buffer
-      };
+      draw = dBlue,
+      below = .1 of bank_1,
+      ] (r_buf_1) {Row buffer};
 
       \node<5>[
       fit = (bank_1) (r_buf_1),
@@ -242,29 +208,21 @@
       label = above:Bank 1,
       ] {};
 
-
       \node<5>[bank,
       right = of bank_1,
-      ] (bank_n) {
-        Row 0
-        \nodepart{two}
-        Row 1
-        \nodepart{three}
-        $\cdots$
-        \nodepart{four}
-        Row 32767
-        \nodepart{five}
+      ] (bank_n) {%
+        Row 0%
+        \nodepart{two}%
+        $\cdots$%
+        \nodepart{three}%
+        Row 32767%
       };
 
       \node<5>[
-      draw,
-      below = .1 of bank_n,
       rectangle,
-      fill = Blue,
-      text = White,
-      ] (r_buf_n) {
-        Row buffer
-      };
+      draw = dBlue,
+      below = .1 of bank_n,
+      ] (r_buf_n) {Row buffer};
 
       \node<5>[
       fit = (bank_n) (r_buf_n),
@@ -274,46 +232,39 @@
 
       \node<5>[
       rectangle,
-      draw,
-      fill = ForestGreen,
-      text = White,
+      draw = dGreen,
       minimum width = 2cm,
       minimum height = 2cm,
       above = of bank_1,
       label = above:Chip,
-      ] (chip) {
-        Bank 0\\
-        Bank 1\\
-        $\cdots$\\
-        Bank n
+      ] (chip) {%
+        Bank 0\\%
+        Bank 1\\%
+        $\cdots$\\%
+        Bank n%
       };
 
       \node<6>[
       rectangle split,
       rectangle split parts = 5,
       rectangle split horizontal,
-      text = White,
-      fill = ForestGreen,
-      draw,
+      draw = dGreen,
       label = above:Row of DRAM,
-      ] (dram_row) {
-        Cell 0
-        \nodepart{two}
-        Cell 1
-        \nodepart{three}
-        Cell 2
-        \nodepart{four}
-        $\cdots$
-        \nodepart{five}
-        Cell n
-        \nodepart{six}
+      ] (dram_row) {%
+        Cell 0%
+        \nodepart{two}%
+        Cell 1%
+        \nodepart{three}%
+        Cell 2%
+        \nodepart{four}%
+        $\cdots$%
+        \nodepart{five}%
+        Cell n%
       };
 
       \node<6>[
       below = of dram_row,
-      ] (cap) {
-        Capacitor
-      };
+      ] (cap) {Capacitor};
 
       \draw<6> (cap) -> (dram_row.one south);
       \draw<6> (cap) -> (dram_row.two south);

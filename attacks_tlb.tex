@@ -6,62 +6,48 @@
       align = center,
       ->,
       > = Stealth,
-      thick,
       ampersand replacement = \&,
       block/.style = {
-        draw,
-        fill = ForestGreen,
-        text = White,
+        draw = dGreen,
       },
       ]
 
       \node[
       block,
-      ] (tlb) {
-        TLB
-      };
+      ] (tlb) {TLB};
 
       \node[
       left = of tlb,
-      text = Black,
-      ] (virt_addr) {
-        Virtual\\
-        Address
-      };
+      ] (virt_addr) {Virtual\\ Address};
 
       \node[
       below = of tlb,
-      text = Black,
-      ] (hit) {
-        Mapped address\\
-        returns quicker!
-      };
+      ] (hit) {Mapped address\\ returns quicker!};
 
       \node[
       block,
-      label = above:Translation table,
+      label = above:\color{dBlue}Translation table,
       right = 6cm of tlb,
       rectangle split,
       rectangle split parts = 5,
       rectangle split empty part width = 1cm,
-      ] (table) {
-        PML4E
-        \nodepart{two}
-        PDPTE
-        \nodepart{three}
-        PDE
-        \nodepart{four}
-        PTE
-        \nodepart{five}
-        Physical address
-        \nodepart{six}
+      ] (table) {%
+        PML4E%
+        \nodepart{two}%
+        PDPTE%
+        \nodepart{three}%
+        PDE%
+        \nodepart{four}%
+        PTE%
+        \nodepart{five}%
+        Physical address%
       };
 
       \draw (virt_addr) -> (tlb);
-      \draw (tlb) -> node[right] {Hit} (hit);
+      \draw (tlb) -> node[right] {\color{dGreen}Hit} (hit);
 
-      \draw (tlb) -> node[below] {Miss}
-      node[above, text = Black] {Unmapped address\\takes $\approx$ 40 cycles\\
+      \draw (tlb) -> node[below] {\color{dRed}Miss}
+        node[above] {Unmapped address\\takes $\approx$ 40 cycles\\%
         more for page table walk} (table);
 
     \end{tikzpicture}

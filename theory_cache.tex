@@ -2,175 +2,145 @@
 
 \begin{frame}{\insertsubsection}
 
-
-  \begin{figure}[h]
+  \begin{figure}
     \begin{tikzpicture}[
       align = center,
       ->,
       > = Stealth,
-      thick,
       core/.style = {
         rectangle,
-        draw,
-        text centered,
-        minimum width = 1cm,
-        minimum height = 1cm,
+        inner sep = 5pt,
+        draw = dBlue,
       },
       cache1/.style = {
         rectangle split,
         rectangle split horizontal,
         rectangle split parts = 2,
-        rectangle split part fill = {
-          OliveGreen, Blue
-        },
-        draw,
-        text = White,
+        draw = dGreen,
       },
       cache2/.style = {
         rectangle,
-        draw,
-        fill = Sepia,
-        text = White,
+        draw = dViolet,
       },
       cache3/.style = {
         rectangle,
-        draw,
-        fill = ForestGreen,
-        text = White,
-        minimum width = 9cm,
+        draw = dDarkGray,
       },
       block/.style = {
         rectangle,
-        draw,
-        fill = Maroon,
-        text = White,
+        draw = dRed,
       },
       ]
 
       \node[
       core,
-      ] (core_0) {
-        Core 0
-      };
-
+      ] (core_0) {Core 0};
 
       \node[
       core,
-      right = 2cm of core_0,
-      ] (core_1) {
-        Core 1
-      };
+      right = 2.2cm of core_0,
+      ] (core_1) {Core 1};
 
       \node[
       core,
-      right = 2cm of core_1,
-      ] (core_2) {
-        Core 2
-      };
+      right = 2.2cm of core_1,
+      ] (core_2) {Core 2};
 
       \node[
       core,
-      right = 2cm of core_2,
-      ] (core_3) {
-        Core 3
+      right = 2.2cm of core_2,
+      ] (core_3) {Core 3};
+
+      \node[
+      cache1,
+      below = .7 of core_0.center,
+      ] (c1_0) {%
+        32KB, L1-i%
+        \nodepart{two}%
+        32KB, L1-d%
       };
 
       \node[
       cache1,
-      below = of core_0.center,
-      ] (c1_0) {
-        32KB,\\L1-i
-        \nodepart{two}
-        32KB,\\L1-d
+      below = .7 of core_1.center,
+      ] (c1_1) {%
+        32KB, L1-i%
+        \nodepart{two}%
+        32KB, L1-d%
       };
 
       \node[
       cache1,
-      below = of core_1.center,
-      ] (c1_1) {
-        32KB,\\L1-i
-        \nodepart{two}
-        32KB,\\L1-d
+      below = .7 of core_2.center,
+      ] (c1_2) {%
+        32KB, L1-i%
+        \nodepart{two}%
+        32KB, L1-d%
       };
 
       \node[
       cache1,
-      below = of core_2.center,
-      ] (c1_2) {
-        32KB,\\L1-i
-        \nodepart{two}
-        32KB,\\L1-d
-      };
-
-      \node[
-      cache1,
-      below = of core_3.center,
-      ] (c1_3) {
-        32KB,\\L1-i
-        \nodepart{two}
-        32KB,\\L1-d
+      below = .7 of core_3.center,
+      ] (c1_3) {%
+        32KB, L1-i%
+        \nodepart{two}%
+        32KB, L1-d%
       };
 
       \node[
       cache2,
       below = .5 of c1_0,
-      ] (c2_0) {
-        256KB,\\L2 (NINE)
-      };
+      ] (c2_0) {256KB,\\L2 (NINE)};
 
       \node[
       cache2,
       below = .5 of c1_1,
-      ] (c2_1) {
-        256KB,\\L2 (NINE)
-      };
+      ] (c2_1) {256KB,\\L2 (NINE)};
 
       \node[
       cache2,
       below = .5 of c1_2,
-      ] (c2_2) {
-        256KB,\\L2 (NINE)
-      };
+      ] (c2_2) {256KB,\\L2 (NINE)};
 
       \node[
       cache2,
       below = .5 of c1_3,
-      ] (c2_3) {
-        256KB,\\L2 (NINE)
-      };
+      ] (c2_3) {256KB,\\L2 (NINE)};
 
       \node[
       cache3,
       below = .5 of $(c2_1.south)!.5!(c2_2.south)$,
-      ] (c3) {
-        8MB,\\
-        shared L3 (inclusive L1, L2)
-      };
+      ] (c3) {8MB, shared L3 (inclusive L1, L2)};
+
+      % TODO
+      % Dirty hack
+      \node[
+      below = .80 of c3,
+      ] (caption_hack) {Data flow through a modern platform};
 
       \node[
       block,
       minimum width = 2cm,
-      right = of c3,
+      right = 2.5 of c3,
       ] (mc) {MC};
 
       \node[
       block,
       minimum width = 2cm,
-      left = of c3,
+      left = 2.5 of c3,
       ] (ht) {HT};
 
       \node[
       block,
+      minimum width = 2cm,
       below = .5 of mc,
       ] (dram) {DRAM};
 
       \node[
       block,
+      minimum width = 2cm,
       below = .5 of ht,
-      ] (chips) {
-        Other\\
-        chips
-      };
+      ] (chips) {Other chips};
 
       \draw[<->] (core_0) -- (c1_0);
       \draw[<->] (core_1) -- (c1_1);
@@ -181,11 +151,10 @@
       \draw[<->] (c1_1) -- (c2_1);
       \draw[<->] (c1_2) -- (c2_2);
       \draw[<->] (c1_3) -- (c2_3);
-
-      \draw[<->] (c2_0) -- (c3);
-      \draw[<->] (c2_1) -- (c3);
-      \draw[<->] (c2_2) -- (c3);
-      \draw[<->] (c2_3) -- (c3);
+      \draw[<->] (c2_0) -- ++(1.5, 0) -- ++(0, -1) |- (c3.175);
+      \draw[<->] (c2_1.south) -- (c2_1.south |- c3.north);
+      \draw[<->] (c2_2.south) -- (c2_2.south |- c3.north);
+      \draw[<->] (c2_3) -- ++(-1.5, 0) -- ++(0, -1) |- (c3.5);
 
       \draw[<->] (c3) -- (ht);
       \draw[<->] (c3) -- (mc);
@@ -194,7 +163,7 @@
       \draw[<->] (mc) -- (dram);
 
     \end{tikzpicture}
-    \caption{The flow of data through a modern platform}\label{fig:proc_cache_arch}
+    % \caption{Data flow through a modern platform}\label{fig:proc_cache_arch}
   \end{figure}
 
   \note{
@@ -216,14 +185,13 @@
 
 \begin{frame}{\insertsubsection}
 
-
   \begin{figure}[h]
 
-    \newcommand*\virtcolor{ForestGreen, ForestGreen, ForestGreen, ForestGreen, ForestGreen, ForestGreen}
+    \newcommand*\virtcolor{dGreen, dGreen, dGreen, dGreen, dGreen, dGreen}
 
     \only<2-3>{
 
-      \renewcommand*\virtcolor{ForestGreen, ForestGreen, BrickRed, ForestGreen, ForestGreen, ForestGreen}
+      \renewcommand*\virtcolor{dGreen, dGreen, dRed, dGreen, dGreen, dGreen}
 
     }
 
@@ -231,44 +199,44 @@
       align = center,
       ->,
       > = Stealth,
-      thick,
-      double = ForestGreen,
       block/.style = {
-        draw,
-        text = White,
+        draw = dWhite,
+        text = dWhite,
         minimum width = 2cm,
         rectangle split,
         rectangle split parts = 6,
         rectangle split part fill = {
-          ForestGreen, ForestGreen, ForestGreen, ForestGreen, ForestGreen, ForestGreen
+          dGreen, dGreen, dGreen, dGreen, dGreen, dGreen
         },
       },
       cache/.style = {
-        draw,
-        text = Black,
+        draw = dWhite,
+        text = dWhite,
         text centered,
         minimum width = 2cm,
         rectangle split,
         rectangle split parts = 2,
+        rectangle split part fill = {
+          dGray, dGray
+        },
       },
       ]
 
       \node[block,
       rectangle split part fill = {\virtcolor},
       label = above:Virtual memory,
-      ] (virt) {
-        0xf200
-        \nodepart{two}
-        0xf100
-        \nodepart{three}
-        0xf000
-        \nodepart{four}
-        $\cdots$
-        \nodepart{five}
-        0x2000
-        \nodepart{six}
-        0x1000
-        \nodepart{seven}
+      ] (virt) {%
+        0xf200%
+        \nodepart{two}%
+        0xf100%
+        \nodepart{three}%
+        0xf000%
+        \nodepart{four}%
+        $\cdots$%
+        \nodepart{five}%
+        0x3000%
+        \nodepart{six}%
+        0x2000%
       };
 
       \node[cache,
@@ -277,25 +245,23 @@
       ] (cache_addr) {
         \only<1-3>{0xf200}%
         \only<4>{0xf000}%
-        \nodepart{two}
-        0x2000
-        \nodepart{three}
+        \nodepart{two}%
+        0x2000%
       };
 
       \node[cache,
       right = 0 of cache_addr,
       label = above:Data,
-      fill = NavyBlue,
+      fill = dBlue,
+      text = dWhite,
       ] (cache_content) {
-        \only<1-3>{\color{White}Kernel secret 0}%
-        \only<4>{\color{White}Kernel secret 1}%
-        \nodepart{two}
-        \color{White}User secret
-        \nodepart{three}
+        \only<1-3>{Kernel secret 0}%
+        \only<4>{Kernel secret 1}%
+        \nodepart{two}%
+        User secret%
       };
 
-      \node[
-      rectangle,
+      \node[rectangle,
       fit = (cache_addr) (cache_content),
       label = {below:Cache (L1, L2, LLC)},
       inner sep = 0,
@@ -303,37 +269,36 @@
 
       \node[block,
       right = of cache_content,
-      label = above:Physical memory\\(DRAM),
-      ] (phys) {
-        0x1000
-        \nodepart{two}
-        0x0900
-        \nodepart{three}
-        0x0800
-        \nodepart{four}
-        0x0700
-        \nodepart{five}
-        0x0600
-        \nodepart{six}
-        0x0500
-        \nodepart{seven}
+      label = above:Physical memory (DRAM),
+      ] (phys) {%
+        0x1000%
+        \nodepart{two}%
+        0x0900%
+        \nodepart{three}%
+        0x0800%
+        \nodepart{four}%
+        0x0700%
+        \nodepart{five}%
+        0x0600%
+        \nodepart{six}%
+        0x0500%
       };
 
-      \draw<1>[ForestGreen] (virt.one east)  -- ++(.5, 0) -- node[right] {hit} ++(0, -1) |- (cache_addr.one west);
-      \draw<1>[ForestGreen] (virt.five east) -- ++(.5, 0) -- node[below right] {hit} ++(0, .4) |- (cache_addr.two west);
+      \draw<1>[dGreen] (virt.one east)  -- ++(.5, 0) -- node[right] {hit} ++(0, -1) |- (cache_addr.one west);
+      \draw<1>[dGreen] (virt.five east) -- ++(.5, 0) -- node[below right] {hit} ++(0, .4) |- (cache_addr.two west);
 
       \draw<1-3> (phys.three west) -- (cache_content.one east);
       \draw (phys.four west) -- (cache_content.two east);
 
-      \draw<2>[BrickRed] (virt.three east) -- node[above] {miss} (cache_addr.west);
+      \draw<2>[dRed] (virt.east) -- node[above] {miss} (cache_addr.west);
 
-      \draw<3>[BrickRed] (virt.three east) -- ++(.5, 0) -- ++(0, -3) -| (phys.south);
+      \draw<3>[dRed] (virt.three east) -- ++(.5, 0) -- ++(0, -3) -| (phys.south);
 
       \draw<4> (virt.three east) -- ++(.5, 0) -- ++(0, -3) -| (phys.south);
-      \draw<4>[BrickRed] (phys.six west) -- ++(-.3, 0) |- (cache_content.one east);
+      \draw<4>[dRed] (phys.six west) -- ++(-.3, 0) |- (cache_content.one east);
 
     \end{tikzpicture}
-    \caption{Algorithm of CPU cache}\label{fig:cache_manipulation_example}
+    \caption{CPU cache algorithm}\label{fig:cache_manipulation_example}
   \end{figure}
 
   \note<1>{
@@ -679,7 +644,6 @@
       align = center,
       ->,
       > = Stealth,
-      thick,
       ampersand replacement = \&,
       mem/.style = {
         draw,
@@ -688,7 +652,7 @@
         rectangle split parts = 3,
         rectangle split horizontal,
         rectangle split every empty part = {},
-        rectangle split empty part width = width("n бит"),
+        rectangle split empty part width = width("n bits"),
       },
       cache/.style = {
         matrix of nodes,
@@ -702,62 +666,54 @@
           anchor = center,
         },
         right delimiter = \},
-        text = Black,
       },
       ]
 
       \node[cache,
       label = above:Cache,
-      label = {
-        [label distance = 10]right:$2^n$\\sets
+      label = {%
+        [label distance = 10]right:$2^n$\\sets%
       },
-      ] (cache) {
-        \node[fill = black!30](cache_1_1){Way 1 Tag}; \& \node[fill = black!30]{Way 1 Data}; \\
-        \node[fill = black!10]{Way 2 Tag}; \& \node[fill = black!10]{Way 2 Data}; \\
-        \node[fill = black!30](tag_1){}; \& \node[fill = black!30](data_1){}; \\
-        \node[fill = black!10](tag_2){}; \& \node[fill = black!10](data_2){}; \\
-        \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
-        \node[fill = black!10]{}; \& \node[fill = black!10]{}; \\
-        \node[fill = black!30]{}; \& \node[fill = black!30]{}; \\
+      ] (cache) {%
+        \node[fill = dGray!20](cache_1_1){Way 1 Tag}; \& \node[fill = dGray!20]{Way 1 Data};\\
+        \node{Way 2 Tag}; \& \node{Way 2 Data};\\
+        \node[fill = dGray!20](tag_1){}; \& \node[fill = dGray!20](data_1){};\\
+        \node(tag_2){}; \& \node(data_2){};\\
+        \node[fill = dGray!20]{}; \& \node[fill = dGray!20]{};\\
+        % \node{}; \& \node{}; \\
+        % \node[fill = dGray!20]{}; \& \node[fill = dGray!20]{}; \\
       };
 
       \node[mem,
       left = of cache_1_1.west,
       label = above:Memory Address,
-      ] (addr) {
-        \nodepart{two}
-        \textit{n} bits
-        \nodepart{three}
-        \textit{b} bits
-        \nodepart{four}
+      ] (addr) {%
+        \nodepart{two}%
+        \textit{n} bits%
+        \nodepart{three}%
+        \textit{b} bits%
       };
 
       \node[
+      rectangle,
       draw,
       dashed,
       below = of addr.one south,
-      rectangle,
       minimum width = 1cm,
       minimum height = 1cm,
-      ] (f) {
-        f
-      };
+      ] (f) {f};
 
       \node[
       circle,
       draw,
-      below = 2 of tag_2,
-      ] (hit_1) {
-        hit?
-      };
+      below = of tag_2,
+      ] (hit_1) {hit?};
 
       \node[
       circle,
       draw,
       below right = 0.1 of hit_1,
-      ] (hit_2) {
-        hit?
-      };
+      ] (hit_2) {hit?};
 
       \draw (addr.one south) -> (f);
       \draw (f) |- node[below right] {Tag} (hit_1);
@@ -768,8 +724,8 @@
       \draw ([xshift = 0.8cm]tag_2.center) -> (hit_2);
 
     \end{tikzpicture}
-    % \caption{Схема работы кэша с ассоциативным набором
-    %   (сетом)}\label{fig:set_associative_cache}
+    % \caption{How works two-way associative
+    %   cache}\label{fig:set_associative_cache}
   \end{figure}
 
   \note{
@@ -795,24 +751,31 @@
 \subsubsection{Cache replacement policies}
 \begin{frame}{\insertsubsubsection}
 
-  \begin{itemize}
-    \item \texttt{FIFO}
-    \item \texttt{LIFO}
-    \item least recently used, \texttt{LRU}
-    \item time aware least recently used, \texttt{TLRU}
-    \item most recently used, \texttt{MRU}
-    \item pseudo-LRU, \texttt{PLRU}
-    \item random replacement, \texttt{RR}
-    \item segment LRU, \texttt{SLRU}
-    \item least frequently used, \texttt{LFU}
-    \item least frequent recently used, \texttt{LFRU}
-    \item LFU with dynamic aging, \texttt{LFUDA}
-    \item low inter--reference recency set, \texttt{LIRS}
-    \item adaptive replacement cache, \texttt{ARC}
-    \item clock with adaptive replacement, \texttt{CAR}
-    \item multi queue, \texttt{MQ}
-    \item and etc.
-  \end{itemize}
+  \begin{columns}
+
+    \column{.5\textwidth}
+    \begin{itemize}
+      \item \texttt{FIFO}
+      \item \texttt{LIFO}
+      \item least recently used, \texttt{LRU}
+      \item time aware least recently used, \texttt{TLRU}
+      \item most recently used, \texttt{MRU}
+      \item pseudo-LRU, \texttt{PLRU}
+      \item random replacement, \texttt{RR}
+      \item segment LRU, \texttt{SLRU}
+    \end{itemize}
+    \column{.5\textwidth}
+    \begin{itemize}
+      \item least frequently used, \texttt{LFU}
+      \item least frequent recently used, \texttt{LFRU}
+      \item LFU with dynamic aging, \texttt{LFUDA}
+      \item low inter--reference recency set, \texttt{LIRS}
+      \item adaptive replacement cache, \texttt{ARC}
+      \item clock with adaptive replacement, \texttt{CAR}
+      \item multi queue, \texttt{MQ}
+      \item and etc.
+    \end{itemize}
+  \end{columns}
 
   \note{
 

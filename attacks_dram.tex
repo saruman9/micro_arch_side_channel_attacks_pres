@@ -3,27 +3,26 @@
 
   \begin{figure}[h]
 
-    \newcommand*\dramcolor{White, White, White,
-      White, White, White, White}
+    \newcommand*\dramcolor{dWhite, dWhite, dWhite, dWhite, dWhite, dWhite,
+      dWhite}%
 
-    \newcommand*\bufcolor{White}
+    \newcommand*\bufcolor{dWhite}%
 
-    \only<2>{
-      \renewcommand*\dramcolor{White, ForestGreen, White,
-      White, White, White, White}
+    \only<2>{%
+      \renewcommand*\dramcolor{dWhite, dGreen, dWhite, dWhite, dWhite, dWhite,
+        dWhite}%
     }
 
-    \only<3-5>{
-      \renewcommand*\dramcolor{White, ForestGreen, White,
-        White, White, White, White}
-      \renewcommand*\bufcolor{ForestGreen}
+    \only<3-5>{%
+      \renewcommand*\dramcolor{dWhite, dGreen, dWhite, dWhite, dWhite, dWhite,
+        dWhite}%
+      \renewcommand*\bufcolor{dGreen}%
     }
 
     \begin{tikzpicture}[
       align = center,
       ->,
       > = Stealth,
-      thick,
       dram/.style = {
         rectangle,
         rectangle split,
@@ -31,79 +30,65 @@
         rectangle split part fill = \dramcolor,
         minimum width = 3cm,
         draw,
-        text = Black,
-        text centered,
-      },
-      block/.style = {
-        rectangle,
-        draw,
-        fill = ForestGreen,
-        text = White,
         text centered,
       },
       ]
 
       \node[
       dram,
-      label = above:DRAM bank,
+      label = above:\color{dBlue}DRAM bank,
       ] (dram) {
-        0123456789
-        \nodepart{two}
-        1234567890
-        \nodepart{three}
-        2345678901
-        \nodepart{four}
-        3456789012
-        \nodepart{five}
-        4567890123
-        \nodepart{six}
-        5678901234
-        \nodepart{seven}
-        6789012345
-        \nodepart{eight}
+        0123456789%
+        \nodepart{two}%
+        \only<2->{\color{dWhite}}%
+        1234567890%
+        \nodepart{three}%
+        2345678901%
+        \nodepart{four}%
+        3456789012%
+        \nodepart{five}%
+        4567890123%
+        \nodepart{six}%
+        5678901234%
+        \nodepart{seven}%
+        6789012345%
       };
 
       \node[
-      draw,
-      fill = ForestGreen,
-      text = White,
+      draw = dGreen,
       left = 3cm of dram,
       minimum width = 2cm,
-      minimum height = 2cm,
-      ] (cpu) {
-        CPU
-      };
+      ] (cpu) {CPU};
 
       \node[
       below = .5 of dram,
-      text = Black,
       fill = \bufcolor,
       draw,
       minimum width = 3cm,
-      ] (buf) {
+      ] (buf) {%
         \only<1-2>{row buffer}%
-        \only<3-5>{1234567890}%
+        \only<3-5>{\color{dWhite}1234567890}%
       };
 
-      \draw<2, 5> (cpu) -- node[sloped, above] {Reading} (dram.two west);
+      \draw<2, 5> (cpu.north) |- node[sloped, above right] {\color{dBlue}Reading} (dram.two west);
 
-      \draw<3> (dram.two east) -- ++(1, 0) |- node[right] {Copy} (buf);
+      \draw<3> (dram.two east) -- ++(1, 0) |- node[right] {\color{dBlue}Copy} (buf);
 
-      \draw<4> (buf) -- (cpu);
+      \draw<4> (buf) -| (cpu);
 
-      \draw<5> (buf) -- node[sloped, above] {Faster!} (cpu);
+      \draw<5> (buf) -| node[above left] {\color{dBlue}Faster!} (cpu);
 
 
     \end{tikzpicture}
-    \only<1>{\caption{Reading from DRAM}}\label{fig:draw_row_buffer}
+    \only<1>{\caption{Reading from DRAM}}\label{fig:draw_row_buffer}%
 
-    \only<2>{\caption{CPU reads row 1, row buffer empty}}
+    \only<2>{\caption{CPU reads row 1, row buffer is empty}}%
 
     % \only<3>{\caption{DRAM открывает строку №1}}
 
     % \only<4>{\caption{CPU читает строку №1 из буфера строки}}
 
-    \only<5>{\caption{CPU reads row 1, row buffer now full}}
+    \only<5>{\caption{CPU reads row 1, row buffer is now full}}%
   \end{figure}
 
   \note<1>{
@@ -127,7 +112,7 @@
   \item DRAMA
   \item Row hit (Flush + Reload)
   \item Row miss (Prime + Probe)
-  \item and etc.
+  \item etc.
   \end{itemize}
 
   \note{
@@ -152,8 +137,8 @@
 
 %   \begin{figure}[h]
 
-%     \newcommand*\dramcolor{Green, NavyBlue, ForestGreen, ForestGreen, White,
-%       White, White}
+%     \newcommand*\dramcolor{Green, NavyBlue, dGreen, dGreen, dWhite,
+%       dWhite, dWhite}
 
 %     \newcommand*\bufcolor{Green}
 
@@ -187,8 +172,8 @@
 %       block/.style = {
 %         rectangle,
 %         draw,
-%         fill = ForestGreen,
-%         text = White,
+%         fill = dGreen,
+%         text = dWhite,
 %         text centered,
 %       },
 %       ]
@@ -215,8 +200,8 @@
 
 %       \node[
 %       draw,
-%       fill = ForestGreen,
-%       text = White,
+%       fill = dGreen,
+%       text = dWhite,
 %       left = 3cm of dram,
 %       minimum width = 2cm,
 %       minimum height = 2cm,

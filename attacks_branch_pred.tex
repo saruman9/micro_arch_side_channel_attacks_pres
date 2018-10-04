@@ -5,12 +5,9 @@
       align = center,
       ->,
       > = Stealth,
-      thick,
       ampersand replacement = \&,
       block/.style = {
-        draw,
-        fill = ForestGreen,
-        text = White,
+        draw = dGreen,
       },
       cache/.style = {
         matrix of nodes,
@@ -19,7 +16,7 @@
         nodes = {
           minimum width = 3cm,
           minimum height = .5cm,
-          draw,
+          draw = dGray,
           align = center,
           anchor = center,
         },
@@ -30,30 +27,26 @@
       cache,
       label = {Branch Target Buffer},
       ] (btb) {
-        Address tag \& Target \\
-        \& \\
-        \& \\
-        0xebe45a82 \& ??? \\
-        \& \\
-        \& \\
-        \& \\
+        Address tag \& Target \\%
+        \& \\%
+        \& \\%
+        0xebe45a82 \& ??? \\%
+        \& \\%
+        \& \\%
+        \& \\%
       };
 
       \node[
       draw,
       left = 7cm of btb.north,
       label = above:Virtual address (user space),
-      ] (addr_user) {
-        0x0000 \color{ForestGreen}EBE45A82
-      };
+      ] (addr_user) {0x0000 \color{dGreen}EBE45A82};
 
       \node[
       draw,
-      below = 4cm of addr_user,
+      below = 3cm of addr_user,
       label = below:Virtual address (kernel space),
-      ] (addr_kernel) {
-        0xFFFF \color{ForestGreen}EBE45A82
-      };
+      ] (addr_kernel) {0xFFFF \color{dGreen}EBE45A82};
 
       \node[
       left = of btb,
@@ -61,16 +54,14 @@
       minimum width = 1cm,
       minimum height = 1cm,
       label = left:Indexing\\function,
-      ] (f) {
-        f(x)
-      };
+      ] (f) {f(x)};
 
       \draw (addr_user.east) -| (f.north);
       \draw (addr_kernel.east) -| (f.south);
       \draw (f) -> (btb.west);
 
     \end{tikzpicture}
-    \caption{Branch Target Buffer addressing scheme in Haswell
+    \caption{Branch Target Buffer addressing a scheme in the Haswell
       processor}\label{btb_tag}
   \end{figure}
 

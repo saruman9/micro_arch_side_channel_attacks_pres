@@ -2,7 +2,7 @@
 
   \begin{figure}[h]
     \center%
-    \includegraphics[height = .8\textheight]{multicore_cpu}
+    \includegraphics[height = .7\textheight]{multicore_cpu}
     \caption{Architecture of multicore CPU}
   \end{figure}
 
@@ -17,123 +17,108 @@
 
 \begin{frame}<1-2>[label = core_elements]{\insertsubsection}
 
-  \begin{figure}[h]
-    \center%
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      mmu_node/.style = {
-        rectangle,
-        draw = Black,
-        fill = ForestGreen,
-        text = White,
-      },
-      cpu_node/.style = {
-        rectangle,
-        fill = PineGreen,
-        draw = Black,
-        text = White,
-      },
-      mem_node/.style = {
-        rectangle,
-        fill = Blue,
-        draw = Black,
-        text = White,
-      },
-      ]
+  \begin{columns}
+    \column{.2\textwidth}%
+      Abstract architecture of core and memory organization
+    \column{.8\textwidth}%
+    \begin{figure}[h]
+      \center%
+      \begin{tikzpicture}[
+        align = center,
+        ->,
+        > = Stealth,
+        mmu_node/.style = {
+          rectangle,
+          draw = dGreen,
+        },
+        cpu_node/.style = {
+          rectangle,
+          draw = dViolet,
+        },
+        mem_node/.style = {
+          rectangle,
+          draw = dBlue,
+        },
+        ]
 
-      \node[mmu_node] (cr3) {
-        CR3
-      };
+        \node[mmu_node] (cr3) {CR3};
 
-      \node[below = .5 of cr3,
-      mmu_node,
-      ] (pt_walker) {
-        PT Walker
-      };
+        \node[below = .5 of cr3,
+        mmu_node,
+        ] (pt_walker) {PT Walker};
 
-      \node[left = of pt_walker,
-      mmu_node,
-      ] (tlb) {
-        TLB
-      };
+        \node[left = of pt_walker,
+        mmu_node,
+        ] (tlb) {TLB};
 
-      \node[
-      inner sep = 8,
-      fit = (tlb) (pt_walker) (cr3),
-      draw = Black,
-      label = above left:MMU,
-      ] (mmu) {};
+        \node[
+        inner sep = 8,
+        fit = (tlb) (pt_walker) (cr3),
+        draw = dGray,
+        label = above left:\color{dBlue}MMU,
+        ] (mmu) {};
 
-      \node[
-      cpu_node,
-      left = 2cm of mmu,
-      yshift = 20,
-      ] (exec_unit)  {
-        Execution Unit
-      };
+        \node[
+        cpu_node,
+        left = 2cm of mmu,
+        yshift = 20,
+        ] (exec_unit)  {Execution Unit};
 
-      \node[
-      cpu_node,
-      below = of exec_unit,
-      ] (load_unit) {
-        Load/Store Unit
-      };
+        \node[
+        cpu_node,
+        below = .8 of exec_unit,
+        ] (load_unit) {Load/Store Unit};
 
-      \node[mem_node,
-      below = .6 of mmu,
-      ] (l1_data) {
-        L1 Data
-      };
+        \node[mem_node,
+        below = .6 of mmu,
+        ] (l1_data) {L1 Data};
 
-      \node[
-      inner sep = 15,
-      fit = (mmu) (load_unit) (exec_unit) (l1_data),
-      draw = Black,
-      label = above left:Core,
-      ] (core) {};
+        \node[
+        inner sep = 15,
+        fit = (mmu) (load_unit) (exec_unit) (l1_data),
+        draw = dGray,
+        label = 151:\color{dBlue}Core,
+        ] (core) {};
 
-      \node[mem_node, below = .2 of core] (l3) {
-        L3 (Shared)
-      };
+        \node[mem_node, below = .2 of core] (l3) {%
+          L3 (Shared)};
 
-      \node[mem_node, above = .75 of l3] (l2) {
-        L2
-      };
+        \node[mem_node, above = .75 of l3] (l2) {%
+          L2};
 
-      \node<2>[
-      fit = (exec_unit) (load_unit),
-      line width = 0.5mm,
-      draw = red,
-      ] (fit_exec) {};
+        \node<2>[
+        fit = (exec_unit) (load_unit),
+        line width = 0.5mm,
+        draw = dRed,
+        ] (fit_exec) {};
 
-      \node<3>[
-      fit = (l1_data) (l2) (l3),
-      line width = 0.5mm,
-      draw = red,
-      ] (fit_cache) {};
+        \node<3>[
+        fit = (l1_data) (l2) (l3),
+        line width = 0.5mm,
+        draw = dRed,
+        ] (fit_cache) {};
 
-      \node<4>[
-      fit = (tlb) (pt_walker) (cr3),
-      line width = 0.5mm,
-      draw = red,
-      ] (fit_mmu) {};
+        \node<4>[
+        fit = (tlb) (pt_walker) (cr3),
+        line width = 0.5mm,
+        draw = dRed,
+        ] (fit_mmu) {};
 
-      \path (cr3)                edge                                       (pt_walker)
-            (pt_walker.175)      edge node[above] {Fill}                    (tlb.10)
-            (tlb.350)            edge node[below] {Miss}                    (pt_walker.185)
-            (exec_unit.east)     edge[<->] node[below = .3cm] {Virt. addr.} (mmu)
-            (load_unit.east)     edge[<->]                                  (mmu)
-            (mmu)                edge node[right] {Phys. addr.}             (l1_data)
-            (l1_data)            edge                                       (l2)
-            (l2)                 edge[<->]                                  (l3);
+        \path (cr3)                edge                                       (pt_walker)
+              (mmu)                edge node[right] {Phys. addr.}             (l1_data)
+              (l1_data)            edge                                       (l2)
+              (l2)                 edge[<->]                                  (l3);
 
-    \end{tikzpicture}
-    \caption{Abstract architecture of core and memory
-      organization}\label{fig:core_elements}
-  \end{figure}
+        \draw (pt_walker.165) -> node[above = 0cm] {Fill} (pt_walker.165 -| tlb.east);
+        \draw (tlb.330) -> node[above = 0cm] {Miss} (tlb.330 -| pt_walker.west);
+        \draw[<->] (exec_unit.east) -- node[below = .3cm] {Virt. addr.} (exec_unit -| mmu.west);
+        \draw[<->] (load_unit.east) -- (load_unit -| mmu.west);
+
+      \end{tikzpicture}
+      % \caption{Abstract architecture of core and memory
+      %   organization}\label{fig:core_elements}
+    \end{figure}
+  \end{columns}
 
   \note<1>{
 
@@ -165,77 +150,58 @@
 \subsubsection{Pipelining}
 \begin{frame}{\insertsubsubsection. In-Order}
 
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      draw,
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      node distance = .6,
-      block/.style = {
-        rectangle,
+  \begin{columns}
+    \column{.3\textwidth}%
+      Elements of a modern in-order core
+    \column{.7\textwidth}
+    \begin{figure}[h]
+      \begin{tikzpicture}[
         draw,
-        fill = ForestGreen,
-        text = White,
-        text centered,
-      },
-      ]
+        align = center,
+        ->,
+        > = Stealth,
+        node distance = .5,
+        block/.style = {
+          rectangle,
+          draw = dGreen,
+          text centered,
+        },
+        ]
 
-      \node[block] (l1_i) {
-        L1 I\$
-      };
+        \node[block] (l1_i) {L1 I\$};
 
-      \node[block, below = of l1_i] (if) {
-        Instruction Fetch
-      };
+        \node[block, below = of l1_i] (if) {Instruction Fetch};
 
-      \node[block, below = of if] (id) {
-        Instruction Decode
-      };
+        \node[block, below = of if] (id) {Instruction Decode};
 
-      \node[block, below = of id] (ie) {
-        Instruction Execute
-      };
+        \node[block, below = of id] (ie) {Instruction Execute};
 
-      \node[block, below = of ie] (mem_acc) {
-        Memory Access
-      };
+        \node[block, below = of ie] (mem_acc) {Memory Access};
 
-      \node[block, below = of mem_acc] (write) {
-        Writeback
-      };
+        \node[block, below = of mem_acc] (write) {Writeback};
 
-      \node[block, left = of if] (bp) {
-        Branch \\
-        Predictor
-      };
+        \node[block, left = of if] (bp) {Branch Predictor};
 
-      \node[block, left = of mem_acc] (rf) {
-        Register \\
-        File
-      };
+        \node[block, left = of mem_acc] (rf) {Register File};
 
-      \node[block, right = 1.5 of mem_acc] (l1_d) {
-        L1 \\
-        D\$
-      };
+        \node[block, right = 1.5 of mem_acc] (l1_d) {L1 D\$};
 
-      \path (l1_i)    edge      (if)
-            (if)      edge      (id)
-            (id)      edge      (ie)
-            (ie)      edge      (mem_acc)
-            (mem_acc) edge      (write)
-            (if)      edge      (bp)
-            (l1_d)    edge[<->] (mem_acc);
+        \path (l1_i)    edge      (if)
+              (if)      edge      (id)
+              (id)      edge      (ie)
+              (ie)      edge      (mem_acc)
+              (mem_acc) edge      (write)
+              (if)      edge      (bp)
+              (l1_d)    edge[<->] (mem_acc);
 
-      \draw (rf.north)   |- node{} (ie.west);
-      \draw (write.west) -| node{} (rf.south);
-      \draw (bp.south)   |- node{} (id.west);
+        \draw (rf.north)   |- node{} (ie.west);
+        \draw (write.west) -| node{} (rf.south);
+        \draw (bp.south)   |- node{} (id.west);
 
-    \end{tikzpicture}
-    \caption{Elements of a modern in-order core}\label{fig:exe_in_order}
-  \end{figure}
+      \end{tikzpicture}
+      % \caption{Elements of a modern in-order core}\label{fig:exe_in_order}
+    \end{figure}
+  \end{columns}
 
   \note{
 
@@ -274,97 +240,85 @@
 
 \begin{frame}<1>[label = reorder_exe]{\insertsubsubsection. Out-of-Order}
 
-  \begin{figure}[h]
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      node distance = .6,
-      block/.style = {
-        rectangle,
-        draw,
-        fill = ForestGreen,
-        text = White,
-      },
-      ]
+  \begin{columns}
+    \column{.2\textwidth}
+      Elements of a modern out-of-order core
+    \column{.8\textwidth}
+    \begin{figure}[h]
+      \begin{tikzpicture}[
+        align = center,
+        ->,
+        > = Stealth,
+        node distance = .5,
+        block/.style = {
+          rectangle,
+          draw = dGreen,
+        },
+        ]
 
-      \node[block] (l1_i) {
-        L1 I\$
-      };
+        \node[block] (l1_i) {L1 I\$};
 
-      \node[block, below = .3 of l1_i,
-      rectangle split,
-      rectangle split parts = 2] (if_id) {
-        Instruction Fetch
-        \nodepart{two}
-        Instruction Decode
-      };
+        \node[block, below = .3 of l1_i,
+        rectangle split,
+        rectangle split parts = 2] (if_id) {%
+          Instruction Fetch%
+          \nodepart{two}%
+          Instruction Decode%
+        };
 
-      \node[block, left = 1 of if_id] (bp) {
-        Branch \\
-        Predictor
-      };
+        \node[block, left = 1 of if_id] (bp) {Branch Predictor};
 
-      \node[block, below = of if_id] (rob) {
-        Register Renaming (ROB)
-      };
+        \node[block, below = of if_id] (rob) {Register Renaming (ROB)};
 
-      \node[block, below left = of rob.south] (iprf) {
-        Integer Physical \\
-        Register File
-      };
+        \node[block, below left = of rob.south] (iprf) {Integer Physical %
+          Register File};
 
-      \node[block, below right = of rob.south] (vprf) {
-        Vector Physical \\
-        Register File
-      };
+        \node[block, below right = of rob.south] (vprf) {Vector Physical %
+          Register File};
 
-      \node[block, below = 2cm of rob] (eu) {
-        Execution Units
-      };
+        \node[block, below = 1.2cm of rob] (eu) {Execution Units};
 
-      \node[block, below = of eu] (l1_d) {
-        L1 D\$
-      };
+        \node[block, below = of eu] (l1_d) {L1 D\$};
 
-      \node[block,
-      minimum height = 4cm,
-      minimum width = 1cm,
-      right = 1cm of rob] (l2) {
-        L2
-      };
+        \node[block,
+        minimum height = 4cm,
+        minimum width = .5cm,
+        right = 3cm of rob] (l2) {L2};
 
-      \node<2>[
-      fit = (bp),
-      line width = 0.5mm,
-      draw = red,
-      ] (fit_bp) {};
+        \node<2>[
+        fit = (bp),
+        inner sep = 0pt,
+        line width = 0.5mm,
+        draw = dRed,
+        ] (fit_bp) {};
 
-      \node<2>[
-      fit = (rob),
-      line width = 0.5mm,
-      draw = red,
-      ] (fit_rob) {};
+        \node<2>[
+        fit = (rob),
+        inner sep = 0pt,
+        line width = 0.5mm,
+        draw = dRed,
+        ] (fit_rob) {};
 
-      \path (l1_i)  edge      (if_id)
-            (if_id) edge[<->] (bp)
-            (rob)   edge[<->] (iprf.north)
-            (rob)   edge[<->] (vprf.north)
-            (iprf)  edge[<->] (eu)
-            (vprf)  edge[<->] (eu)
-            (eu)    edge[<->] (l1_d);
+        \path (l1_i)  edge      (if_id)
+              (if_id) edge[<->] (bp)
+              (eu)    edge[<->] (l1_d);
 
-      \foreach \i [count = \xi from 0] in {2,...,-2}{
-        \draw ([xshift = \i * 0.4cm]if_id.south) -- ([xshift = \i * 0.4cm]rob.north);
-      }
+        \draw (rob) -| (iprf.north);
+        \draw (rob) -| (vprf.north);
+        \draw (iprf) |- (eu.west);
+        \draw (vprf) |- (eu.east);
 
-      \draw[<->] (l1_i) -| (l2.north);
-      \draw[<->] (l1_d) -| (l2.south);
+        \foreach \i [count = \xi from 0] in {2,...,-2}{
+          \draw ([xshift = \i * 0.4cm]if_id.south) -- ([xshift = \i * 0.4cm]rob.north);
+        }
 
-    \end{tikzpicture}
-    \caption{Elements of a modern out-of-order core}\label{fig:exe_out_of_order}
-  \end{figure}
+        \draw[<->] (l1_i) -| (l2.north);
+        \draw[<->] (l1_d) -| (l2.south);
+
+      \end{tikzpicture}
+      % \caption{Elements of a modern out-of-order core}\label{fig:exe_out_of_order}
+    \end{figure}
+\end{columns}
 
   \note<1>{
 
@@ -582,31 +536,23 @@
       align = center,
       ->,
       > = Stealth,
-      thick,
-      double = ForestGreen,
-      double distance = 1pt,
-      % node distance = .6,
       block/.style = {
         rectangle,
-        draw,
-        fill = ForestGreen,
-        text = White,
+        draw = dGreen,
         minimum width = 4cm,
         text width = 4cm,
         text centered,
       },
       ]
 
-      \node[block] (if) {
-        \texttt{if x > y}
+      \node[block] (if) {\texttt{if x > y}};
+
+      \node[block, below left = of if.center] (secret) {%
+        \texttt{get\_secret\_key()}%
       };
 
-      \node[block, below left = of if.center] (secret) {
-        \texttt{get\_secret\_key()}
-      };
-
-      \node[block, below right = of if.center] (comp) {
-        \texttt{some\_computation()}
+      \node[block, below right = of if.center] (comp) {%
+        \texttt{some\_computation()}%
       };
 
       \draw (if.west) -| node[above] {$\omega = 0.80$} (secret.north);
@@ -653,7 +599,7 @@
 
   \begin{figure}[h]
     \center%
-    \includegraphics[height = .8\textheight]{Hwloc}
+    \includegraphics[height = .7\textheight]{Hwloc}
     \caption{Architecture of multicore CPU AMD Bulldozer}
   \end{figure}
 

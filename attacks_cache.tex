@@ -5,11 +5,8 @@
       align = center,
       ->,
       > = Stealth,
-      thick,
       block/.style = {
-        draw,
-        fill = ForestGreen,
-        text = White,
+        draw = dGreen,
       },
       ]
 
@@ -18,35 +15,28 @@
       label = above:Cache,
       minimum width = 1cm,
       minimum height = 1cm,
-      ] (cache) {
-        Data
-      };
+      ] (cache) {Data};
 
       \node[
       block,
       label = above:DRAM,
       below = of cache,
-      minimum width = 3cm,
-      minimum height = 3cm,
-      ] (dram) {
-        Data
-      };
+      minimum width = 2cm,
+      minimum height = 2cm,
+      ] (dram) {Data};
 
       \node[
       block,
       right = 3cm of $(cache.east)!.5!(dram.east)$,
       minimum width = 2cm,
-      minimum height = 2cm,
-      ] (cpu) {
-        CPU
-      };
+      ] (cpu) {CPU};
 
-      \draw (cpu) -> node[above, sloped] {0.5 ns -- 7 ns} (cache);
-      \draw (cpu) -> node[below, sloped] {250 ns} (dram);
+      \draw (cpu.north) -- ++(0, 1) |- node[above left, sloped] {0.5 ns -- 7 ns} (cache);
+      \draw (cpu.south) -- ++(0, -1) |- node[above left, sloped] {250 ns} (dram);
 
     \end{tikzpicture}
-    \caption{Timing attack --- attack exploiting differences in the execution
-      time of an algorithm}\label{cache_faster}
+    \caption{Timing attack --- an attack aimed at exploiting differences in an
+      algorithm execution time}\label{cache_faster}
   \end{figure}
 
   \note{
@@ -243,13 +233,13 @@
 
 %       \node<2,4,5>[
 %       left = of cache,
-%       ] (bsd) {
-%         \includegraphics[height = .1\textheight]{freebsd}
+%       ] (attacker) {
+%         \includegraphics[height = .1\textheight]{attacker}
 %       };
 
-%       \draw<2>[red] (bsd) -> (attack_0.west);
-%       \draw<4>[red] (bsd) -> (attack_1.west);
-%       \draw<5>[red] (bsd) -> (detect.center);
+%       \draw<2>[red] (attacker) -> (attack_0.west);
+%       \draw<4>[red] (attacker) -> (attack_1.west);
+%       \draw<5>[red] (attacker) -> (detect.center);
 
 %     \end{tikzpicture}
 %     % \caption{Пример атаки Evict + Time}\label{evict_time_example}
@@ -395,14 +385,14 @@
 
 %       \node[
 %       left = of cache,
-%       ] (bsd) {
-%         \includegraphics[height = .1\textheight]{freebsd}
+%       ] (attacker) {
+%         \includegraphics[height = .1\textheight]{attacker}
 %       };
 
 %       \node[
 %       right = of cache,
-%       ] (smile) {
-%         \includegraphics[height = .1\textheight]{smile}
+%       ] (user) {
+%         \includegraphics[height = .1\textheight]{user}
 %       };
 
 %       \node<7>[
@@ -412,17 +402,17 @@
 %         \includegraphics[height = .1\textheight]{aim}
 %       };
 
-%       \draw<1>[red] (bsd) -> (att_0.west);
-%       \draw<2>[LimeGreen] (smile) -> (vic_0.center);
-%       \draw<2>[LimeGreen] (smile) -> (vic_1.center);
-%       \draw<2>[LimeGreen] (smile) -> (vic_2.center);
-%       \draw<2>[LimeGreen] (smile) -> (vic_3.center);
-%       \draw<2>[LimeGreen] (smile) -> (vic_4.center);
-%       \draw<3>[red] (bsd) -> node[caption] {hit} (att_0.center);
-%       \draw<4>[red] (bsd) -> node[caption] {miss} (vic_3.center);
-%       \draw<5>[red] (bsd) -> node[caption] {hit} (att_1.center);
-%       \draw<6>[red] (bsd) -> node[caption] {miss} (vic_4.center);
-%       \draw<7>[red] (bsd) -> node[caption] {Detected!} (att_0.west);
+%       \draw<1>[red] (attacker) -> (att_0.west);
+%       \draw<2>[LimeGreen] (user) -> (vic_0.center);
+%       \draw<2>[LimeGreen] (user) -> (vic_1.center);
+%       \draw<2>[LimeGreen] (user) -> (vic_2.center);
+%       \draw<2>[LimeGreen] (user) -> (vic_3.center);
+%       \draw<2>[LimeGreen] (user) -> (vic_4.center);
+%       \draw<3>[red] (attacker) -> node[caption] {hit} (att_0.center);
+%       \draw<4>[red] (attacker) -> node[caption] {miss} (vic_3.center);
+%       \draw<5>[red] (attacker) -> node[caption] {hit} (att_1.center);
+%       \draw<6>[red] (attacker) -> node[caption] {miss} (vic_4.center);
+%       \draw<7>[red] (attacker) -> node[caption] {Detected!} (att_0.west);
 
 %     \end{tikzpicture}
 %     % \caption{Пример атаки Prime + Probe}\label{prime_probe_example}
@@ -474,10 +464,10 @@
 \subsubsection{Flush + Reload}
 \begin{frame}{\insertsubsubsection}
   \begin{enumerate}
-  \item Map binary (e.g., shared object) into address space
+  \item Map binary (e.g., shared object) into the address space
   \item Flush a cache line (code or data) from the cache
-  \item Schedule the victim's program
-  \item Check if corresponding cache line from step 2 has been loaded by the
+  \item Schedule a victim's program
+  \item Check if the corresponding cache line from Step 2 has been loaded by the
     victim's program
   \end{enumerate}
 
@@ -494,114 +484,119 @@
 
 \begin{frame}{\insertsubsubsection}
 
-  \only<1>{Map binary (e.g., shared object) into address space}%
+  \only<1-4>{\begin{columns}}
 
-  \only<2>{Flush a cache line (code or data) from the cache}%
+    \only<1-4>{\column{.4\textwidth}}
+    \only<1>{Map binary (e.g., shared object) into the address space}%
 
-  \only<3>{Schedule the victim's program}%
+    \only<2>{Flush a cache line (code or data) from the cache}%
 
-  \only<4>{Check if corresponding cache line from step 2 has been loaded by the
-    victim's program}%
+    \only<3>{Schedule a victim's program}%
 
-  \begin{figure}[h]
+    \only<4>{Check if the corresponding cache line from Step 2 has been loaded by
+      the victim's program}%
 
-    \newcommand*\viccolor{ForestGreen}
-    \newcommand*\vicatcolorone{ForestGreen}
-    \newcommand*\vicatcolortwo{ForestGreen}
-    \newcommand*\attcolor{NavyBlue}
-    \newcommand*\attcolorone{White}
+    \only<1-4>{\column{.6\textwidth}}
+    \begin{figure}[h]
 
-    \only<2>{
-      \renewcommand*\vicatcolorone{White}
-      \renewcommand*\vicatcolortwo{White}
-    }
-    \only<3>{
-      \renewcommand*\vicatcolorone{White}
-      \renewcommand*\vicatcolortwo{ForestGreen}
-    }
-    \only<4->{
-      \renewcommand*\vicatcolorone{NavyBlue}
-      \renewcommand*\vicatcolortwo{BrickRed}
-    }
+      \newcommand*\viccolor{dGreen}
+      \newcommand*\vicatcolorone{dGreen}
+      \newcommand*\vicatcolortwo{dGreen}
+      \newcommand*\attcolor{dBlue}
+      \newcommand*\attcolorone{dWhite}
 
-    \begin{tikzpicture}[
-      align = center,
-      ->,
-      > = Stealth,
-      thick,
-      ampersand replacement = \&,
-      block/.style = {
-        draw,
-        fill = ForestGreen,
-        text = White,
-      },
-      cache/.style = {
-        matrix of nodes,
-        nodes in empty cells,
-        nodes = {
-          minimum width = .5cm,
-          minimum height = .5cm,
-          draw,
-          align = center,
-          anchor = center,
+      \only<2>{
+        \renewcommand*\vicatcolorone{dWhite}
+        \renewcommand*\vicatcolortwo{dWhite}
+      }
+      \only<3>{
+        \renewcommand*\vicatcolorone{dWhite}
+        \renewcommand*\vicatcolortwo{dGreen}
+      }
+      \only<4->{
+        \renewcommand*\vicatcolorone{dBlue}
+        \renewcommand*\vicatcolortwo{dRed}
+      }
+
+      \begin{tikzpicture}[
+        align = center,
+        ->,
+        > = Stealth,
+        ampersand replacement = \&,
+        cache/.style = {
+          matrix of nodes,
+          nodes in empty cells,
+          nodes = {
+            minimum width = .5cm,
+            minimum height = .5cm,
+            draw = dGray,
+            align = center,
+            anchor = center,
+          },
         },
-      },
-      caption/.style = {
-        fill = White,
-        sloped,
-        above,
-        inner sep = 0,
-        outer sep = 3,
-      },
-      ]
+        caption/.style = {
+          fill = White,
+          sloped,
+          above,
+          inner sep = 0,
+          outer sep = 3,
+        },
+        ]
 
-      \node[
-      cache,
-      label = {Cache (8 sets, 4 ways)},
-      ] (cache) {
-        \& \& \& \\
-        \& \node[fill = \vicatcolorone] (vic_0) {}; \& \& \\
-        \& \& \& \\
-        \& \& \node[fill = \vicatcolortwo] (vic_1) {}; \& \\
-        \& \& \& \\
-        \& \& \& \\
-        \& \& \& \\
-        \& \& \& \\
-      };
+        \node[
+        cache,
+        label = {Cache (8 sets, 4 ways)},
+        ] (cache) {
+          \& \& \& \\
+          \& \node[fill = \vicatcolorone] (vic_0) {}; \& \& \\
+          \& \& \& \\
+          \& \& \node[fill = \vicatcolortwo] (vic_1) {}; \& \\
+          \& \& \& \\
+          \& \& \& \\
+          \& \& \& \\
+          \& \& \& \\
+        };
 
-      \node[
-      left = of cache,
-      ] (bsd) {
-        \includegraphics[height = .1\textheight]{freebsd}
-      };
+        \node[
+        left = of cache,
+        ] (attacker) {
+          \includegraphics[height = .13\textheight]{attacker}
+        };
 
-      \node[
-      right = of cache,
-      ] (smile) {
-        \includegraphics[height = .1\textheight]{smile}
-      };
+        \node[
+        right = of cache,
+        ] (user) {
+          \includegraphics[height = .13\textheight]{user}
+        };
 
-      \node<5>[
-      right = of cache,
-      yshift = 5,
-      ] (aim) {
-        \includegraphics[height = .1\textheight]{aim}
-      };
+        \node<5>[
+        right = of cache,
+        yshift = 5,
+        ] (aim) {
+          \includegraphics[height = .13\textheight]{aim}
+        };
 
-      \draw<1>[Green] (smile) -> (vic_0);
-      \draw<1>[Green] (smile) -> (vic_1);
-      \draw<1>[red] (bsd) -> (vic_0);
-      \draw<1>[red] (bsd) -> (vic_1);
-      \draw<2>[red] (bsd) -> node[caption] {flush} (vic_0);
-      \draw<2>[red] (bsd) -> node[caption] {flush} (vic_1);
-      \draw<3>[Green] (smile) -> (vic_1);
-      \draw<4>[red] (bsd) -> node[caption] {miss} (vic_0);
-      \draw<4>[red] (bsd) -> node[caption] {hit} (vic_1);
-      \draw<5>[red] (bsd) -> node[caption] {Detected!} (vic_1);
+        \draw<1>[dGreen] (user.north) |- (vic_0.east);
+        \draw<1>[dGreen] (user) -- ++(-1.3, 0) |- (vic_1);
 
-    \end{tikzpicture}
-    % \caption{Пример атаки Flush + Reload}\label{flush_reload_example}
-  \end{figure}
+        \draw<1>[dRed] (attacker.north) |- (vic_0.west);
+        \draw<1>[dRed] (attacker) -- ++(1.3, 0) -- ++(0, .1) |- (vic_1.west);
+
+        \draw<2>[dRed] (attacker.north) |- node[above] {flush} (vic_0.west);
+        \draw<2>[dRed] (attacker) -- ++(1.3, 0) |- node[above] {flush} (vic_1.west);
+
+        \draw<3>[dGreen] (user) -- ++(-1.3, 0) |- (vic_1);
+
+        \draw<4>[dRed] (attacker.north) |- node[above] {miss} (vic_0.west);
+        \draw<4>[dRed] (attacker) -- ++(1.3, 0) |- node[above] {hit} (vic_1.west);
+
+        \draw<5>[dRed] (attacker) -- ++(1.3, 0) |- node[caption] {Detected!} (vic_1.west);
+
+      \end{tikzpicture}
+      % \caption{Пример атаки Flush + Reload}\label{flush_reload_example}
+    \end{figure}
+
+  \only<1-4>{\end{columns}}
 
   \note<1>{
 
@@ -663,7 +658,7 @@
   \item Flush + Flush
   \item Evict + Reload
   \item AnC (ASLR $\oplus$ Cache)
-  \item and etc.
+  \item etc.
   \end{itemize}
 
   \note{
@@ -726,26 +721,26 @@
 
 %       \node[
 %       left = of cache,
-%       ] (bsd) {
-%         \includegraphics[height = .1\textheight]{freebsd}
+%       ] (attacker) {
+%         \includegraphics[height = .1\textheight]{attacker}
 %       };
 
 %       \node[
 %       right = of cache,
 %       text = Black,
 %       label = {[White] below:Я слежу за тобой!},
-%       ] (smile) {
-%         \includegraphics[height = .1\textheight]{smile}
+%       ] (user) {
+%         \includegraphics[height = .1\textheight]{user}
 %       };
 
-%       \draw[red] (bsd) -> (vic_0);
-%       \draw[red] (bsd) -> (vic_1);
-%       \draw[red] (bsd) -> (cache-1-1.center);
-%       \draw[red] (bsd) -> (cache-1-2.center);
-%       \draw[red] (bsd) -> (cache-3-1.center);
-%       \draw[red] (bsd) -> (cache-5-3.center);
-%       \draw[red] (bsd) -> (cache-6-1.center);
-%       \draw[red] (bsd) -> (cache-7-2.center);
+%       \draw[red] (attacker) -> (vic_0);
+%       \draw[red] (attacker) -> (vic_1);
+%       \draw[red] (attacker) -> (cache-1-1.center);
+%       \draw[red] (attacker) -> (cache-1-2.center);
+%       \draw[red] (attacker) -> (cache-3-1.center);
+%       \draw[red] (attacker) -> (cache-5-3.center);
+%       \draw[red] (attacker) -> (cache-6-1.center);
+%       \draw[red] (attacker) -> (cache-7-2.center);
 
 %     \end{tikzpicture}
 %     \caption{Количество и продолжительность обращений к памяти может быть
@@ -817,14 +812,14 @@
 
 %       \node[
 %       left = of cache,
-%       ] (bsd) {
-%         \includegraphics[height = .1\textheight]{freebsd}
+%       ] (attacker) {
+%         \includegraphics[height = .1\textheight]{attacker}
 %       };
 
-%       \draw[red] (bsd) -> node[caption, text = BlueViolet] {3.83ns} (vic_0);
-%       \draw[red] (bsd) -> node[caption, text = BlueViolet] {4.85ns} (vic_1);
-%       \draw[red] (bsd) -> node[caption, text = Black] {0.96ns} (cache-7-4.center);
-%       \draw[red] (bsd) -> node[caption, text = Black] {1.06ns} (cache-8-1.center);
+%       \draw[red] (attacker) -> node[caption, text = BlueViolet] {3.83ns} (vic_0);
+%       \draw[red] (attacker) -> node[caption, text = BlueViolet] {4.85ns} (vic_1);
+%       \draw[red] (attacker) -> node[caption, text = Black] {0.96ns} (cache-7-4.center);
+%       \draw[red] (attacker) -> node[caption, text = Black] {1.06ns} (cache-8-1.center);
 
 %     \end{tikzpicture}
 %     \caption{Инструкция для сброса кэша срабатывает за различное время в
@@ -927,14 +922,14 @@
 
 %       \node[
 %       left = of cache,
-%       ] (bsd) {
-%         \includegraphics[height = .1\textheight]{freebsd}
+%       ] (attacker) {
+%         \includegraphics[height = .1\textheight]{attacker}
 %       };
 
 %       \node[
 %       right = of cache,
-%       ] (smile) {
-%         \includegraphics[height = .1\textheight]{smile}
+%       ] (user) {
+%         \includegraphics[height = .1\textheight]{user}
 %       };
 
 %       \node<5>[
@@ -944,16 +939,16 @@
 %         \includegraphics[height = .1\textheight]{aim}
 %       };
 
-%       \draw<1>[green] (smile) -> (vic_0);
-%       \draw<1>[green] (smile) -> (vic_1);
-%       \draw<1>[red] (bsd) -> (vic_0);
-%       \draw<1>[red] (bsd) -> (vic_1);
-%       \draw<2>[red] (bsd) -> node[caption] {evict} (evict_0.west);
-%       \draw<2>[red] (bsd) -> node[caption] {evict} (evict_1.west);
-%       \draw<3>[green] (smile) -> (vic_0);
-%       \draw<4>[red] (bsd) -> node[caption] {hit} (vic_0);
-%       \draw<4>[red] (bsd) -> node[caption] {miss} (vic_1);
-%       \draw<5>[red] (bsd) -> node[caption] {Detected!} (vic_0);
+%       \draw<1>[green] (user) -> (vic_0);
+%       \draw<1>[green] (user) -> (vic_1);
+%       \draw<1>[red] (attacker) -> (vic_0);
+%       \draw<1>[red] (attacker) -> (vic_1);
+%       \draw<2>[red] (attacker) -> node[caption] {evict} (evict_0.west);
+%       \draw<2>[red] (attacker) -> node[caption] {evict} (evict_1.west);
+%       \draw<3>[green] (user) -> (vic_0);
+%       \draw<4>[red] (attacker) -> node[caption] {hit} (vic_0);
+%       \draw<4>[red] (attacker) -> node[caption] {miss} (vic_1);
+%       \draw<5>[red] (attacker) -> node[caption] {Detected!} (vic_0);
 
 %     \end{tikzpicture}
 %     % \caption{Пример атаки Flush + Reload}\label{flush_reload_example}

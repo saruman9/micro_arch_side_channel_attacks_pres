@@ -5,17 +5,15 @@
       align = center,
       ->,
       > = Stealth,
-      thick,
       ampersand replacement = \&,
-      block/.style = {
-        draw,
-        fill = ForestGreen,
-        text = White,
-      },
       cache/.style = {
         rectangle split,
-        rectangle split parts = 5,
-        draw,
+        rectangle split parts = 4,
+        draw = dGray,
+        minimum width = 2cm,
+      },
+      cpu/.style = {
+        draw = dGray,
         minimum width = 2cm,
       },
       ]
@@ -23,74 +21,55 @@
       \node[
       cache,
       label = above:Cache 0,
-      ] (cache_0) {
-      };
+      ] (cache_0) {};
 
       \node[
-      right = of cache_0,
-      draw,
-      minimum width = 1cm,
-      minimum height = 1cm,
-      ] (cpu_0) {
-        CPU\\0
-      };
+      cpu,
+      right = 2 of cache_0,
+      ] (cpu_0) {CPU 0};
 
       \node[
       cache,
       label = above:Cache 3,
       above = of cache_0,
-      ] (cache_3) {
-      };
+      ] (cache_3) {};
 
       \node[
-      right = of cache_3,
-      draw,
-      minimum width = 1cm,
-      minimum height = 1cm,
-      ] (cpu_3) {
-        CPU\\3
-      };
+      cpu,
+      right = 2 of cache_3,
+      ] (cpu_3) {CPU 3};
 
       \node[
       cache,
       label = above:Cache 1,
       left = of cache_0,
-      ] (cache_1) {
-      };
+      ] (cache_1) {};
 
       \node[
-      left = of cache_1,
-      draw,
-      minimum width = 1cm,
-      minimum height = 1cm,
-      ] (cpu_1) {
-        CPU\\1
-      };
+      cpu,
+      left = 2 of cache_1,
+      ] (cpu_1) {CPU 1};
 
       \node[
       cache,
       label = above:Cache 2,
       above = of cache_1,
-      ] (cache_2) {
-      };
+      ] (cache_2) {};
 
       \node[
-      left = of cache_2,
-      draw,
-      minimum width = 1cm,
-      minimum height = 1cm,
-      ] (cpu_2) {
-        CPU\\2
-      };
+      cpu,
+      left = 2 of cache_2,
+      ] (cpu_2) {CPU 2};
 
       \draw (cpu_0) -- (cache_0);
       \draw (cpu_1) -- (cache_1);
       \draw (cpu_2) -- (cache_2);
       \draw (cpu_3) -- (cache_3);
-      \draw[ForestGreen] (cache_0.three west) -- ++(-0.5, 0) |- (cache_3.four west);
-      \draw[BrickRed] (cache_1.five east) -- ++(0.3, 0) |- (cache_3.one west);
-      \draw[Green] (cache_2.one east) -- ++(0.1, 0) |- (cache_3.three west);
-      \draw[Blue] (cache_1.two west) -- ++(-0.5, 0) |- (cache_2.five west);
+
+      \draw[dGreen] (cache_0.three west) -- ++(-0.5, 0) |- (cache_3.four west);
+      \draw[dRed] (cache_1.three east) -- ++(0.3, 0) |- (cache_3.one west);
+      \draw[dGreen] (cache_2.one east) -- ++(0.1, 0) |- (cache_3.three west);
+      \draw[dBlue] (cache_1.two west) -- ++(-0.5, 0) |- (cache_2.one west);
 
     \end{tikzpicture}
     \caption{Cross-core covert channels}\label{covert_attack_example}
@@ -151,36 +130,36 @@
 % \begin{frame}{\insertsubsubsection}
 
 %   \begin{figure}[h]
-%     \newcommand*\colorshared{White, White, White,
-%       White, White}
+%     \newcommand*\colorshared{dWhite, dWhite, dWhite,
+%       dWhite, dWhite}
 
 %     \only<2>{
-%       \renewcommand*\colorshared{White, White,
-%         ForestGreen, White, White}
+%       \renewcommand*\colorshared{dWhite, dWhite,
+%         dGreen, dWhite, dWhite}
 %     }
 %     \only<3>{
-%       \renewcommand*\colorshared{White, White,
-%         ForestGreen, White, White}
+%       \renewcommand*\colorshared{dWhite, dWhite,
+%         dGreen, dWhite, dWhite}
 %     }
 %     \only<4>{
-%       \renewcommand*\colorshared{White, ForestGreen,
-%         White, White, White}
+%       \renewcommand*\colorshared{dWhite, dGreen,
+%         dWhite, dWhite, dWhite}
 %     }
 %     \only<5>{
-%       \renewcommand*\colorshared{White, ForestGreen,
-%         White, White, White}
+%       \renewcommand*\colorshared{dWhite, dGreen,
+%         dWhite, dWhite, dWhite}
 %     }
 %     \only<6>{
-%       \renewcommand*\colorshared{White, White,
-%         ForestGreen, White, White}
+%       \renewcommand*\colorshared{dWhite, dWhite,
+%         dGreen, dWhite, dWhite}
 %     }
 %     \only<7>{
-%       \renewcommand*\colorshared{White, ForestGreen,
-%         White, White, White}
+%       \renewcommand*\colorshared{dWhite, dGreen,
+%         dWhite, dWhite, dWhite}
 %     }
 %     \only<8>{
-%       \renewcommand*\colorshared{White, White,
-%         ForestGreen, White, White}
+%       \renewcommand*\colorshared{dWhite, dWhite,
+%         dGreen, dWhite, dWhite}
 %     }
 
 %     \begin{tikzpicture}[
@@ -191,8 +170,8 @@
 %       ampersand replacement = \&,
 %       block/.style = {
 %         draw,
-%         fill = ForestGreen,
-%         text = White,
+%         fill = dGreen,
+%         text = dWhite,
 %       },
 %       cache/.style = {
 %         rectangle split,
@@ -232,13 +211,13 @@
 %       above = of p0,
 %       text = Black,
 %       ] (p0_t) {
-%         \only<2>{\color{ForestGreen}1}
-%         \only<3>{1\color{ForestGreen}1}
-%         \only<4>{11\color{ForestGreen}0}
-%         \only<5>{110\color{ForestGreen}0}
-%         \only<6>{1100\color{ForestGreen}1}
-%         \only<7>{11001\color{ForestGreen}0}
-%         \only<8>{110010\color{ForestGreen}1}
+%         \only<2>{\color{dGreen}1}
+%         \only<3>{1\color{dGreen}1}
+%         \only<4>{11\color{dGreen}0}
+%         \only<5>{110\color{dGreen}0}
+%         \only<6>{1100\color{dGreen}1}
+%         \only<7>{11001\color{dGreen}0}
+%         \only<8>{110010\color{dGreen}1}
 %       };
 
 %       \node[
@@ -253,13 +232,13 @@
 %       above = of p1,
 %       text = Black,
 %       ] (p1_t) {
-%         \only<2>{\color{ForestGreen}1}
-%         \only<3>{1\color{ForestGreen}1}
-%         \only<4>{11\color{ForestGreen}0}
-%         \only<5>{110\color{ForestGreen}0}
-%         \only<6>{1100\color{ForestGreen}1}
-%         \only<7>{11001\color{ForestGreen}0}
-%         \only<8>{110010\color{ForestGreen}1}
+%         \only<2>{\color{dGreen}1}
+%         \only<3>{1\color{dGreen}1}
+%         \only<4>{11\color{dGreen}0}
+%         \only<5>{110\color{dGreen}0}
+%         \only<6>{1100\color{dGreen}1}
+%         \only<7>{11001\color{dGreen}0}
+%         \only<8>{110010\color{dGreen}1}
 %       };
 
 %       \draw<1-3,6,8> (p0) -- node[above] {Запись} (shared);
@@ -311,9 +290,9 @@
 %   \begin{figure}[h]
 
 %     \newcommand*\dramcolor{Green, Green, NavyBlue,
-%       NavyBlue, White, White, White}
+%       NavyBlue, dWhite, dWhite, dWhite}
 
-%     \newcommand*\bufcolor{White}
+%     \newcommand*\bufcolor{dWhite}
 
 %     \only<2>{
 %       \renewcommand*\bufcolor{Green}
@@ -349,8 +328,8 @@
 %       block/.style = {
 %         rectangle,
 %         draw,
-%         fill = ForestGreen,
-%         text = White,
+%         fill = dGreen,
+%         text = dWhite,
 %         text centered,
 %       },
 %       ]
@@ -377,8 +356,8 @@
 
 %       \node[
 %       draw,
-%       fill = ForestGreen,
-%       text = White,
+%       fill = dGreen,
+%       text = dWhite,
 %       left = 3cm of dram,
 %       minimum width = 2cm,
 %       minimum height = 2cm,
@@ -477,8 +456,8 @@
 %       block/.style = {
 %         rectangle,
 %         draw,
-%         fill = ForestGreen,
-%         text = White,
+%         fill = dGreen,
+%         text = dWhite,
 %       },
 %       ]
 
@@ -508,13 +487,13 @@
 %         \only<8>{t$^\circ$C}%
 %       };
 
-%       \draw<1> (core_1) -- ++(2, 0) |- node[right, text = Black] {\color{ForestGreen}1} (core_0);
-%       \draw<2> (core_1) -- ++(2, 0) |- node[right, text = Black] {1\color{ForestGreen}0} (core_0);
-%       \draw<3> (core_1) -- ++(2, 0) |- node[right, text = Black] {10\color{ForestGreen}1} (core_0);
-%       \draw<4> (core_1) -- ++(2, 0) |- node[right, text = Black] {101\color{ForestGreen}0} (core_0);
-%       \draw<5> (core_1) -- ++(2, 0) |- node[right, text = Black] {1010\color{ForestGreen}1} (core_0);
-%       \draw<6> (core_1) -- ++(2, 0) |- node[right, text = Black] {10101\color{ForestGreen}0} (core_0);
-%       \draw<7> (core_1) -- ++(2, 0) |- node[right, text = Black] {101010\color{ForestGreen}0} (core_0);
+%       \draw<1> (core_1) -- ++(2, 0) |- node[right, text = Black] {\color{dGreen}1} (core_0);
+%       \draw<2> (core_1) -- ++(2, 0) |- node[right, text = Black] {1\color{dGreen}0} (core_0);
+%       \draw<3> (core_1) -- ++(2, 0) |- node[right, text = Black] {10\color{dGreen}1} (core_0);
+%       \draw<4> (core_1) -- ++(2, 0) |- node[right, text = Black] {101\color{dGreen}0} (core_0);
+%       \draw<5> (core_1) -- ++(2, 0) |- node[right, text = Black] {1010\color{dGreen}1} (core_0);
+%       \draw<6> (core_1) -- ++(2, 0) |- node[right, text = Black] {10101\color{dGreen}0} (core_0);
+%       \draw<7> (core_1) -- ++(2, 0) |- node[right, text = Black] {101010\color{dGreen}0} (core_0);
 %       \draw<8> (core_1) -- ++(2, 0) |- node[right, text = Black] {1010100} (core_0);
 
 
