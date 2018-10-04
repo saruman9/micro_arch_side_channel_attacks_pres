@@ -1,45 +1,26 @@
-# You want latexmk to *always* run, because make does not have all the info.
-# Also, include non-file targets in .PHONY so they are run regardless of any
-# file of the given name existing.
-.PHONY: all clean pdflatex
+MAKEFLAGS  := -j 1
+SRC = tex/main.tex
+PDF = tex/main.pdf
+CACHE_DIR   := $(shell pwd)/.latex-cache
+STY = $(wildcard *.sty)
 
-# The first rule in a Makefile is the one executed by default ("make"). It
-# should always be the "all" rule, so that "make" and "make all" are identical.
-all: main.pdf
+COMPILE_TEX := latexmk -xelatex -shell-escape -use-make -output-directory=$(CACHE_DIR)
+export TEXINPUTS:=$(shell pwd):$(shell pwd)/source:${TEXINPUTS}
 
+.PHONY: all presentation clean clean-cache
 
-# CUSTOM BUILD RULES
+all: presentation
 
-# In case you didn't know, '$@' is a variable holding the name of the target,
-# and '$<' is a variable holding the (first) dependency of a rule.
-# "raw2tex" and "dat2tex" are just placeholders for whatever custom steps
-# you might have.
+presentation: $(PDF)
 
-%.tex: %.raw
-		./raw2tex $< > $@
+clean: clean-cache
 
-%.tex: %.dat
-		./dat2tex $< > $@
+clean-cache:
+	@rm -rf "$(CACHE_DIR)"
 
-# MAIN LATEXMK RULE
+$(CACHE_DIR):
+	@mkdir -p $(CACHE_DIR)
 
-# -pdf tells latexmk to generate PDF directly (instead of DVI).
-# -pdflatex="" tells latexmk to call a specific backend with specific options.
-# -use-make tells latexmk to call make for generating missing files.
-
-# -interaction=nonstopmode keeps the pdflatex backend from stopping at a
-# missing file reference and interactively asking you for an alternative.
-
-pdflatex: main.tex
-	latexmk -pdf -pdflatex="pdflatex --shell-escape -interaction=nonstopmode %O %S" -use-make $<
-
-main.pdf: main.tex
-	latexmk -pdf -pdflatex="xelatex --shell-escape %O %S" -use-make $<
-
-ignore-errors: main.tex
-	latexmk -pdf -pdflatex="xelatex --shell-escape -halt-on-error %O %S" -use-make $<
-
-
-clean:
-	latexmk -c
-	rm -rf *.bbl *.run.xml _minted* *.glo *.gls *.glg *.xdy *.acn *.acr *.alg *.fls *.nav *.snm *.vrb auto
+$(PDF): $(STY) $(SRC) | clean-cache $(CACHE_DIR)
+	@cd $(firstword $(dir $(SRC))) && $(COMPILE_TEX) $(notdir $(SRC))
+	@cp $(CACHE_DIR)/$(notdir $(PDF)) presentation.pdf
