@@ -7,9 +7,9 @@
 
 [[file:./DCG_wo_notes.pdf][Основная версия с DCG 5.8.18 (без подстрочника)]]
 
-[[file:./DCG_w_notes.pdf][Основаная версия с DCG 5.8.18 (с подстрочником)]]
+[[file:./DCG_w_notes.pdf][Основная версия с DCG 5.8.18 (с подстрочником)]]
 
-[[file:./KazHackStan_wo_notes.pdf][Основаная версия с KazHackStan 05.10.18 (без подстрочника)]]
+[[file:./KazHackStan_wo_notes.pdf][Основная версия с KazHackStan 05.10.18 (без подстрочника)]]
 
 * Презентации
 
